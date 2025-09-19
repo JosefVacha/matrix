@@ -21,11 +21,13 @@ Output:
 
 Exit codes: 0 OK, 1 on file not found/unreadable
 """
+
 import argparse
 import re
 from pathlib import Path
 import sys
 import json
+
 
 def parse_summary(path: Path) -> dict:
     vals = {}
@@ -33,23 +35,25 @@ def parse_summary(path: Path) -> dict:
         m = re.match(r"<!--\s*SIGNALS:([^>]*)-->", line)
         if m:
             kvs = m.group(1)
-            for pair in kvs.split(';'):
+            for pair in kvs.split(";"):
                 pair = pair.strip()
-                if '=' in pair:
-                    k, v = pair.split('=', 1)
+                if "=" in pair:
+                    k, v = pair.split("=", 1)
                     vals[k.strip()] = v.strip()
         m2 = re.match(r"<!--\s*PERF_PROXY:([^>]*)-->", line)
         if m2:
             kvs = m2.group(1)
-            for pair in kvs.split(';'):
+            for pair in kvs.split(";"):
                 pair = pair.strip()
-                if '=' in pair:
-                    k, v = pair.split('=', 1)
+                if "=" in pair:
+                    k, v = pair.split("=", 1)
                     vals[k.strip()] = v.strip()
     return vals
 
+
 def clamp(x, a, b):
     return max(a, min(b, x))
+
 
 def calc_score(vals: dict) -> int:
     # PLACEHOLDER constants
@@ -64,18 +68,34 @@ def calc_score(vals: dict) -> int:
         short_rate = float(vals.get("short_rate", "0"))
         churn_rate = float(vals.get("churn_rate", "0"))
         max_dd = float(vals.get("max_dd", "0"))
-        penalty_trigger = clamp(abs(trigger_rate - target_band_center) / target_band_halfwidth, 0, 1) * 25
-        penalty_imbalance = clamp(max(0, abs(long_rate - short_rate) - tol) / (1 - tol), 0, 1) * 25
+        penalty_trigger = (
+            clamp(abs(trigger_rate - target_band_center) / target_band_halfwidth, 0, 1)
+            * 25
+        )
+        penalty_imbalance = (
+            clamp(max(0, abs(long_rate - short_rate) - tol) / (1 - tol), 0, 1) * 25
+        )
         penalty_churn = clamp(churn_rate / churn_ref, 0, 1) * 25
         penalty_dd = clamp(max_dd / dd_ref, 0, 1) * 25
-        score = round(max(0, 100 - (penalty_trigger + penalty_imbalance + penalty_churn + penalty_dd)))
+        score = round(
+            max(
+                0,
+                100
+                - (penalty_trigger + penalty_imbalance + penalty_churn + penalty_dd),
+            )
+        )
     except Exception:
         score = 0
     return score
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Calculate stability score from SUMMARY files.")
-    parser.add_argument("--summaries", nargs='+', required=True, help="List of SUMMARY_*.md files")
+    parser = argparse.ArgumentParser(
+        description="Calculate stability score from SUMMARY files."
+    )
+    parser.add_argument(
+        "--summaries", nargs="+", required=True, help="List of SUMMARY_*.md files"
+    )
     args = parser.parse_args()
     scores = []
     for fname in args.summaries:
@@ -91,6 +111,7 @@ def main():
         avg = round(sum(scores) / len(scores))
         print(json.dumps({"aggregate_avg": avg}))
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

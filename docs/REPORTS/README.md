@@ -1,3 +1,8 @@
+## Synthetic
+
+SIM summaries (from `simulate_thresholds.py`) live alongside real run summaries in `docs/summaries/`.
+Use for quick experimentation and parameter tuning before real runs.
+
 #
 ## Second Run
 

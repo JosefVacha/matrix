@@ -1,0 +1,3 @@
+pair,n_trades,win_rate,avg_trade_return,max_drawdown
+BTC/USDT,42,0.43,0.012,-0.12
+ETH/USDT,38,0.41,0.011,-0.13

@@ -13,11 +13,13 @@ Output:
 
 Exit codes: 0 OK (even if churn not computable), 1 on file not found/unreadable
 """
+
 import argparse
 import re
 from pathlib import Path
 import sys
 import json
+
 
 def parse_markers(path: Path) -> dict:
     markers = {}
@@ -25,15 +27,18 @@ def parse_markers(path: Path) -> dict:
         m = re.match(r"<!--\s*SIGNALS:([^>]*)-->", line)
         if m:
             kvs = m.group(1)
-            for pair in kvs.split(';'):
+            for pair in kvs.split(";"):
                 pair = pair.strip()
-                if '=' in pair:
-                    k, v = pair.split('=', 1)
+                if "=" in pair:
+                    k, v = pair.split("=", 1)
                     markers[k.strip()] = v.strip()
     return markers
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Calculate churn rate from REPORT or SUMMARY.")
+    parser = argparse.ArgumentParser(
+        description="Calculate churn rate from REPORT or SUMMARY."
+    )
     parser.add_argument("--report", type=str, help="Path to REPORT_*.md")
     parser.add_argument("--summary", type=str, help="Path to SUMMARY_*.md")
     args = parser.parse_args()
@@ -56,11 +61,17 @@ def main():
         entries = int(markers.get("entries", "0"))
         exits_lt_cooldown = int(markers.get("exits_lt_cooldown", "0"))
         churn_rate = round(exits_lt_cooldown / entries, 4) if entries > 0 else "N/A"
-        out = {"source": source, "churn_rate": churn_rate, "entries": entries, "exits_lt_cooldown": exits_lt_cooldown}
+        out = {
+            "source": source,
+            "churn_rate": churn_rate,
+            "entries": entries,
+            "exits_lt_cooldown": exits_lt_cooldown,
+        }
     except Exception:
         out = {"churn_rate": "N/A"}
     print(json.dumps(out))
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

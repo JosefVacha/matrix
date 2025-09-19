@@ -1,28 +1,24 @@
 {
     "// POZNÁMKA": "Toto je SKELETON konfigurace - zkopíruj na freqtrade.json a doplň lokálně",
     "// BEZPEČNOST": "ŽÁDNÉ API KLÍČE v tomto souboru - pouze placeholdery!",
-    
     "max_open_trades": 3,
     "stake_currency": "USDT",
     "stake_amount": 100,
     "tradable_balance_ratio": 0.99,
     "fiat_display_currency": "USD",
-    
     "dry_run": true,
     "dry_run_wallet": 1000,
-    
     "// EXCHANGE": "Placeholder - NEPROVÁDÍ live obchody",
     "exchange": {
         "name": "binance",
         "// API_KEYS": "DOPLŇ LOKÁLNĚ! Nikdy nepushuj do Gitu",
-        "key": "YOUR_API_KEY_HERE", 
+        "key": "YOUR_API_KEY_HERE",
         "secret": "YOUR_SECRET_HERE",
         "ccxt_config": {},
         "ccxt_async_config": {},
         "// MARKETS": "Refresh interval pro market data",
         "markets_refresh_interval": 60
     },
-    
     "// PAIRLIST": "STATICKÁ pro reprodukovatelné backtesty - klíčové!",
     "pairlists": [
         {
@@ -32,37 +28,30 @@
     "// PAIRS": "Definovaný statický seznam pro konzistentní výsledky",
     "pair_whitelist": [
         "BTC/USDT",
-        "ETH/USDT", 
+        "ETH/USDT",
         "ADA/USDT",
         "DOT/USDT"
     ],
-    
     "// TIMEFRAMES": "Pro MATRIX pipeline",
     "timeframe": "5m",
-    
     "// STRATEGY": "Placeholder pro MATRIX strategii",
     "strategy": "MatrixStrategy",
     "strategy_path": "strategies/",
-    
     "// BACKTEST": "Nastavení pro walk-forward validaci",
     "timerange": "20241101-20241201",
     "enable_protections": false,
-    
     "// TELEGRAM": "Notifikace - doplň lokálně",
     "telegram": {
         "enabled": false,
         "token": "YOUR_TELEGRAM_TOKEN",
         "chat_id": "YOUR_CHAT_ID"
     },
-    
-    "// PATHS": "Data a log cesty", 
+    "// PATHS": "Data a log cesty",
     "datadir": "user_data/data",
     "user_data_dir": "user_data",
-    
     "// LOGS": "Debugging pro MATRIX",
     "verbosity": 3,
     "logfile": "logs/freqtrade.log",
-    
     "// API": "Webserver pro monitoring",
     "api_server": {
         "enabled": false,

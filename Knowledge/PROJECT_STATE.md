@@ -1,14 +1,22 @@
 # MATRIX - Project State
 
 ## Current Project Status / Aktuální stav projektu
-**Last Updated / Datum poslední aktualizace:** 19 September 2025  
-**Phase / Fáze:** First-Run Sandbox Preparation / Příprava první sandbox run  
-**Status:** ✅ READY FOR FIRST OFFLINE RUN - Data placement docs + precheck + report template / Připraveno pro první offline run
 **Last Updated / Datum poslední aktualizace:** 19 September 2025
-**Phase / Fáze:** Churn & Stability Calculators, Summary/Merge Updates / Kalkulátory churn & stability, úpravy summary/merge
-**Status:** 🟢 CHURN & STABILITY CALCULATORS INTEGRATED: SUMMARY now includes churn, merge tool prints JSON aggregates, echo tasks added / Kalkulátory churn & stability integrovány, SUMMARY nyní obsahuje churn, merge tool tiskne JSON agregáty, echo úlohy přidány
+**Phase / Fáze:** M1 DRY Run Completed / M1 DRY run dokončen
+**Status:** 🟢 M1 DRY RUN COMPLETED: End-to-end DRY cycle, ingest→summary→recap, thresholds diff & changelog, decision note, roadmap/ADR ticked / Dokončen DRY cyklus, ingest→summary→recap, diff & changelog, decision note, roadmap/ADR
 
 ## Completed Tasks / Co bylo dokončeno
+30. 🟢 Freqtrade Adapter Layer — src/matrix/adapter/freqtrade_strategy_adapter.py, strategies/MatrixAdapterStrategy.py, docstrings, contract references
+31. 🟢 DRY Backtest Protocol — docs/DRY_BACKTEST_PROTOCOL.md, configs/strategy.adapter.example.json
+32. 🟢 Adapter Test Skeletons — tests/test_adapter_contracts.py
+33. 🟢 Governance Wiring — ROADMAP.md milestone, ADR 0004
+34. 🟢 VS Code Echo Tasks — adapter-plan, adapter-walkthrough
+## Next TODOs
+1. If KEEP → prep M2 (FreqAI features impl plan)
+2. If ITERATE → propose new TS draft & next DRY cycle
+3. Always keep CHANGELOG updated
+4. Review audit trail completeness before M2
+5. Confirm roadmap/ADR links for every decision note
 1. ✅ **Directory Structure / Adresářová struktura** - Created all required folders / Vytvořeny všechny potřebné složky (configs/, strategies/, scripts/, src/, tests/, Knowledge/, .vscode/, .github/)
 2. ✅ **Basic Files / Základní soubory** - README.md, LICENSE (MIT), .gitignore, .copilotignore
 3. ✅ **VS Code Settings / VS Code nastavení** - Enabled instruction file support / Zapnuta podpora pro instrukční soubory v .vscode/settings.json
@@ -50,11 +58,11 @@
 ## Current Report Link / Aktuální link na report
 **Current report → [docs/REPORT_TEMPLATE.md](docs/REPORT_TEMPLATE.md) (to be filled after first run)**
 ## Next Steps / Další kroky
-1. Fill REPORT_1, generate SUMMARY_1; pick TS_*
-2. Run offline 2, fill REPORT_2, SUMMARY_2
-3. Compute churn + stability, update STABILITY_RECAP
-4. DIFF_TS between sets if changed
-5. Decide keep/iterate TS
+1. Try 2–3 SIM runs with different UP/DN; record summaries
+2. Choose a TS candidate based on SIM findings
+3. Run offline sandbox 2 with chosen TS; fill REPORT/SUMMARY
+4. Update STABILITY_RECAP.md (real + SIM rows)
+5. Propose doc/ADR/threshold updates as needed
 
 ## Key Components / Klíčové komponenty
 - **Pipeline breathing:** sensor(OHLCV) → feature(hooks) → trainer(FreqAI) → predict(hooks) → strategy(thresholds) → risk → execution(Freqtrade)

@@ -1,3 +1,12 @@
+## Offline mapping & simulator metrics
+
+Synthetic simulator (`simulate_thresholds.py`) produces:
+- Trigger Rate
+- Long/Short split
+- Churn proxy (entries exiting < cooldown)
+- Avg hold bars
+- ASCII sparkline of predictions
+
 # METRICS_CHECKLIST.md
 
 Essential metrics collection for MATRIX sandbox backtesting.

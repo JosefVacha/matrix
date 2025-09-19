@@ -7,14 +7,11 @@
         "SAFETY: This config is designed for offline operation only - no live trading risk"
     ],
     "_safety_warning": "No live trading, no API keys, local data only",
-
     "trading_mode": "backtest",
     "timeframe": "5m",
-    
     "_data_source_note": "Local candles only - no network access",
     "datadir": "./data",
     "timerange": "<FROM_YYYYMMDD>-<TO_YYYYMMDD>",
-    
     "_asset_selection_note": "Static pairlist for reproducibility",
     "exchange": {
         "name": "binance",
@@ -24,36 +21,34 @@
         "ccxt_config": {},
         "ccxt_async_config": {}
     },
-    
     "pairlists": [
         {
             "method": "StaticPairList",
             "_reference_note": "Uses configs/pairlist.static.json for consistency"
         }
     ],
-    
     "_strategy_note": "MATRIX strategy with prediction-based signals",
     "strategy": "MatrixStrategy",
     "strategy_path": "./strategies/",
-    
     "_thresholds_note": [
         "IMPORTANT: Threshold values are NOT stored in this config file",
         "Thresholds live in documentation and are applied in strategy code:",
         "- Initial values: placeholder defaults in strategies/MatrixStrategy.py",
-        "- Optimization methodology: docs/THRESHOLDS.md Decision Rules section", 
+        "- Optimization methodology: docs/THRESHOLDS.md Decision Rules section",
         "- Data-driven proposals: docs/REPORT_TEMPLATE.md Thresholds Extraction",
         "- Final approved values: implemented in src/matrix/strategy/core.py",
         "This separation ensures threshold decisions are documented and reviewable"
     ],
-    
     "_walk_forward_note": "Configuration for WFO validation",
-    "backtest_breakdown": ["day", "week", "month"],
+    "backtest_breakdown": [
+        "day",
+        "week",
+        "month"
+    ],
     "enable_protections": false,
-    
     "_fees_slippage_note": "Realistic but separate from signal quality assessment",
     "fee": 0.001,
     "_slippage_todo": "Add slippage modeling after signal validation",
-    
     "_risk_management_note": "Conservative defaults - actual logic in risk/policy.py",
     "dry_run": true,
     "_roi_sl_note": "ROI/SL disabled - handled by strategy/risk policy",
@@ -62,26 +57,21 @@
     },
     "stoploss": -1.0,
     "trailing_stop": false,
-    
     "_position_sizing_note": "Fixed size for initial validation",
     "stake_currency": "USDT",
     "stake_amount": 100,
     "tradable_balance_ratio": 1.0,
-    
     "_output_config_note": "Local files only",
     "backtest_cache": "day",
     "export": "signals",
     "exportfilename": "./user_data/backtest_results/matrix_sandbox_<TIMESTAMP>.json",
-    
     "_logging_note": "Detailed for development",
     "verbosity": 3,
     "logfile": "./logs/matrix_sandbox.log",
-    
     "_performance_note": "Optimize for development workflow",
     "max_workers": 1,
     "enable_position_stacking": false,
     "position_adjustment_enable": false,
-    
     "_freqai_integration_note": "Reference to FreqAI config",
     "freqai": {
         "_config_ref": "Load from configs/freqai.example.json",
@@ -89,29 +79,24 @@
         "identifier": "matrix_sandbox_model",
         "_model_note": "Model artifacts saved locally for inspection"
     },
-    
     "_development_note": "Flags for debugging and validation",
     "internals": {
         "process_throttle_secs": 5,
         "interval": 3
     },
-    
     "_metrics_note": "Enable comprehensive logging for analysis",
     "telegram": {
         "enabled": false,
         "_telegram_note": "No external notifications in sandbox mode"
     },
-    
     "api_server": {
         "enabled": false,
         "_api_note": "No external API access in sandbox mode"
     },
-    
     "_validation_note": "Checksums for reproducibility",
     "_contracts_todo": "Add contract/label version tracking",
     "_contracts_md5_placeholder": "<calculate_from_docs/CONTRACTS.md>",
     "_labels_md5_placeholder": "<calculate_from_docs/LABELS.md>",
-    
     "_documentation_notes": [
         "This config is for OFFLINE sandbox backtesting only",
         "Copy to backtest.sandbox.json and edit placeholders",

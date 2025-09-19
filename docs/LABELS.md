@@ -1,3 +1,12 @@
+# Label R(Return_H) Semantics
+
+Formula:
+- Percent return: $R_{t,H}^{pct} = \frac{close_{t+H}}{close_t} - 1$
+- Log return: $R_{t,H}^{log} = \log\left(\frac{close_{t+H}}{close_t}\right)$
+
+Alignment:
+- Label for time $t$ uses close at $t$ and $t+H$ (lookahead)
+- Last $H$ rows become NaN and are dropped downstream
 # MATRIX Label Generation Semantics
 
 This document defines the semantics and methodology for label generation in MATRIX.

@@ -6,7 +6,13 @@ Fill one row per sandbox run. Churn rate = share of entries that exit < cooldown
 |---------|--------|---------|--------------|------------|------------|--------|-----------------|
 |         |        |         |              |            |            |        |                 |
 
+<!-- Decision Note -->
+[See TS_DECISION_20250919_SAMPLE.md](../DECISIONS/TS_DECISION_20250919_SAMPLE.md)
+<!-- /Decision Note -->
+
 ## Instructions
+
+SIM runs can be logged in the same table with `run_tag = SIM_<tag>` (clearly marked as synthetic).
 - After each run, fill a new row with key metrics and notes.
 - Use REPORT and SUMMARY files for values.
 - You can prefill `churn_rate` and initial `stability_score` using:

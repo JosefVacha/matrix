@@ -15,7 +15,9 @@ CLI Sketch:
 
 No external dependencies; stdlib only. No file I/O logic yet (just stubs).
 """
+
 from typing import Optional, Dict, Any
+
 
 def parse_report_md(report_path: str) -> Optional[Dict[str, Any]]:
     """
@@ -37,10 +39,10 @@ def parse_report_md(report_path: str) -> Optional[Dict[str, Any]]:
             return {}
         section, kvs = m.groups()
         out = {"_section": section}
-        for pair in kvs.split(';'):
+        for pair in kvs.split(";"):
             pair = pair.strip()
-            if '=' in pair:
-                k, v = pair.split('=', 1)
+            if "=" in pair:
+                k, v = pair.split("=", 1)
                 out[k.strip()] = v.strip()
         return out
 
@@ -65,10 +67,14 @@ def parse_report_md(report_path: str) -> Optional[Dict[str, Any]]:
         Render summary Markdown using METRICS_SUMMARY_TEMPLATE.md structure.
         Fill available fields, use 'N/A' if missing.
         """
-        template_path = Path(__file__).parent.parent.parent / "docs" / "METRICS_SUMMARY_TEMPLATE.md"
+        template_path = (
+            Path(__file__).parent.parent.parent / "docs" / "METRICS_SUMMARY_TEMPLATE.md"
+        )
         template = template_path.read_text()
+
         def get(section, key):
             return data.get(section, {}).get(key, "N/A")
+
         out = template.replace("<commit>", get("RUN_META", "commit"))
         out = out.replace("<timeframe>", get("RUN_META", "timeframe"))
         out = out.replace("<timerange>", get("RUN_META", "timerange"))
@@ -86,7 +92,13 @@ def parse_report_md(report_path: str) -> Optional[Dict[str, Any]]:
         entries = get("SIGNALS", "entries")
         exits_lt_cooldown = get("SIGNALS", "exits_lt_cooldown")
         try:
-            churn_rate = round(float(exits_lt_cooldown) / float(entries), 4) if entries != "N/A" and exits_lt_cooldown != "N/A" and float(entries) > 0 else "N/A"
+            churn_rate = (
+                round(float(exits_lt_cooldown) / float(entries), 4)
+                if entries != "N/A"
+                and exits_lt_cooldown != "N/A"
+                and float(entries) > 0
+                else "N/A"
+            )
         except Exception:
             churn_rate = "N/A"
         out += f"\nChurn Rate: {churn_rate}\n"
@@ -96,9 +108,15 @@ def parse_report_md(report_path: str) -> Optional[Dict[str, Any]]:
         """
         CLI entry point for metrics extraction.
         """
-        parser = argparse.ArgumentParser(description="Extract metrics summary from MATRIX REPORT_*.md")
-        parser.add_argument("--report", type=str, required=True, help="Path to REPORT_*.md")
-        parser.add_argument("--out", type=str, required=True, help="Path to output SUMMARY_*.md")
+        parser = argparse.ArgumentParser(
+            description="Extract metrics summary from MATRIX REPORT_*.md"
+        )
+        parser.add_argument(
+            "--report", type=str, required=True, help="Path to REPORT_*.md"
+        )
+        parser.add_argument(
+            "--out", type=str, required=True, help="Path to output SUMMARY_*.md"
+        )
         args = parser.parse_args()
         report_path = Path(args.report)
         out_path = Path(args.out)

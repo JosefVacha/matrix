@@ -1,0 +1,6 @@
+{
+    "strategy": "MatrixAdapterStrategy",
+    "timeframe": "5m",
+    "pairlist": "configs/pairlist.static.json",
+    "comment": "NO KEYS / OFFLINE ONLY. See docs/DRY_BACKTEST_PROTOCOL.md for CLI usage."
+}

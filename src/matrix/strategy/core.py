@@ -73,6 +73,10 @@ def to_signals(predictions: pd.Series, context: Dict[str, Any]) -> Dict[str, boo
     - TODO: Apply context['market_conditions'] for regime-specific thresholds
     - TODO: Integrate context['risk_budget'] for position sizing hints
     
+    """
+    Reference: The pure mapping logic for offline signal generation is implemented in src/matrix/strategy/mapping.py.
+    Freqtrade wiring remains TODO; use mapping.py for all offline tests and synthetic runs.
+    """
     # --- Threshold Set Injection ---
     # TODO: Inject threshold set from docs/thresholds/sets/TS_*.yml manually for each run
     # Reference: docs/thresholds/THRESHOLDS_SETS.md for versioning and provenance

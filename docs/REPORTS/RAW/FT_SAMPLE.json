@@ -1,0 +1,5 @@
+{
+  "run_meta": {"timeframe": "5m", "timerange": "20250101-20250131", "pairlist": ["BTC/USDT"], "strategy": "MatrixAdapterStrategy", "commit": "abc123"},
+  "perf": {"avg_trade_return": 0.012, "win_rate": 0.43, "max_drawdown": -0.12, "exposure": 0.85},
+  "signals": {"entries": 42, "exits_lt_cooldown": 5, "long_rate": 0.51, "short_rate": 0.49, "trigger_rate": 0.12, "hold_time_median": 15}
+}

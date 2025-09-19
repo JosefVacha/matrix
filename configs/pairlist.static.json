@@ -2,14 +2,12 @@
     "// POZNÁMKA": "Statická pairlist pro reprodukovatelné backtesty",
     "// ÚČEL": "Garantuje konzistentní výsledky WFO - NIKDY neměnit během BT",
     "// BEZPEČNOST": "Pouze pro backtesting - NEPROVÁDÍ live trading",
-    
     "exchange": "binance",
     "stake_currency": "USDT",
-    
     "// STATIC_PAIRS": "Fixní seznam pro wszystkie MATRIX backtesty",
     "pairs": [
         "BTC/USDT",
-        "ETH/USDT", 
+        "ETH/USDT",
         "BNB/USDT",
         "ADA/USDT",
         "DOT/USDT",
@@ -17,25 +15,27 @@
         "LINK/USDT",
         "UNI/USDT"
     ],
-    
-    "// TIMEFRAMES": "Podporované časové rámce", 
-    "timeframes": ["5m", "15m", "1h", "4h", "1d"],
-    
+    "// TIMEFRAMES": "Podporované časové rámce",
+    "timeframes": [
+        "5m",
+        "15m",
+        "1h",
+        "4h",
+        "1d"
+    ],
     "// FILTERS": "Základní filtry pro kvalitu dat",
     "volume_filter": {
         "min_24h_volume_usdt": 1000000,
         "description": "Min 1M USDT 24h volume pro stabilitu"
     },
-    
     "spread_filter": {
         "max_spread_ratio": 0.005,
         "description": "Max 0.5% spread pro minimalizaci slippage"
     },
-    
     "// MAINTENANCE": "Jak udržovat tuto pairlist",
     "maintenance_notes": [
         "Přidat nové páry pouze na konci seznamu",
-        "NIKDY neměnit pořadí existujících párů", 
+        "NIKDY neměnit pořadí existujících párů",
         "Změny provádět pouze mimo aktivní WFO backtesty",
         "Dokumentovat důvod změn v commit message",
         "Pro live trading použij dynamickou pairlist v main config"

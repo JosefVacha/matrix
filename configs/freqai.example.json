@@ -1,7 +1,6 @@
 {
     "// NOTE": "FreqAI configuration for MATRIX - copy to freqai.json and complete",
     "// SECURITY": "Only placeholders, no sensitive data!",
-    
     "freqai": {
         "enabled": true,
         "purge_old_models": true,
@@ -9,7 +8,6 @@
         "backtest_period_days": 7,
         "identifier": "matrix_model",
         "save_backtest_models": true,
-        
         "// MODEL": "Integration with MATRIX feature engineering",
         "model_training_parameters": {
             "// PLACEHOLDER": "Model config by type (LightGBM, CatBoost, etc.)",
@@ -18,13 +16,11 @@
             "max_depth": 6,
             "random_state": 42
         },
-        
         "// MATRIX_HOOKS": "Custom feature/label generation hooks",
         "// feature_hook": "matrix.freqai.hooks.generate_features",
-        "// label_hook": "matrix.freqai.hooks.generate_labels", 
+        "// label_hook": "matrix.freqai.hooks.generate_labels",
         "// feature_columns_hook": "matrix.freqai.hooks.feature_columns",
         "// label_name_hook": "matrix.freqai.hooks.label_name",
-        
         "// DATA": "Feature engineering integration with MATRIX",
         "feature_parameters": {
             "// INTEGRATION": "src/matrix/feature/engineering.py",
@@ -36,31 +32,34 @@
                 "shuffle": false,
                 "nu": 0.1
             },
-            "// MATRIX_FEATURES": "Custom feature configuration",
-            "include_timeframes": ["5m", "15m", "1h"],
+            "// TRAINING_PROTOCOL_REF": "docs/TRAINING_PROTOCOL.md",
+            "// LABELING": {"mode":"R","H":"<PH>","transform":"<log|pct>"},
+            "// FEATURES": {"windows":[1,3,12], "prefix":"f_", "drop_warmup":true},
+            "// MODEL": {"type":"<linear|tree|baseline>", "params":"<PH>"},
+            "// EVALUATION": {"wf_blocks":"<table_ref>","metrics":["r2_proxy","mae_proxy","trigger_rate","churn"]},
+            "include_timeframes": [
+                "5m",
+                "15m",
+                "1h"
+            ],
             "include_shifted_candles": 2,
             "include_corr_pairs": []
         },
-        
         "// DATA_SPLIT": "Walk-forward without temporal leakage - CRITICAL!",
         "data_split_parameters": {
             "test_size": 0.33,
             "shuffle": false,
             "// GUARDRAIL": "No shuffle for time series!"
         },
-        
         "// MODEL_TYPE": "Placeholder - can be changed as needed",
         "model_type": "LightGBMRegressor",
-        
         "// PATHS": "Model storage",
         "model_save_type": "stable",
         "conv_width": 2,
-        
-        "// LABELS": "Integration with MATRIX label generation", 
+        "// LABELS": "Integration with MATRIX label generation",
         "label_period_candles": 24,
         "// INTEGRATION": "src/matrix/freqai/hooks.py"
     },
-    
     "// RISK_INTEGRATION": "Integration with MATRIX risk policy - src/matrix/risk/policy.py",
     "// TELEMETRY_INTEGRATION": "Metrics for monitoring - src/matrix/telemetry/metrics.py"
 }

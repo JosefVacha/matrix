@@ -12,6 +12,7 @@ Sample output:
 
 Exit code: 0 if all present, 1 if missing.
 """
+
 import argparse
 import re
 from pathlib import Path
@@ -19,6 +20,7 @@ import sys
 import textwrap
 
 REQUIRED = ["RUN_META", "PRED_DIST", "SIGNALS"]
+
 
 def scan_report(path: Path) -> dict:
     markers = {}
@@ -28,8 +30,10 @@ def scan_report(path: Path) -> dict:
             markers[m.group(1)] = True
     return markers
 
+
 def validate_required(markers: dict) -> list:
     return [k for k in REQUIRED if k not in markers]
+
 
 def main():
     parser = argparse.ArgumentParser(description="Validate required report markers.")
@@ -47,6 +51,7 @@ def main():
     else:
         print(f"[FAIL] Missing markers: {', '.join(missing)}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

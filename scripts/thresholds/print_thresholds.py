@@ -11,27 +11,30 @@ Output:
 
 Exit 0 on success, 1 on error.
 """
+
 import argparse
 import re
 from pathlib import Path
 import sys
 import textwrap
 
+
 def parse_simple_yaml(path: Path) -> dict:
     out = {"meta": {}, "params": {}}
     block = None
     for line in path.read_text().splitlines():
         line = line.strip()
-        if not line or line.startswith('#'):
+        if not line or line.startswith("#"):
             continue
-        if line.endswith(':') and line[:-1] in ('meta', 'params'):
+        if line.endswith(":") and line[:-1] in ("meta", "params"):
             block = line[:-1]
             continue
-        m = re.match(r'(\w[\w\.]*):\s*(.+)', line)
+        m = re.match(r"(\w[\w\.]*):\s*(.+)", line)
         if m and block:
             k, v = m.groups()
             out[block][k] = v
     return out
+
 
 def main():
     parser = argparse.ArgumentParser(description="Print key thresholds for copy-paste.")
@@ -52,6 +55,7 @@ def main():
     except Exception:
         print("[FAIL] Could not parse required threshold values.")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

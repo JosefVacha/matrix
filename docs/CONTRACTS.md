@@ -45,9 +45,14 @@ Definition of mandatory inputs and outputs between MATRIX modules. All contracts
 
 ### MUST
 - `generate_features(df_ohlcv)` → DataFrame with same index as input, no leakage
+  - All rolling/statistics are right-aligned (window ends at t)
+  - Drop warmup rows (first max(window) rows)
+  - Columns prefixed 'f_'
 - `generate_labels(df_ohlcv, mode, **kwargs)` → Series with same index, uses lookahead
-- `feature_columns()` → list[str] matching generate_features() output columns
-- `label_name()` → str matching generate_labels() output Series name
+  - Label for t uses close at t and t+H (lookahead)
+  - Last H rows become NaN and are dropped downstream
+- feature_columns() → list[str] matching generate_features() output columns
+- label_name() → str matching generate_labels() output Series name
 - All hooks preserve index alignment and prevent temporal leakage
 
 ### SHOULD
