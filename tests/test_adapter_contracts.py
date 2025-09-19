@@ -1,7 +1,9 @@
 """
 Smoke tests for Freqtrade adapter contract (offline only).
 """
+
 from src.matrix.adapter.freqtrade_strategy_adapter import preds_to_signal_cols
+
 
 def test_signal_shape_and_values():
     preds = [0.1, 0.5, -0.2, 0.7]
@@ -9,6 +11,7 @@ def test_signal_shape_and_values():
     signals = preds_to_signal_cols(preds, thresholds)
     assert all(len(signals[k]) == len(preds) for k in signals)
     assert all(x in (0, 1) for k in signals for x in signals[k])
+
 
 def test_hysteresis_behavior():
     preds = [0.5, -0.5, 0.6, -0.6]
@@ -19,6 +22,7 @@ def test_hysteresis_behavior():
     # For now, just check shape and 0/1
     assert all(len(signals[k]) == len(preds) for k in signals)
     assert all(x in (0, 1) for k in signals for x in signals[k])
+
 
 if __name__ == "__main__":
     pass

@@ -37,7 +37,7 @@
 18. ✅ **Hook Config Placeholders / Hook config placeholdery** - Added commented hook references to configs/freqai.example.json
 19. ✅ **Documentation Updates / Aktualizace dokumentace** - Added FreqAI Hooks Contract to docs/CONTRACTS.md and created docs/LABELS.md
 20. ✅ **Sandbox Backtest Protocol / Sandbox backtest protokol** - docs/SANDBOX_BT.md with offline WFO blocks, static pairlist, report template
-21. ✅ **Sandbox Config Template / Sandbox config template** - configs/backtest.sandbox.example.json with offline-only settings and placeholders  
+21. ✅ **Sandbox Config Template / Sandbox config template** - configs/backtest.sandbox.example.json with offline-only settings and placeholders
 22. ✅ **Threshold Optimization Methodology / Metodika optimalizace prahů** - docs/THRESHOLDS.md with 3-step process: Grid Sweep → WFO Evaluation → Stability Check
 23. ✅ **Strategy Core Enhancement / Vylepšení strategy core** - Updated src/matrix/strategy/core.py with comprehensive threshold implementation TODOs
 24. ✅ **Metrics Collection Framework / Framework pro sběr metrik** - docs/METRICS_CHECKLIST.md with 4-phase implementation priority (Data Quality → Signal Behavior → Performance → Risk → Advanced)
@@ -68,7 +68,7 @@
 - **Pipeline breathing:** sensor(OHLCV) → feature(hooks) → trainer(FreqAI) → predict(hooks) → strategy(thresholds) → risk → execution(Freqtrade)
 - **Sandbox Framework:** Complete offline backtesting with WFO blocks, threshold optimization, metrics collection
 - **Threshold Methodology:** Systematic 3-step optimization (Grid Sweep → WFO Evaluation → Stability Check) + data-driven extraction
-- **Metrics Priority:** Phase-based implementation (Essential → Validation → Risk → Advanced)  
+- **Metrics Priority:** Phase-based implementation (Essential → Validation → Risk → Advanced)
 - **FreqAI Integration:** Hooks-based feature/label generation with temporal integrity / Integrace založená na hooks s časovou integritou
 - **Security Guardrails:** No API keys, no live trading, skeleton-only commands / Žádné API klíče, žádné live trading
 - **Compatibility:** Freqtrade/FreqAI workflow and terminology / Kompatibilita s workflow a terminologií
@@ -80,7 +80,7 @@
 - Add signal behavior tracking (trigger rates, holding periods, oscillations)
 - Create console summary and JSON export functions
 
-### Phase 2: Threshold Implementation  
+### Phase 2: Threshold Implementation
 - Implement UP/DOWN thresholds with hysteresis in strategy/core.py
 - Add cooldown logic for signal stability
 - Integrate with MatrixStrategy.py for FreqTrade compatibility

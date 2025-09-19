@@ -6,7 +6,9 @@ Freqtrade IStrategy skeleton for DRY backtest only.
 - Thresholds injected manually from docs/thresholds/sets/TS_*.yml (see DRY_BACKTEST_PROTOCOL.md).
 - See CONTRACTS.md for I/O contract; see THRESHOLDS_SETS.md for threshold format.
 """
+
 from freqtrade.strategy.interface import IStrategy
+
 
 class MatrixAdapterStrategy(IStrategy):
     """
@@ -15,6 +17,7 @@ class MatrixAdapterStrategy(IStrategy):
     Thresholds must be injected manually from TS files (see DRY_BACKTEST_PROTOCOL.md).
     WARNING: NO LIVE TRADING; OFFLINE ONLY.
     """
+
     # --- Required Freqtrade method signatures ---
     def populate_indicators(self, dataframe, metadata):
         """Stub: indicators populated via adapter."""

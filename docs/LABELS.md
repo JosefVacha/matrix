@@ -103,7 +103,7 @@ assert labels.index.equals(df_ohlcv.index)
 generate_labels(df, mode='R', horizon=12, method='simple')  # 1-hour ahead
 ```
 
-### Medium-term Classification (1h timeframe)  
+### Medium-term Classification (1h timeframe)
 ```python
 generate_labels(df, mode='C', horizon=24, threshold_high=0.02, threshold_low=-0.02)  # 1-day ahead
 ```

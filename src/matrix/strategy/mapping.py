@@ -26,7 +26,9 @@ Examples:
     >>> map_predictions_to_signals([0.2, 0.15, 0.05, -0.1, 0.12], up=0.1, dn=-0.1, hysteresis=0.02, cooldown_bars=2)
     {'enter_long': [1, 0, 0, 0, 0], 'enter_short': [0, 0, 0, 1, 0], 'exit_long': [0, 0, 1, 0, 0], 'exit_short': [0, 0, 0, 0, 0]}
 """
+
 from typing import Iterable, List, Dict, Union
+
 
 def map_predictions_to_signals(
     preds: Union[List[float], tuple[float, ...], Iterable[float]],
@@ -34,7 +36,7 @@ def map_predictions_to_signals(
     up: float,
     dn: float,
     hysteresis: float,
-    cooldown_bars: int
+    cooldown_bars: int,
 ) -> Dict[str, List[int]]:
     enter_long, enter_short, exit_long, exit_short = [], [], [], []
     state = None  # None, 'long', 'short'
@@ -51,17 +53,17 @@ def map_predictions_to_signals(
                 if pred >= up:
                     enter_long.append(1)
                     enter_short.append(0)
-                    state = 'long'
+                    state = "long"
                     last_entry_idx = i
                 elif pred <= dn:
                     enter_long.append(0)
                     enter_short.append(1)
-                    state = 'short'
+                    state = "short"
                     last_entry_idx = i
                 else:
                     enter_long.append(0)
                     enter_short.append(0)
-            elif state == 'long':
+            elif state == "long":
                 if pred < (up - hysteresis):
                     exit_long.append(1)
                     exit_short.append(0)
@@ -70,7 +72,7 @@ def map_predictions_to_signals(
                 else:
                     exit_long.append(0)
                     exit_short.append(0)
-            elif state == 'short':
+            elif state == "short":
                 if pred > (dn + hysteresis):
                     exit_long.append(0)
                     exit_short.append(1)
@@ -90,8 +92,8 @@ def map_predictions_to_signals(
         while len(k) < n:
             k.append(0)
     return {
-        'enter_long': enter_long,
-        'enter_short': enter_short,
-        'exit_long': exit_long,
-        'exit_short': exit_short
+        "enter_long": enter_long,
+        "enter_short": enter_short,
+        "exit_long": exit_long,
+        "exit_short": exit_short,
     }

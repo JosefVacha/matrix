@@ -1,54 +1,60 @@
 {
-        "label": "sim-plan",
-        "type": "shell",
-        "command": "echo",
-        "args": ["Review THRESHOLDS.md Decision Rules and pick simulator parameters (UP, DN, hysteresis, cooldown) for synthetic run."],
-        "group": "test",
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared",
-            "showReuseMessage": true,
-            "clear": false
-        },
-        "problemMatcher": [],
-        "detail": "Plan synthetic simulator parameters (OFFLINE ONLY)"
+    "label": "sim-plan",
+    "type": "shell",
+    "command": "echo",
+    "args": [
+        "Review THRESHOLDS.md Decision Rules and pick simulator parameters (UP, DN, hysteresis, cooldown) for synthetic run."
+    ],
+    "group": "test",
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
     },
-    {
-        "label": "sim-run",
-        "type": "shell",
-        "command": "echo",
-        "args": ["python scripts/sim/simulate_thresholds.py --len 500 --noise 0.2 --up 0.1 --dn -0.1 --hysteresis 0.02 --cooldown 3 --out docs/summaries/SIM_SUMMARY_SAMPLE.md"],
-        "group": "test",
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared",
-            "showReuseMessage": true,
-            "clear": false
-        },
-        "problemMatcher": [],
-        "detail": "Run synthetic simulator (OFFLINE ONLY)"
+    "problemMatcher": [],
+    "detail": "Plan synthetic simulator parameters (OFFLINE ONLY)"
+},
+{
+    "label": "sim-run",
+    "type": "shell",
+    "command": "echo",
+    "args": [
+        "python scripts/sim/simulate_thresholds.py --len 500 --noise 0.2 --up 0.1 --dn -0.1 --hysteresis 0.02 --cooldown 3 --out docs/summaries/SIM_SUMMARY_SAMPLE.md"
+    ],
+    "group": "test",
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
     },
-    {
-        "label": "sim-report",
-        "type": "shell",
-        "command": "echo",
-        "args": ["Save SIM summary to docs/summaries/ and reference in STABILITY_RECAP.md (run_tag = SIM_<tag>)"],
-        "group": "test",
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared",
-            "showReuseMessage": true,
-            "clear": false
-        },
-        "problemMatcher": [],
-        "detail": "Document SIM summary and link in recap (OFFLINE ONLY)"
+    "problemMatcher": [],
+    "detail": "Run synthetic simulator (OFFLINE ONLY)"
+},
+{
+    "label": "sim-report",
+    "type": "shell",
+    "command": "echo",
+    "args": [
+        "Save SIM summary to docs/summaries/ and reference in STABILITY_RECAP.md (run_tag = SIM_<tag>)"
+    ],
+    "group": "test",
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
     },
+    "problemMatcher": [],
+    "detail": "Document SIM summary and link in recap (OFFLINE ONLY)"
+},
 {
     "label": "metrics-summary",
     "type": "shell",
@@ -236,108 +242,126 @@
 },
 "version": "2.0.0",
 "tasks": [
-    {
-        "label": "m1-preflight",
-        "type": "shell",
-        "command": "echo",
-        "args": ["python scripts/qa/check_doc_consistency.py && python scripts/metrics/validate_report_markers.py --report docs/REPORTS/REPORT_SAMPLE.md && python scripts/thresholds/validate_threshold_set.py --file docs/thresholds/sets/TS_SAMPLE_A.yml (OFFLINE ONLY)", "Run doc consistency QA and validators before DRY run."],
-        "group": "test",
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared",
-            "showReuseMessage": true,
-            "clear": false
-        },
-        "problemMatcher": [],
-        "detail": "Preflight QA and validation for DRY run (OFFLINE ONLY)"
-    },
-    {
-        "label": "m1-rehearsal",
-        "type": "shell",
-        "command": "echo",
-        "args": ["python scripts/runbook/dry_run_rehearsal.py --ts docs/thresholds/sets/TS_SAMPLE_A.yml --cfg configs/backtest.dry.json --raw docs/REPORTS/RAW/FT_SAMPLE.json --report docs/REPORTS/REPORT_SAMPLE_DRY.md --summary docs/summaries/SUMMARY_SAMPLE_DRY.md (OFFLINE ONLY)", "Print DRY run shell commands for rehearsal."],
-        "group": "test",
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared",
-            "showReuseMessage": true,
-            "clear": false
-        },
-        "problemMatcher": [],
-        "detail": "DRY run rehearsal commands (OFFLINE ONLY)"
-    },
-    {
-        "label": "m1-post",
-        "type": "shell",
-        "command": "echo",
-        "args": ["python scripts/metrics/ingest_freqtrade_report.py --input docs/REPORTS/RAW/FT_SAMPLE.json --report docs/REPORTS/REPORT_SAMPLE_DRY.md --summary docs/summaries/SUMMARY_SAMPLE_DRY.md && python scripts/metrics/merge_summaries.py --inputs docs/summaries/SUMMARY_SAMPLE_DRY.md --out docs/STABILITY_RECAP.md && python scripts/thresholds/diff_thresholds.py --a docs/thresholds/sets/TS_SAMPLE_A.yml --b docs/thresholds/sets/TS_SAMPLE_B.yml --out docs/diffs/DIFF_TS_SAMPLE_A_vs_B.md && python scripts/thresholds/changelog_from_diffs.py --diffs docs/diffs/DIFF_TS_SAMPLE_A_vs_B.md --out docs/thresholds/CHANGELOG.md (OFFLINE ONLY)", "Ingest, summarize, merge, diff, changelog, and create decision note after DRY run."],
-        "group": "test",
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared",
-            "showReuseMessage": true,
-            "clear": false
-        },
-        "problemMatcher": [],
-        "detail": "Post-DRY run automation and decision (OFFLINE ONLY)"
-    },
-    {
-        "label": "dry-rehearsal",
-        "type": "shell",
-        "command": "echo",
-        "args": ["python scripts/runbook/dry_run_rehearsal.py --ts docs/thresholds/sets/TS_SAMPLE_A.yml --cfg configs/backtest.dry.json --raw docs/REPORTS/RAW/FT_SAMPLE.json --report docs/REPORTS/REPORT_SAMPLE_DRY.md --summary docs/summaries/SUMMARY_SAMPLE_DRY.md (OFFLINE ONLY)", "Prints DRY run shell commands for human copy/paste."],
-        "group": "test",
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared",
-            "showReuseMessage": true,
-            "clear": false
-        },
-        "problemMatcher": [],
-        "detail": "Print DRY run shell commands for rehearsal (OFFLINE ONLY)"
-    },
-    {
-        "label": "m1-exit",
-        "type": "shell",
-        "command": "echo",
-        "args": ["See docs/RUNBOOK_DRY.md for exit criteria checklist. Confirm STABILITY_RECAP.md row is present before PR.", "Tick all boxes in RUNBOOK_DRY.md before closing Milestone M1."],
-        "group": "test",
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared",
-            "showReuseMessage": true,
-            "clear": false
-        },
-        "problemMatcher": [],
-        "detail": "Milestone M1 exit criteria checklist (OFFLINE ONLY)"
-    },
-    {
-        "label": "ts-changelog",
-        "type": "shell",
-        "command": "echo",
-        "args": ["python scripts/thresholds/changelog_from_diffs.py --diffs docs/diffs/DIFF_TS_SAMPLE_A_vs_B.md --out docs/thresholds/CHANGELOG.md (OFFLINE ONLY)", "Update thresholds changelog after DIFF."],
-        "group": "test",
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared",
-            "showReuseMessage": true,
-            "clear": false
-        },
-        "problemMatcher": [],
-        "detail": "Update thresholds changelog from DIFF_TS files (OFFLINE ONLY)"
-    },
+{
+"label": "m1-preflight",
+"type": "shell",
+"command": "echo",
+"args": [
+"python scripts/qa/check_doc_consistency.py && python scripts/metrics/validate_report_markers.py --report docs/REPORTS/REPORT_SAMPLE.md && python scripts/thresholds/validate_threshold_set.py --file docs/thresholds/sets/TS_SAMPLE_A.yml (OFFLINE ONLY)",
+"Run doc consistency QA and validators before DRY run."
+],
+"group": "test",
+"presentation": {
+"echo": true,
+"reveal": "always",
+"focus": false,
+"panel": "shared",
+"showReuseMessage": true,
+"clear": false
+},
+"problemMatcher": [],
+"detail": "Preflight QA and validation for DRY run (OFFLINE ONLY)"
+},
+{
+"label": "m1-rehearsal",
+"type": "shell",
+"command": "echo",
+"args": [
+"python scripts/runbook/dry_run_rehearsal.py --ts docs/thresholds/sets/TS_SAMPLE_A.yml --cfg configs/backtest.dry.json --raw docs/REPORTS/RAW/FT_SAMPLE.json --report docs/REPORTS/REPORT_SAMPLE_DRY.md --summary docs/summaries/SUMMARY_SAMPLE_DRY.md (OFFLINE ONLY)",
+"Print DRY run shell commands for rehearsal."
+],
+"group": "test",
+"presentation": {
+"echo": true,
+"reveal": "always",
+"focus": false,
+"panel": "shared",
+"showReuseMessage": true,
+"clear": false
+},
+"problemMatcher": [],
+"detail": "DRY run rehearsal commands (OFFLINE ONLY)"
+},
+{
+"label": "m1-post",
+"type": "shell",
+"command": "echo",
+"args": [
+"python scripts/metrics/ingest_freqtrade_report.py --input docs/REPORTS/RAW/FT_SAMPLE.json --report docs/REPORTS/REPORT_SAMPLE_DRY.md --summary docs/summaries/SUMMARY_SAMPLE_DRY.md && python scripts/metrics/merge_summaries.py --inputs docs/summaries/SUMMARY_SAMPLE_DRY.md --out docs/STABILITY_RECAP.md && python scripts/thresholds/diff_thresholds.py --a docs/thresholds/sets/TS_SAMPLE_A.yml --b docs/thresholds/sets/TS_SAMPLE_B.yml --out docs/diffs/DIFF_TS_SAMPLE_A_vs_B.md && python scripts/thresholds/changelog_from_diffs.py --diffs docs/diffs/DIFF_TS_SAMPLE_A_vs_B.md --out docs/thresholds/CHANGELOG.md (OFFLINE ONLY)",
+"Ingest, summarize, merge, diff, changelog, and create decision note after DRY run."
+],
+"group": "test",
+"presentation": {
+"echo": true,
+"reveal": "always",
+"focus": false,
+"panel": "shared",
+"showReuseMessage": true,
+"clear": false
+},
+"problemMatcher": [],
+"detail": "Post-DRY run automation and decision (OFFLINE ONLY)"
+},
+{
+"label": "dry-rehearsal",
+"type": "shell",
+"command": "echo",
+"args": [
+"python scripts/runbook/dry_run_rehearsal.py --ts docs/thresholds/sets/TS_SAMPLE_A.yml --cfg configs/backtest.dry.json --raw docs/REPORTS/RAW/FT_SAMPLE.json --report docs/REPORTS/REPORT_SAMPLE_DRY.md --summary docs/summaries/SUMMARY_SAMPLE_DRY.md (OFFLINE ONLY)",
+"Prints DRY run shell commands for human copy/paste."
+],
+"group": "test",
+"presentation": {
+"echo": true,
+"reveal": "always",
+"focus": false,
+"panel": "shared",
+"showReuseMessage": true,
+"clear": false
+},
+"problemMatcher": [],
+"detail": "Print DRY run shell commands for rehearsal (OFFLINE ONLY)"
+},
+{
+"label": "m1-exit",
+"type": "shell",
+"command": "echo",
+"args": [
+"See docs/RUNBOOK_DRY.md for exit criteria checklist. Confirm STABILITY_RECAP.md row is present before PR.",
+"Tick all boxes in RUNBOOK_DRY.md before closing Milestone M1."
+],
+"group": "test",
+"presentation": {
+"echo": true,
+"reveal": "always",
+"focus": false,
+"panel": "shared",
+"showReuseMessage": true,
+"clear": false
+},
+"problemMatcher": [],
+"detail": "Milestone M1 exit criteria checklist (OFFLINE ONLY)"
+},
+{
+"label": "ts-changelog",
+"type": "shell",
+"command": "echo",
+"args": [
+"python scripts/thresholds/changelog_from_diffs.py --diffs docs/diffs/DIFF_TS_SAMPLE_A_vs_B.md --out docs/thresholds/CHANGELOG.md (OFFLINE ONLY)",
+"Update thresholds changelog after DIFF."
+],
+"group": "test",
+"presentation": {
+"echo": true,
+"reveal": "always",
+"focus": false,
+"panel": "shared",
+"showReuseMessage": true,
+"clear": false
+},
+"problemMatcher": [],
+"detail": "Update thresholds changelog from DIFF_TS files (OFFLINE ONLY)"
+},
 {
 "label": "download-data",
 "type": "shell",
@@ -357,83 +381,89 @@
 "problemMatcher": [],
 "detail": "Download sample data for MATRIX backtesting (SKELETON - NO LIVE EXECUTION)"
 },
-    {
-        "label": "qa-docs-consistency",
-        "type": "shell",
-        "command": "echo",
-        "args": ["python scripts/qa/check_doc_consistency.py (OFFLINE ONLY)", "Run before each DRY run to check mapping/adapter/CONTRACTS.md docstrings."],
-        "group": "test",
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared",
-            "showReuseMessage": true,
-            "clear": false
-        },
-        "problemMatcher": [],
-        "detail": "Check docstring/contract consistency (OFFLINE ONLY)"
-    },
-        "label": "adapter-plan",
-        "type": "shell",
-        "command": "echo",
-        "args": [
-            "Open: src/matrix/adapter/freqtrade_strategy_adapter.py, strategies/MatrixAdapterStrategy.py, docs/DRY_BACKTEST_PROTOCOL.md. Review docstrings and contract references."
-        ],
-        "group": "test",
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared",
-            "showReuseMessage": true,
-            "clear": false
-        },
-        "problemMatcher": [],
-        "detail": "Adapter planning (OFFLINE ONLY / NO LIVE ACTION)"
-    },
-    {
-        "label": "recap-update",
-        "type": "shell",
-        "command": "echo",
-        "args": ["python scripts/metrics/merge_summaries.py --inputs docs/summaries/SUMMARY_*.md --out docs/STABILITY_RECAP.md (OFFLINE ONLY)", "Update recap table after new DRY run."],
-        "group": "test",
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared",
-            "showReuseMessage": true,
-            "clear": false
-        },
-        "problemMatcher": [],
-        "detail": "Merge summaries into STABILITY_RECAP.md (OFFLINE ONLY)"
-    },
-        "label": "adapter-walkthrough",
-        "type": "shell",
-        "command": "echo",
-        "args": [
-            "1. Copy configs/backtest.sandbox.example.json → configs/backtest.dry.json (local only)",
-            "2. Pick TS_*.yml from docs/thresholds/sets/ and print via scripts/thresholds/print_thresholds.py",
-            "3. Inject thresholds into MatrixAdapterStrategy (see docstring)",
-            "4. Run Freqtrade dry-run/backtest via CLI (see DRY_BACKTEST_PROTOCOL.md)",
-            "5. Fill docs/REPORTS/REPORT_<DATE>_DRY.md (template + markers)",
-            "6. Generate SUMMARY + optional DIFF; update STABILITY_RECAP row",
-            "7. Guardrails: static pairlist, same feature pipeline, record commit hashes",
-            "8. NO LIVE TRADING / OFFLINE ONLY"
-        ],
-        "group": "test",
-        "presentation": {
-            "echo": true,
-            "reveal": "always",
-            "focus": false,
-            "panel": "shared",
-            "showReuseMessage": true,
-            "clear": false
-        },
-        "problemMatcher": [],
-        "detail": "Adapter walkthrough (OFFLINE ONLY / NO LIVE ACTION)"
-    },
+{
+"label": "qa-docs-consistency",
+"type": "shell",
+"command": "echo",
+"args": [
+"python scripts/qa/check_doc_consistency.py (OFFLINE ONLY)",
+"Run before each DRY run to check mapping/adapter/CONTRACTS.md docstrings."
+],
+"group": "test",
+"presentation": {
+"echo": true,
+"reveal": "always",
+"focus": false,
+"panel": "shared",
+"showReuseMessage": true,
+"clear": false
+},
+"problemMatcher": [],
+"detail": "Check docstring/contract consistency (OFFLINE ONLY)"
+},
+"label": "adapter-plan",
+"type": "shell",
+"command": "echo",
+"args": [
+"Open: src/matrix/adapter/freqtrade_strategy_adapter.py, strategies/MatrixAdapterStrategy.py, docs/DRY_BACKTEST_PROTOCOL.md. Review docstrings and contract references."
+],
+"group": "test",
+"presentation": {
+"echo": true,
+"reveal": "always",
+"focus": false,
+"panel": "shared",
+"showReuseMessage": true,
+"clear": false
+},
+"problemMatcher": [],
+"detail": "Adapter planning (OFFLINE ONLY / NO LIVE ACTION)"
+},
+{
+"label": "recap-update",
+"type": "shell",
+"command": "echo",
+"args": [
+"python scripts/metrics/merge_summaries.py --inputs docs/summaries/SUMMARY_*.md --out docs/STABILITY_RECAP.md (OFFLINE ONLY)",
+"Update recap table after new DRY run."
+],
+"group": "test",
+"presentation": {
+"echo": true,
+"reveal": "always",
+"focus": false,
+"panel": "shared",
+"showReuseMessage": true,
+"clear": false
+},
+"problemMatcher": [],
+"detail": "Merge summaries into STABILITY_RECAP.md (OFFLINE ONLY)"
+},
+"label": "adapter-walkthrough",
+"type": "shell",
+"command": "echo",
+"args": [
+"1. Copy configs/backtest.sandbox.example.json → configs/backtest.dry.json (local only)",
+"2. Pick TS_*.yml from docs/thresholds/sets/ and print via scripts/thresholds/print_thresholds.py",
+"3. Inject thresholds into MatrixAdapterStrategy (see docstring)",
+"4. Run Freqtrade dry-run/backtest via CLI (see DRY_BACKTEST_PROTOCOL.md)",
+"5. Fill docs/REPORTS/REPORT_<DATE>_DRY.md (template + markers)",
+"6. Generate SUMMARY + optional DIFF; update STABILITY_RECAP row",
+"7. Guardrails: static pairlist, same feature pipeline, record commit hashes",
+"8. NO LIVE TRADING / OFFLINE ONLY"
+],
+"group": "test",
+"presentation": {
+"echo": true,
+"reveal": "always",
+"focus": false,
+"panel": "shared",
+"showReuseMessage": true,
+"clear": false
+},
+"problemMatcher": [],
+"detail": "Adapter walkthrough (OFFLINE ONLY / NO LIVE ACTION)"
+},
 {
 "label": "backtest-quick-month",
 "type": "shell",
@@ -835,17 +865,21 @@
 "detail": "Fill report template with second sandbox results and stability score (OFFLINE ONLY)"
 },
 {
-        "label": "ds-build-plan",
-        "type": "shell",
-        "command": "echo",
-        "args": ["python scripts/training/build_dataset.py --ohlcv docs/REPORTS/RAW/OHLCV_SAMPLE.csv --timeframe 5m --H 12 --transform pct --windows 1,3,12 --out data/dataset.parquet  # OFFLINE ONLY"],
-        "problemMatcher": []
-    },
-    {
-        "label": "ds-build-smoke",
-        "type": "shell",
-        "command": "echo",
-        "args": ["python -m tests.test_build_dataset  # OFFLINE ONLY"],
-        "problemMatcher": []
-    }
+"label": "ds-build-plan",
+"type": "shell",
+"command": "echo",
+"args": [
+"python scripts/training/build_dataset.py --ohlcv docs/REPORTS/RAW/OHLCV_SAMPLE.csv --timeframe 5m --H 12 --transform pct --windows 1,3,12 --out data/dataset.parquet  # OFFLINE ONLY"
+],
+"problemMatcher": []
+},
+{
+"label": "ds-build-smoke",
+"type": "shell",
+"command": "echo",
+"args": [
+"python -m tests.test_build_dataset  # OFFLINE ONLY"
+],
+"problemMatcher": []
+}
 ]

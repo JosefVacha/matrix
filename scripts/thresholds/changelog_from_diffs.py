@@ -3,7 +3,9 @@
 Generate/update thresholds changelog from DIFF_TS files.
 Stdlib only: argparse, pathlib, re, datetime, textwrap
 """
+
 import argparse, pathlib, re, datetime, textwrap
+
 
 def parse_diff(path):
     text = pathlib.Path(path).read_text(encoding="utf-8")
@@ -21,8 +23,9 @@ def parse_diff(path):
         "dn": dn.group(1) if dn else "N/A",
         "hysteresis": hyst.group(1) if hyst else "N/A",
         "cooldown": cd.group(1) if cd else "N/A",
-        "notes": notes.group(1).strip() if notes else ""
+        "notes": notes.group(1).strip() if notes else "",
     }
+
 
 def update_changelog(changelog_path, entries):
     lines = []
@@ -31,14 +34,21 @@ def update_changelog(changelog_path, entries):
     seen = set()
     for e in entries:
         key = f"{e['date']}|{e['sets'][0]}|{e['sets'][1]}"
-        if key in seen: continue
+        if key in seen:
+            continue
         seen.add(key)
-        lines.append(f"- {e['date']}: DIFF {e['sets'][0]} vs {e['sets'][1]} | up={e['up']} dn={e['dn']} hysteresis={e['hysteresis']} cooldown={e['cooldown']}" + (f" | notes: {e['notes']}" if e['notes'] else ""))
+        lines.append(
+            f"- {e['date']}: DIFF {e['sets'][0]} vs {e['sets'][1]} | up={e['up']} dn={e['dn']} hysteresis={e['hysteresis']} cooldown={e['cooldown']}"
+            + (f" | notes: {e['notes']}" if e["notes"] else "")
+        )
     changelog_path.write_text("\n".join(lines), encoding="utf-8")
     return lines
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Generate/update thresholds changelog from DIFF_TS files.")
+    parser = argparse.ArgumentParser(
+        description="Generate/update thresholds changelog from DIFF_TS files."
+    )
     parser.add_argument("--diffs", nargs="+", required=True)
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
@@ -46,6 +56,7 @@ def main():
     lines = update_changelog(pathlib.Path(args.out), entries)
     print("Updated CHANGELOG:")
     print("\n".join(lines))
+
 
 if __name__ == "__main__":
     main()

@@ -30,7 +30,7 @@ Priority: data quality → signal behavior → performance → advanced analytic
 ## Metrics Hierarchy
 
 ### 1. Data Quality (CRITICAL - always collect)
-- **Missing Data %**: NaN percentage in OHLCV and features  
+- **Missing Data %**: NaN percentage in OHLCV and features
 - **Feature Coverage**: % of prediction periods with complete features
 - **OHLCV Gaps**: Count of missing candles in timeframe sequence
 - **Volume Anomalies**: Count of zero/extreme volume periods
@@ -161,7 +161,7 @@ Risk: -12.4% max DD, 1.45 Sharpe
 - WFO blocks aggregate metrics for comparison
 - Threshold stability analysis uses signal behavior metrics
 
-### With THRESHOLDS.md  
+### With THRESHOLDS.md
 - Grid sweep evaluates metrics across threshold ranges
 - WFO evaluation ranks thresholds by composite metric score
 - Stability check monitors metric consistency across blocks

@@ -78,7 +78,7 @@ def feature_columns() -> list[str]:
     Return list of feature column names (deterministic, doc-only).
     Columns: 'f_ret_1', 'f_ret_3', 'f_ret_12', 'f_hl_range', 'f_oc_range', 'f_vol_z'
     """
-    return ['f_ret_1', 'f_ret_3', 'f_ret_12', 'f_hl_range', 'f_oc_range', 'f_vol_z']
+    return ["f_ret_1", "f_ret_3", "f_ret_12", "f_hl_range", "f_oc_range", "f_vol_z"]
 
 
 def label_name() -> str:

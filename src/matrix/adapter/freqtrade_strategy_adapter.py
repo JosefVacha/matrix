@@ -10,7 +10,9 @@ Purpose:
 - Guarantee: I/O alignment, no leakage, signals aligned to predictions, 0/1 columns only.
 - NO live trading, NO downloads, NO auto-runs.
 """
+
 from typing import List, Dict, Any
+
 
 # --- Adapter Helpers ---
 def inject_thresholds_from_yaml(yaml_path: str) -> dict:
@@ -23,6 +25,7 @@ def inject_thresholds_from_yaml(yaml_path: str) -> dict:
     # Pseudocode: parse YAML subset (reuse scripts/thresholds/print_thresholds.py logic)
     # ...existing code...
     return {}
+
 
 def preds_to_signal_cols(preds: List[float], thresholds: dict) -> Dict[str, List[int]]:
     """
@@ -39,9 +42,15 @@ def preds_to_signal_cols(preds: List[float], thresholds: dict) -> Dict[str, List
     """
     # Pseudocode: call mapping.map_predictions_to_signals()
     # ...existing code...
-    return {k: [0]*len(preds) for k in ['enter_long','enter_short','exit_long','exit_short']}
+    return {
+        k: [0] * len(preds)
+        for k in ["enter_long", "enter_short", "exit_long", "exit_short"]
+    }
 
-def attach_signal_cols_to_dataframe(df_like: Any, signal_cols: Dict[str, List[int]]) -> Any:
+
+def attach_signal_cols_to_dataframe(
+    df_like: Any, signal_cols: Dict[str, List[int]]
+) -> Any:
     """
     Document how signal columns would be attached to a Freqtrade DataFrame.
     Args:

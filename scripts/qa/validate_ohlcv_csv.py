@@ -3,11 +3,13 @@
 Validate OHLCV CSV for MATRIX (docs-first, stdlib-only).
 Checks columns, UTC timestamps, monotonicity, duplicates, volume, gaps.
 """
+
 import argparse
 import csv
 import pathlib
 import datetime
 import sys
+
 
 def main():
     parser = argparse.ArgumentParser(description="Validate OHLCV CSV for MATRIX.")
@@ -52,6 +54,7 @@ def main():
         print(f"Warning: {gaps} gaps detected (>10%).")
     print(f"Checked {len(rows)} rows: OK")
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

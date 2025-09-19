@@ -3,12 +3,14 @@
 Smoke test for MATRIX dataset builder (offline, pandas/numpy only).
 Usage: python -m tests.test_build_dataset
 """
+
 import subprocess
 import pandas as pd
 import numpy as np
 import sys
 from pathlib import Path
 import os
+
 
 def main():
     sample_csv = "docs/REPORTS/RAW/OHLCV_SAMPLE.csv"
@@ -22,13 +24,22 @@ def main():
         except Exception:
             pass
     # Run builder
-    cmd = [sys.executable, "scripts/training/build_dataset.py",
-           "--ohlcv", sample_csv,
-           "--timeframe", "5m",
-           "--H", "3",
-           "--transform", "pct",
-           "--windows", "1,3",
-           "--out", str(out_parquet)]
+    cmd = [
+        sys.executable,
+        "scripts/training/build_dataset.py",
+        "--ohlcv",
+        sample_csv,
+        "--timeframe",
+        "5m",
+        "--H",
+        "3",
+        "--transform",
+        "pct",
+        "--windows",
+        "1,3",
+        "--out",
+        str(out_parquet),
+    ]
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         print("Builder failed:", result.stderr)
@@ -72,6 +83,7 @@ def main():
         sys.exit(1)
     print(f"SMOKE OK {artifact}")
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

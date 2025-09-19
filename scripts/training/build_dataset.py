@@ -3,6 +3,7 @@
 Build reproducible local dataset for MATRIX (offline, pandas/numpy only).
 Enforces DATASET_SCHEMA.md, LABELS.md, TRAINING_PROTOCOL.md, CONTRACTS.md, hooks.py docstrings.
 """
+
 import argparse
 import pandas as pd
 import numpy as np
@@ -14,6 +15,7 @@ FEATURES = ["f_ret_1", "f_ret_3", "f_ret_12", "f_hl_range", "f_oc_range", "f_vol
 
 LABEL_PATTERN = "label_R_H{H}_{transform}"
 
+
 def robust_zscore(vol):
     med = np.median(vol)
     q75, q25 = np.percentile(vol, [75, 25])
@@ -21,6 +23,7 @@ def robust_zscore(vol):
     if iqr == 0:
         return np.zeros_like(vol)
     return (vol - med) / iqr
+
 
 def main():
     parser = argparse.ArgumentParser(description="Build MATRIX dataset from OHLCV CSV.")
@@ -35,7 +38,9 @@ def main():
     windows = [int(w) for w in args.windows.split(",") if w.strip()]
     ohlcv_path = Path(args.ohlcv)
     out_path = Path(args.out)
-    sidecar_path = Path(args.sidecar_json) if args.sidecar_json else out_path.with_suffix(".json")
+    sidecar_path = (
+        Path(args.sidecar_json) if args.sidecar_json else out_path.with_suffix(".json")
+    )
     # Load CSV
     df = pd.read_csv(ohlcv_path)
     if "date" in df.columns:
@@ -55,7 +60,7 @@ def main():
             raise ValueError(f"Missing required column: {col}")
     # Compute features
     for w in windows:
-        if w not in [1,3,12]:
+        if w not in [1, 3, 12]:
             continue
         if args.transform == "pct":
             df[f"f_ret_{w}"] = df["close"].pct_change(w)
@@ -77,7 +82,12 @@ def main():
     df = df.iloc[warmup:]
     df = df[:-H] if H > 0 else df
     # Select columns
-    keep_cols = [f"f_ret_{w}" for w in windows if w in [1,3,12]] + ["f_hl_range", "f_oc_range", "f_vol_z", label_name]
+    keep_cols = [f"f_ret_{w}" for w in windows if w in [1, 3, 12]] + [
+        "f_hl_range",
+        "f_oc_range",
+        "f_vol_z",
+        label_name,
+    ]
     df = df[keep_cols]
     # Drop NaN
     df = df.dropna()
@@ -106,12 +116,13 @@ def main():
         "started_at": started_at,
         "finished_at": finished_at,
         "sha_note": "binary artifacts are not tracked",
-        "schema": "right-aligned"
+        "schema": "right-aligned",
     }
     with open(sidecar_path, "w") as f:
         json.dump(summary, f, indent=2)
     print(f"Built dataset: {out_path} ({out_fmt}), rows={n_rows}, label={label_name}")
     exit(0)
+
 
 if __name__ == "__main__":
     main()

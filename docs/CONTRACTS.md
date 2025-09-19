@@ -10,7 +10,7 @@ Definition of mandatory inputs and outputs between MATRIX modules. All contracts
 - All values of numeric type (float64/int64)
 - **FORBIDDEN to overwrite basic OHLCV columns** - features into separate namespace
 
-### SHOULD  
+### SHOULD
 - Index sorted chronologically (oldest → newest)
 - No duplicate timestamps
 - Reasonable data frequency (5m, 15m, 1h, 4h, 1d)
@@ -24,13 +24,13 @@ Definition of mandatory inputs and outputs between MATRIX modules. All contracts
 - Features in separate namespace (prefix `feat_`, `ta_`, etc.)
 
 ### SHOULD
-- Robust scaling (median/IQR) resistant to outliers  
+- Robust scaling (median/IQR) resistant to outliers
 - Consistent feature naming across runs
 - Feature documentation in metadata
 
 ## Labels Contract (feature → model)
 
-### MUST  
+### MUST
 - Labels with **same datetime index** as features
 - **Defined by lookahead** - label for time t created from t+lookahead
 - **No temporal leakage** - label t not used in features t
@@ -115,7 +115,7 @@ Definition of mandatory inputs and outputs between MATRIX modules. All contracts
 
 ### MUST
 - **Log hooks** for critical metrics:
-  - `log_latency_ms(stage, value)` - inference latency  
+  - `log_latency_ms(stage, value)` - inference latency
   - `log_nan_ratio(stage, value)` - % NaN after features
   - `log_feature_drift(stat)` - simple drift indicator
 - Thread-safe logging
