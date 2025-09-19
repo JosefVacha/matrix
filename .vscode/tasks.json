@@ -1,4 +1,13 @@
 {
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "retrain-check",
+            "type": "shell",
+            "command": "echo python scripts/qa/check_retrain_cadence.py --last-train 2025-09-10 --min-days 7 --max-days 30 --drift none --summaries-dir docs/summaries  # OFFLINE ONLY",
+            "problemMatcher": []
+        },
+{
     "label": "sim-plan",
     "type": "shell",
     "command": "echo",
@@ -36,8 +45,35 @@
     "problemMatcher": [],
     "detail": "Run synthetic simulator (OFFLINE ONLY)"
 },
+    {
+        "label": "sim-report",
+        "type": "shell",
+        "command": "echo sim-report placeholder  # OFFLINE ONLY",
+        "problemMatcher": []
+    },
 {
-    "label": "sim-report",
+    "label": "train-smoke",
+    "type": "shell",
+    "command": "echo python -m tests.test_train_baseline  # OFFLINE ONLY",
+    "problemMatcher": []
+},
+{
+    "label": "registry-check",
+    "type": "shell",
+    "command": "echo python scripts/qa/validate_model_metadata.py --file models/M3_SMOKE_RH3/metadata.json  # OFFLINE ONLY",
+    "problemMatcher": []
+},
+{
+    "label": "registry-init",
+    "type": "shell",
+    "command": "echo python scripts/registry/init_model_tag.py --tag M3_DEMO  # OFFLINE ONLY",
+    "problemMatcher": []
+},
+{
+    "label": "registry-validate",
+    "type": "shell",
+    "command": "echo python scripts/qa/validate_model_metadata.py --file models/M3_DEMO/metadata.json  # OFFLINE ONLY",
+    "problemMatcher": []
     "type": "shell",
     "command": "echo",
     "args": [
@@ -899,5 +935,6 @@
             "python -m tests.test_evaluate_wfo  # OFFLINE ONLY"
         ],
         "problemMatcher": []
-    }
-]
+        }
+    ]
+}

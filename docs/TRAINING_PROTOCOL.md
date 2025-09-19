@@ -39,6 +39,39 @@ python scripts/training/build_dataset.py \
 ```
 Builder enforces DATASET_SCHEMA.md and writes a sidecar JSON with shape + parameters.
 
+## Training Runner CLI
+
+Minimal offline training runner for baseline models (linear, ridge, OLS).
+
+### Usage
+```bash
+python scripts/training/train_baseline.py \
+  --dataset data/dataset_SMOKE.parquet \
+  --label-name label_R_H3_pct \
+  --features "f_ret_1,f_ret_3,f_vol_12" \
+  --train-from 2025-01-01 --train-to 2025-01-08 \
+  --model-tag M3_SMOKE_RH3 \
+  --out-json docs/summaries/TRAIN_SUMMARY_SMOKE.json \
+  --save-model models/M3_SMOKE_RH3/model.pkl
+```
+
+### Output: Train Summary JSON
+Minimal schema:
+```json
+{
+  "run_tag": "<model-tag>",
+  "label": "label_R_H3_pct",
+  "features": ["f_ret_1","f_ret_3","f_vol_12"],
+  "train": {"from":"YYYY-MM-DD","to":"YYYY-MM-DD","n":123},
+  "model": {"type":"ridge","alpha":0.1},
+  "metrics": {"mae":..., "mse":..., "r2":..., "resid_mean":..., "resid_std":...},
+  "created_at": "ISO-8601"
+}
+```
+
+### Registry Metadata
+See MODEL_REGISTRY.md for schema and example.
+
 ## Reproducibility
 - Record commit hashes: CONTRACTS, LABELS, HOOKS
 - TS set name

@@ -20,7 +20,17 @@
 - Pin concrete tool versions (Python/pandas/numpy/Freqtrade/FreqAI) — pending
 - CI for smoke/validators — pending
 
-## Next 3 Steps
-1) M3.1: Minimal training runner (offline) → train baseline model on dataset, write models/<tag>/metadata.json (no .pkl tracked)
-2) M3.2: Registry helpers (init_model_tag.py finalize, metadata validator, provenance)
-3) M3.3: Retrain cadence policy → doc→check script stub (time/drift/perf), wire to ROADMAP exit criteria
+
+## Milestone M3.1 Complete
+- Training runner implemented: scripts/training/train_baseline.py (offline, deterministic)
+- Registry metadata: models/<tag>/metadata.json (idempotent, contract-compliant)
+- Smoke test: tests/test_train_baseline.py (validates summary + metadata)
+
+## Lessons / Follow-ups
+- Pin tool versions (Python, pandas, numpy, Freqtrade, FreqAI) — still pending for full reproducibility
+- CI for smoke/validators — to be added for automated checks
+- Registry helpers and retrain cadence policy are next (M3.2/M3.3)
+
+## Next Steps
+1) M3.2: Registry helpers (init_model_tag.py, metadata validator, provenance, schema)
+2) M3.3: Retrain cadence policy (doc, check script, echo task)

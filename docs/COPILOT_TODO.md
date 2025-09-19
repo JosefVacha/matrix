@@ -31,10 +31,11 @@
 - [✅] Update WFO metrics template with provenance note and JSON keys
 - [✅] Add echo tasks for WFO planning and evaluation smoke
 
+
 ## PHASE M3.1
 
-- [ ] Implement scripts/training/train_baseline.py (offline, takes dataset + label, outputs metrics JSON + models/<tag>/metadata.json; model.pkl ignored)
-- [ ] Docs/TRAINING_PROTOCOL.md: add “Training Runner CLI” block + example
+- [✅] Implement scripts/training/train_baseline.py (offline, takes dataset + label, outputs metrics JSON + models/<tag>/metadata.json; model.pkl ignored)
+- [✅] Docs/TRAINING_PROTOCOL.md: add “Training Runner CLI” block + example
 
 ## PHASE M3.2
 

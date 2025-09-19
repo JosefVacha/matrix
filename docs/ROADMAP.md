@@ -61,20 +61,20 @@
 
 ### M3: Training, Registry, Retrain Cadence
 **Goals:**
-  - M3.1 Training Runner (CLI + docs-first, stdlib+pandas/numpy + scikit-learn-like API stub if needed)
-  - M3.2 Model Registry helpers (metadata schema, init/validate)
-  - M3.3 Retrain Cadence (policy doc + stub validator), exit criteria
+  - [x] M3.1 Training Runner (CLI + docs-first, stdlib+pandas/numpy + scikit-learn-like API stub if needed)
+  - [ ] M3.2 Model Registry helpers (metadata schema, init/validate)
+  - [ ] M3.3 Retrain Cadence (policy doc + stub validator), exit criteria
 **Deliverables:**
-  - scripts/training/train_baseline.py (offline, takes dataset + label, outputs metrics JSON + models/<tag>/metadata.json; model.pkl ignored)
-  - Docs/TRAINING_PROTOCOL.md: add “Training Runner CLI” block + example
-  - scripts/registry/init_model_tag.py (idempotent), scripts/qa/validate_model_metadata.py checks
-  - Docs/MODEL_REGISTRY.md: finalize schema + examples
-  - Docs/RETRAIN_POLICY.md: wire cadence → validator inputs/outputs
-  - scripts/qa/check_retrain_cadence.py (stub; exit 0/1); add echo task
+  - [x] scripts/training/train_baseline.py (offline, takes dataset + label, outputs metrics JSON + models/<tag>/metadata.json; model.pkl ignored)
+  - [x] Docs/TRAINING_PROTOCOL.md: add “Training Runner CLI” block + example
+  - [ ] scripts/registry/init_model_tag.py (idempotent), scripts/qa/validate_model_metadata.py checks
+  - [ ] Docs/MODEL_REGISTRY.md: finalize schema + examples
+  - [ ] Docs/RETRAIN_POLICY.md: wire cadence → validator inputs/outputs
+  - [ ] scripts/qa/check_retrain_cadence.py (stub; exit 0/1); add echo task
 **Exit Criteria:**
-  - Training runner produces metrics and metadata
-  - Registry helpers and validator pass
-  - Retrain cadence policy and check script in place
+  - [x] Training runner produces metrics and metadata
+  - [ ] Registry helpers and validator pass
+  - [ ] Retrain cadence policy and check script in place
 **Risks:**
   - Incomplete training/registry coverage
   - Cadence logic not wired to exit criteria
