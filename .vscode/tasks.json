@@ -881,5 +881,23 @@
 "python -m tests.test_build_dataset  # OFFLINE ONLY"
 ],
 "problemMatcher": []
-}
+},
+{
+        "label": "wfo-plan",
+        "type": "shell",
+        "command": "echo",
+        "args": [
+            "python scripts/planning/wfo_plan.py --from 2025-01-01 --to 2025-01-31 --block-days 3 --gap-days 0  # OFFLINE ONLY"
+        ],
+        "problemMatcher": []
+    },
+    {
+        "label": "wfo-eval-smoke",
+        "type": "shell",
+        "command": "echo",
+        "args": [
+            "python -m tests.test_evaluate_wfo  # OFFLINE ONLY"
+        ],
+        "problemMatcher": []
+    }
 ]

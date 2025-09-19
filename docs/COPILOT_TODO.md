@@ -23,3 +23,10 @@
   - Status: tests/test_build_dataset.py exists and passes.
 - [✅] Add echo tasks for builder
   - Status: .vscode/tasks.json updated with ds-build-plan and ds-build-smoke.
+
+## PHASE M2.4
+
+- [✅] Implement offline WFO evaluation runner
+- [✅] Add WFO evaluation smoke test
+- [✅] Update WFO metrics template with provenance note and JSON keys
+- [✅] Add echo tasks for WFO planning and evaluation smoke
