@@ -1,48 +1,113 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Model Registry Metadata",
-  "type": "object",
-  "required": [
-    "model_tag", "created_at", "label", "features", "train_window", "algo", "artifacts", "provenance"
-  ],
-  "properties": {
-    "model_tag": {"type": "string"},
-    "created_at": {"type": "string", "format": "date-time"},
-    "label": {"type": "string"},
-    "features": {"type": "array", "items": {"type": "string"}},
-    "timeframe": {"type": ["string", "null"]},
-    "train_window": {
-      "type": "object",
-      "required": ["from", "to", "rows"],
-      "properties": {
-        "from": {"type": "string"},
-        "to": {"type": "string"},
-        "rows": {"type": "integer"}
-      }
-    },
-    "algo": {
-      "type": "object",
-      "required": ["name", "params"],
-      "properties": {
-        "name": {"type": "string", "enum": ["ridge", "ols"]},
-        "params": {"type": "object"}
-      }
-    },
-    "artifacts": {
-      "type": "object",
-      "properties": {
-        "pickle_path": {"type": ["string", "null"]}
-      },
-      "required": ["pickle_path"]
-    },
-    "provenance": {
-      "type": "object",
-      "required": ["dataset_path", "commit", "generator"],
-      "properties": {
-        "dataset_path": {"type": "string"},
-        "commit": {"type": ["string", "null"]},
-        "generator": {"type": "string"}
-      }
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Model Registry Metadata",
+    "type": "object",
+    "required": [
+        "model_tag",
+        "created_at",
+        "label",
+        "features",
+        "train_window",
+        "algo",
+        "artifacts",
+        "provenance"
+    ],
+    "properties": {
+        "model_tag": {
+            "type": "string"
+        },
+        "created_at": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "label": {
+            "type": "string"
+        },
+        "features": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "timeframe": {
+            "type": [
+                "string",
+                "null"
+            ]
+        },
+        "train_window": {
+            "type": "object",
+            "required": [
+                "from",
+                "to",
+                "rows"
+            ],
+            "properties": {
+                "from": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "rows": {
+                    "type": "integer"
+                }
+            }
+        },
+        "algo": {
+            "type": "object",
+            "required": [
+                "name",
+                "params"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "enum": [
+                        "ridge",
+                        "ols"
+                    ]
+                },
+                "params": {
+                    "type": "object"
+                }
+            }
+        },
+        "artifacts": {
+            "type": "object",
+            "properties": {
+                "pickle_path": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "pickle_path"
+            ]
+        },
+        "provenance": {
+            "type": "object",
+            "required": [
+                "dataset_path",
+                "commit",
+                "generator"
+            ],
+            "properties": {
+                "dataset_path": {
+                    "type": "string"
+                },
+                "commit": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "generator": {
+                    "type": "string"
+                }
+            }
+        }
     }
-  }
 }

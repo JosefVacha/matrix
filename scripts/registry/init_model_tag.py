@@ -4,13 +4,17 @@ Idempotent registry skeleton creator for models/<tag>/metadata.json
 Usage:
   python scripts/registry/init_model_tag.py --tag M3_DEMO
 """
+
 import argparse
 import pathlib
 import json
 import datetime
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Init model registry metadata skeleton")
+    parser = argparse.ArgumentParser(
+        description="Init model registry metadata skeleton"
+    )
     parser.add_argument("--tag", required=True)
     args = parser.parse_args()
     tag = args.tag
@@ -30,8 +34,8 @@ def main():
         "provenance": {
             "dataset_path": "<dataset_path>",
             "commit": None,
-            "generator": "scripts/registry/init_model_tag.py"
-        }
+            "generator": "scripts/registry/init_model_tag.py",
+        },
     }
     # Idempotent update: merge skeleton into existing, preserve unknown fields
     if meta_path.exists():
@@ -49,6 +53,7 @@ def main():
     with open(meta_path, "w") as f:
         json.dump(meta, f, indent=2)
     print(f"Initialized registry metadata: {meta_path}")
+
 
 if __name__ == "__main__":
     main()

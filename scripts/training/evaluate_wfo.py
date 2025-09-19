@@ -11,6 +11,7 @@ Usage:
     --out-md docs/summaries/WFO_SUMMARY_SAMPLE.md \
     --run-tag SAMPLE_3D
 """
+
 import argparse, sys, json
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -19,9 +20,7 @@ import numpy as np
 
 
 def parse_args():
-    p = argparse.ArgumentParser(
-        description="Offline WFO evaluation runner for MATRIX."
-    )
+    p = argparse.ArgumentParser(description="Offline WFO evaluation runner for MATRIX.")
     p.add_argument("--dataset", required=True)
     p.add_argument("--label-name", required=True)
     p.add_argument("--from", dest="from_date", required=True)

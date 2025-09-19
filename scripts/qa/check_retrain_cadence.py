@@ -4,11 +4,13 @@ Check retrain cadence policy (offline, stdlib-only)
 Usage:
   python scripts/qa/check_retrain_cadence.py --last-train 2025-09-10 --min-days 7 --max-days 30 --drift none --summaries-dir docs/summaries/
 """
+
 import argparse
 import sys
 import json
 import datetime
 import os
+
 
 def main():
     parser = argparse.ArgumentParser(description="Check retrain cadence policy")
@@ -27,13 +29,35 @@ def main():
     days_since = (today - last_train).days
     # Logic
     if days_since > args.max_days:
-        print(json.dumps({"pass": False, "reason": f"Days since last train ({days_since}) > max_days ({args.max_days})"}))
+        print(
+            json.dumps(
+                {
+                    "pass": False,
+                    "reason": f"Days since last train ({days_since}) > max_days ({args.max_days})",
+                }
+            )
+        )
         sys.exit(1)
     if args.drift == "high" and days_since > args.min_days:
-        print(json.dumps({"pass": False, "reason": f"Drift high and days since last train ({days_since}) > min_days ({args.min_days})"}))
+        print(
+            json.dumps(
+                {
+                    "pass": False,
+                    "reason": f"Drift high and days since last train ({days_since}) > min_days ({args.min_days})",
+                }
+            )
+        )
         sys.exit(1)
-    print(json.dumps({"pass": True, "reason": f"Cadence OK: days_since={days_since}, drift={args.drift}"}))
+    print(
+        json.dumps(
+            {
+                "pass": True,
+                "reason": f"Cadence OK: days_since={days_since}, drift={args.drift}",
+            }
+        )
+    )
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

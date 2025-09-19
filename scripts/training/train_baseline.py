@@ -12,9 +12,11 @@ import pandas as pd
 
 try:
     from sklearn.linear_model import Ridge
+
     SKLEARN_AVAILABLE = True
 except ImportError:
     SKLEARN_AVAILABLE = False
+
 
 # --- Helpers ---
 def load_dataset(path):
@@ -29,22 +31,26 @@ def load_dataset(path):
         raise ValueError("Dataset index must be monotonic increasing (UTC)")
     return df
 
+
 def select_features(df, features):
     if features:
         return [f for f in features if f in df.columns]
     # Default: all columns starting with 'f_'
     return [c for c in df.columns if c.startswith("f_")]
 
+
 def right_align_train(df, train_from, train_to):
     # Assumes index is datetime
     mask = (df.index >= train_from) & (df.index <= train_to)
     return df.loc[mask]
+
 
 def train_ridge(X, y, alpha):
     model = Ridge(alpha=alpha)
     model.fit(X, y)
     y_pred = model.predict(X)
     return model, y_pred
+
 
 def train_ols_tikhonov(X, y, lmbd):
     # OLS with Tikhonov regularization: (X^T X + lmbd*I)^-1 X^T y
@@ -55,18 +61,26 @@ def train_ols_tikhonov(X, y, lmbd):
     b = X_.T @ y_
     coef = np.linalg.solve(A, b)
     y_pred = X_ @ coef
+
     class Model:
         def __init__(self, coef):
             self.coef_ = coef
+
         def predict(self, X):
             return np.asarray(X) @ self.coef_
+
     return Model(coef), y_pred
+
 
 def compute_metrics(y_true, y_pred):
     resid = y_true - y_pred
     mae = float(np.mean(np.abs(resid)))
-    mse = float(np.mean(resid ** 2))
-    r2 = float(1 - np.sum(resid ** 2) / np.sum((y_true - np.mean(y_true)) ** 2)) if len(y_true) > 1 else float('nan')
+    mse = float(np.mean(resid**2))
+    r2 = (
+        float(1 - np.sum(resid**2) / np.sum((y_true - np.mean(y_true)) ** 2))
+        if len(y_true) > 1
+        else float("nan")
+    )
     return {
         "mae": mae,
         "mse": mse,
@@ -75,14 +89,18 @@ def compute_metrics(y_true, y_pred):
         "resid_std": float(np.std(resid)),
     }
 
+
 def save_json(obj, path):
     with open(path, "w") as f:
         json.dump(obj, f, indent=2)
 
+
 def save_pickle(obj, path):
     import pickle
+
     with open(path, "wb") as f:
         pickle.dump(obj, f)
+
 
 def update_metadata(meta_path, new_meta):
     # Idempotent update: merge new_meta into existing, preserve unknown fields
@@ -100,6 +118,7 @@ def update_metadata(meta_path, new_meta):
     with open(meta_path, "w") as f:
         json.dump(meta, f, indent=2)
 
+
 # --- Main CLI ---
 def main():
     parser = argparse.ArgumentParser(description="Offline baseline model trainer")
@@ -111,12 +130,20 @@ def main():
     parser.add_argument("--model-tag", required=True)
     parser.add_argument("--out-json", required=True)
     parser.add_argument("--save-model", required=False)
-    parser.add_argument("--alpha", type=float, default=0.1, help="Ridge alpha (if sklearn)")
-    parser.add_argument("--lmbd", type=float, default=0.0, help="OLS regularization (if no sklearn)")
+    parser.add_argument(
+        "--alpha", type=float, default=0.1, help="Ridge alpha (if sklearn)"
+    )
+    parser.add_argument(
+        "--lmbd", type=float, default=0.0, help="OLS regularization (if no sklearn)"
+    )
     args = parser.parse_args()
 
     df = load_dataset(args.dataset)
-    features = [f.strip() for f in args.features.split(",") if f.strip()] if args.features else []
+    features = (
+        [f.strip() for f in args.features.split(",") if f.strip()]
+        if args.features
+        else []
+    )
     features = select_features(df, features)
     if args.label_name not in df.columns:
         print(f"Label column {args.label_name} not found in dataset.", file=sys.stderr)
@@ -186,19 +213,26 @@ def main():
         "provenance": {
             "dataset_path": str(args.dataset),
             "commit": get_git_sha1(),
-            "generator": "scripts/training/train_baseline.py"
-        }
+            "generator": "scripts/training/train_baseline.py",
+        },
     }
     update_metadata(meta_path, meta)
+
 
 # --- Git SHA1 helper ---
 def get_git_sha1():
     import subprocess
+
     try:
-        sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=pathlib.Path(__file__).parent.parent.parent, stderr=subprocess.DEVNULL)
+        sha = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=pathlib.Path(__file__).parent.parent.parent,
+            stderr=subprocess.DEVNULL,
+        )
         return sha.decode().strip()
     except Exception:
         return None
+
 
 if __name__ == "__main__":
     main()

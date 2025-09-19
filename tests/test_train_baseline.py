@@ -5,6 +5,7 @@ import json
 import pathlib
 import subprocess
 
+
 def main():
     dataset_path = "data/dataset_SMOKE.parquet"
     if not os.path.exists(dataset_path):
@@ -22,15 +23,26 @@ def main():
         except Exception:
             pass
     # Run training
-    cmd = [sys.executable, "scripts/training/train_baseline.py",
-           "--dataset", dataset_path,
-           "--label-name", "label_R_H3_pct",
-           "--features", "f_ret_1,f_ret_3,f_vol_12",
-           "--train-from", "2025-01-01",
-           "--train-to", "2025-01-08",
-           "--model-tag", model_tag,
-           "--out-json", out_json,
-           "--save-model", f"models/{model_tag}/model.pkl"]
+    cmd = [
+        sys.executable,
+        "scripts/training/train_baseline.py",
+        "--dataset",
+        dataset_path,
+        "--label-name",
+        "label_R_H3_pct",
+        "--features",
+        "f_ret_1,f_ret_3,f_vol_12",
+        "--train-from",
+        "2025-01-01",
+        "--train-to",
+        "2025-01-08",
+        "--model-tag",
+        model_tag,
+        "--out-json",
+        out_json,
+        "--save-model",
+        f"models/{model_tag}/model.pkl",
+    ]
     result = subprocess.run(cmd, capture_output=True)
     if result.returncode != 0:
         print("Train runner failed:", result.stderr.decode())
@@ -43,7 +55,10 @@ def main():
             assert k in summary, f"Missing key {k} in summary"
         for m in ["mae", "mse", "r2", "resid_mean", "resid_std"]:
             v = summary["metrics"].get(m)
-            assert v is not None and not (isinstance(v, float) and (v != v or v == float('inf') or v == float('-inf'))), f"Metric {m} invalid: {v}"
+            assert v is not None and not (
+                isinstance(v, float)
+                and (v != v or v == float("inf") or v == float("-inf"))
+            ), f"Metric {m} invalid: {v}"
     except Exception as e:
         print(f"Summary JSON check failed: {e}")
         sys.exit(1)
@@ -58,6 +73,7 @@ def main():
         sys.exit(1)
     print(f"TRAIN SMOKE OK: {model_tag}")
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
