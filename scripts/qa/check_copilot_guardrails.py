@@ -7,10 +7,13 @@ Usage:
   python3 scripts/qa/check_copilot_guardrails.py
 """
 
-import sys
+import argparse
+import json
 import subprocess
+import sys
 from pathlib import Path
-from typing import List
+from typing import List, Dict
+
 
 # Critical trio (must always be present and reloaded)
 CRITICAL = [
@@ -35,25 +38,29 @@ CONDITIONAL_MAP = {
 
 
 def exists_readable(path: str) -> bool:
+    """Return True if file exists; supports simple glob patterns."""
     p = Path(path)
-    # support simple glob patterns
     if "*" in path:
-        matches = list(p.parent.glob(p.name))
+        # use glob on parent/name
+        parent = p.parent if p.parent.exists() else Path(".")
+        matches = list(parent.glob(p.name))
         return any(m.exists() for m in matches)
     return p.exists()
 
 
 def get_changed_scope() -> List[str]:
-    # Try to detect staged/changed files and map to conditional scopes.
+    """Detect changed files via git and map to scopes.
+
+    If git is unavailable or no changes detected, return an empty list.
+    """
     try:
         out = subprocess.check_output(
             ["git", "diff", "--name-only", "--staged"], text=True
         )
-    except Exception:
-        try:
+        if not out.strip():
             out = subprocess.check_output(["git", "diff", "--name-only"], text=True)
-        except Exception:
-            out = ""
+    except Exception:
+        return []
     files = [line.strip() for line in out.splitlines() if line.strip()]
     scopes = set()
     for f in files:
@@ -68,82 +75,176 @@ def get_changed_scope() -> List[str]:
     return list(scopes)
 
 
-def check_files(files: List[str]) -> List[str]:
-    missing = []
-    for f in files:
-        if not exists_readable(f):
-            missing.append(f)
-    return missing
+def run_subscript(script: str) -> Dict[str, object]:
+    """Run a python script, capture exit code and combined output.
+
+    Returns dict with keys: code, output
+    """
+    try:
+        # Protect against hanging subsidiary scripts with a timeout (seconds)
+        p = subprocess.run(
+            ["python3", script], capture_output=True, text=True, check=False, timeout=15
+        )
+        return {"code": p.returncode, "output": p.stdout + p.stderr}
+    except subprocess.TimeoutExpired as e:
+        return {"code": 2, "output": f"timeout: {str(e)}"}
+    except Exception as e:
+        return {"code": 1, "output": str(e)}
 
 
-def main():
-    failed = []
-    # Check critical
-    missing_critical = check_files(CRITICAL)
-    if missing_critical:
-        failed.extend([f"missing: {x}" for x in missing_critical])
+def check_preface() -> bool:
+    """Ensure the copilot preface lines are present in copilot-instructions.md."""
+    p = Path(".github/copilot-instructions.md")
+    if not p.exists():
+        return False
+    txt = p.read_text(encoding="utf-8")
+    line1 = "Guardrail check: ran check_copilot_guardrails.py — PASS"
+    line2 = "Files reloaded: copilot-instructions.md, AGENTS.md, PROJECT_STATE.md"
+    return (line1 in txt) and (line2 in txt)
 
-    # Determine conditional scopes
+
+def check_language_rules() -> bool:
+    """Ensure instructions contain the language rule for Czech replies and template reference.
+
+    Specifically, require a line that says (case-insensitive):
+      "If user asks in Czech, answer in Czech"
+    and that `Knowledge/REPLY_TEMPLATES.md` is referenced in the copilot file.
+    """
+    p = Path(".github/copilot-instructions.md")
+    if not p.exists():
+        return False
+    txt = p.read_text(encoding="utf-8").lower()
+    # Accept both English and Czech formulations (simple heuristics)
+    eng_patterns = [
+        "if user asks in czech, answer in czech",
+        "when the user asks in czech",
+        "if the user asks in czech",
+    ]
+    cz_patterns = [
+        "odpov",
+        "odpověz v češtině",
+        "odpověz česky",
+        "odpovězte v češtině",
+        "pokud uživatel.*češt",
+    ]
+    rule_ok = any(pat in txt for pat in eng_patterns) or any(
+        pat in txt for pat in cz_patterns
+    )
+    template_ref = "knowledge/reply_templates.md" in txt
+    # also ensure the canonical template file exists and contains Czech headings
+    template_path = Path("Knowledge/REPLY_TEMPLATES.md")
+    template_exists = template_path.exists()
+    template_has_czech = False
+    if template_exists:
+        ttxt = template_path.read_text(encoding="utf-8").lower()
+        template_has_czech = "šablona" in ttxt or "češt" in ttxt or "česky" in ttxt
+    return bool(rule_ok and template_ref and template_exists and template_has_czech)
+
+
+def check_all(strict: bool = False) -> Dict[str, object]:
+    """Run all checks and return a structured result."""
+    result: Dict[str, object] = {}
+    missing_critical = [f for f in CRITICAL if not exists_readable(f)]
+    result["missing_critical"] = missing_critical
+
     scopes = get_changed_scope()
-    conditional_checked = []
-    conditional_missing = []
-    # Always check some default conditionals (docs and tasks) to be conservative
+    # default conservative conditionals
     default_conditionals = CONDITIONAL_MAP.get("docs", []) + CONDITIONAL_MAP.get(
         "tasks", []
     )
     to_check = set(default_conditionals)
-    # Expand with scopes detected
     for s in scopes:
         to_check.update(CONDITIONAL_MAP.get(s, []))
 
-    for f in sorted(to_check):
-        conditional_checked.append(f)
-        if not exists_readable(f):
-            conditional_missing.append(f)
-            failed.append(f"missing-conditional: {f}")
+    conditional_checked = sorted(to_check)
+    missing_conditionals = [f for f in conditional_checked if not exists_readable(f)]
+    result["conditional_checked"] = conditional_checked
+    result["missing_conditionals"] = missing_conditionals
 
-    # Output machine-readable summary
-    if failed:
-        print("Guardrail check: FAIL")
+    # run subsidiary validators
+    code_fence = run_subscript("scripts/qa/check_code_fences.py")
+    cli_export = run_subscript("scripts/qa/check_cli_exports.py")
+    result["code_fence"] = code_fence
+    result["cli_export"] = cli_export
+
+    # preface check
+    result["preface_ok"] = check_preface()
+
+    # summary
+    language_ok = check_language_rules()
+    result["language_ok"] = language_ok
+
+    ok = (
+        (not missing_critical)
+        and (not missing_conditionals)
+        and code_fence.get("code", 1) == 0
+        and cli_export.get("code", 1) == 0
+        and result["preface_ok"]
+        and language_ok
+    )
+    result["ok"] = bool(ok)
+    result["scopes_detected"] = scopes
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Guardrail checker for MATRIX repo")
+    parser.add_argument(
+        "--json", action="store_true", help="Emit machine-readable JSON summary"
+    )
+    parser.add_argument(
+        "--strict", action="store_true", help="Treat conditional missing files as fatal"
+    )
+    parser.add_argument("--verbose", action="store_true", help="Verbose output")
+    parser.add_argument("--output-file", help="Write JSON summary to this file")
+    args = parser.parse_args()
+
+    res = check_all(strict=args.strict)
+
+    if args.json:
+        out = json.dumps(res, indent=2)
+        print(out)
+        if args.output_file:
+            Path(args.output_file).write_text(out, encoding="utf-8")
+    else:
+        if res["ok"]:
+            print("Guardrail check: PASS")
+        else:
+            print("Guardrail check: FAIL")
+
+        missing_critical = res.get("missing_critical", [])
+        conditional_checked = res.get("conditional_checked", [])
+        missing_conditionals = res.get("missing_conditionals", [])
+
         print("Critical reloaded:", [c for c in CRITICAL if c not in missing_critical])
         print(
             "Conditional reloaded:",
-            [c for c in conditional_checked if c not in conditional_missing],
+            [c for c in conditional_checked if c not in missing_conditionals],
         )
-        for f in failed:
-            print(" -", f)
-        sys.exit(1)
+        for m in missing_critical:
+            print(" - missing:", m)
+        for m in missing_conditionals:
+            print(" - missing-conditional:", m)
 
-    # Run code-fence checker (fail guardrail if any .py contains the three-backtick sequence)
-    try:
-        import subprocess
+        code_fence = res.get("code_fence", {})
+        cli_export = res.get("cli_export", {})
+        try:
+            if code_fence.get("code", 1) != 0:
+                print(" - code-fence-check: failed")
+        except Exception:
+            print(" - code-fence-check: error reading result")
+        try:
+            if cli_export.get("code", 1) != 0:
+                print(" - cli-export-check: failed")
+        except Exception:
+            print(" - cli-export-check: error reading result")
+        if not res.get("preface_ok"):
+            print(
+                " - copilot preface: missing or malformed in .github/copilot-instructions.md"
+            )
 
-        rc = subprocess.call(["python3", "scripts/qa/check_code_fences.py"])
-        if rc != 0:
-            print("Guardrail check: FAIL")
-            print("Critical reloaded:", CRITICAL)
-            print("Conditional reloaded:", conditional_checked)
-            print(" - code-fence-check: failed")
-            sys.exit(1)
-        # CLI export checker
-        rc2 = subprocess.call(["python3", "scripts/qa/check_cli_exports.py"])
-        if rc2 != 0:
-            print("Guardrail check: FAIL")
-            print("Critical reloaded:", CRITICAL)
-            print("Conditional reloaded:", conditional_checked)
-            print(" - cli-export-check: failed")
-            sys.exit(1)
-    except Exception:
-        print("Guardrail check: FAIL")
-        print("Critical reloaded:", CRITICAL)
-        print("Conditional reloaded:", conditional_checked)
-        print(" - code-fence-check: error")
-        sys.exit(1)
-
-    print("Guardrail check: PASS")
-    print("Critical reloaded:", CRITICAL)
-    print("Conditional reloaded:", conditional_checked)
-    sys.exit(0)
+    # final exit
+    sys.exit(0 if res.get("ok") else 1)
 
 
 if __name__ == "__main__":

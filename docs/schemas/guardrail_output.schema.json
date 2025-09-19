@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Guardrail output",
+    "type": "object",
+    "properties": {
+        "missing_critical": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "conditional_checked": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "missing_conditionals": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "code_fence": {
+            "type": "object"
+        },
+        "cli_export": {
+            "type": "object"
+        },
+        "preface_ok": {
+            "type": "boolean"
+        },
+        "language_ok": {
+            "type": "boolean"
+        },
+        "ok": {
+            "type": "boolean"
+        },
+        "scopes_detected": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "required": [
+        "ok",
+        "preface_ok",
+        "language_ok"
+    ]
+}

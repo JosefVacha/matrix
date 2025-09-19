@@ -6,6 +6,7 @@ on:
     branches: [ "main" ]
 permissions:
   contents: read
+  issues: write
 jobs:
   validators:
     name: validators (py${{ matrix.python-version }})
@@ -31,6 +32,9 @@ jobs:
       - name: Guardrail check (copilot)  # must pass before other validators
         run: |
           python3 scripts/qa/check_copilot_guardrails.py
+      - name: Reply template presence check
+        run: |
+          python3 scripts/qa/check_reply_template_presence.py
       - name: Guardrails unit test
         run: |
           python3 -m tests.test_guardrails
@@ -71,6 +75,14 @@ jobs:
       - name: English policy check (stdlib)
         run: |
           python scripts/qa/check_english_policy.py
+      - name: Notify on guardrail failure (best-effort)
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          echo 'Guardrail/validators failed — producing artifact and attempting notifier (best-effort)'
+          python3 scripts/qa/notify_guardrail_failure.py || true
   smoke:
     name: smoke (py${{ matrix.python-version }}) — optional
     runs-on: ubuntu-latest
@@ -90,6 +102,9 @@ jobs:
         shell: bash
         run: |
           # Generate a tiny SMOKE dataset for the smoke test if generator exists
+          # Ensure minimal runtime deps are available for the generator (avoid full dev install here)
+          python -m pip install --upgrade pip
+          python -m pip install pandas numpy
           if [ -f scripts/qa/generate_smoke_dataset.py ]; then
             echo 'Generating small SMOKE dataset for smoke test'
             python -m scripts.qa.generate_smoke_dataset

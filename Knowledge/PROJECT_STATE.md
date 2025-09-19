@@ -39,3 +39,10 @@
 ## Short-term notes
 - Dev dependency change: `pyarrow` -> `fastparquet` in `requirements-dev.txt` (CI-friendly).
 - Current CI: validators pass but smoke job earlier failed due to missing SMOKE dataset; generator added and CI re-triggered. Monitor latest run.
+
+### 2025-09-20 - CI / dev-deps follow-up
+- Pinned `fastparquet` to `2024.11.0` in `requirements-dev.txt` after CI reported unavailable wheel for `2024.12.0`.
+- Added minimal runtime install step (`python -m pip install pandas numpy`) to the `smoke` job in `.github/workflows/smoke-validators.yml` so `scripts/qa/generate_smoke_dataset.py` can run before full dev deps are installed.
+- Rationale: avoid heavy native builds in CI (pyarrow) and prevent generator failing due to missing numpy/pandas.
+
+CZ: Krátký záznam: připnuto `fastparquet>=2024.4.0,<2025.0`, přidán krok instalace `pandas` a `numpy` v `smoke` jobu. Sledujte následující CI runy a po jejich úspěchu aktualizujte PR popis a mergněte.

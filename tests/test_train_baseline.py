@@ -42,7 +42,7 @@ def main():
         model_tag,
         "--out-json",
         out_json,
-    # Do not request saving the pickle in CI smoke (sklearn may be absent)
+        # Do not request saving the pickle in CI smoke (sklearn may be absent)
     ]
     result = subprocess.run(cmd, capture_output=True)
     if result.returncode != 0:
