@@ -1,0 +1,66 @@
+{
+    "// NOTE": "FreqAI configuration for MATRIX - copy to freqai.json and complete",
+    "// SECURITY": "Only placeholders, no sensitive data!",
+    
+    "freqai": {
+        "enabled": true,
+        "purge_old_models": true,
+        "train_period_days": 30,
+        "backtest_period_days": 7,
+        "identifier": "matrix_model",
+        "save_backtest_models": true,
+        
+        "// MODEL": "Integration with MATRIX feature engineering",
+        "model_training_parameters": {
+            "// PLACEHOLDER": "Model config by type (LightGBM, CatBoost, etc.)",
+            "n_estimators": 1000,
+            "learning_rate": 0.02,
+            "max_depth": 6,
+            "random_state": 42
+        },
+        
+        "// MATRIX_HOOKS": "Custom feature/label generation hooks",
+        "// feature_hook": "matrix.freqai.hooks.generate_features",
+        "// label_hook": "matrix.freqai.hooks.generate_labels", 
+        "// feature_columns_hook": "matrix.freqai.hooks.feature_columns",
+        "// label_name_hook": "matrix.freqai.hooks.label_name",
+        
+        "// DATA": "Feature engineering integration with MATRIX",
+        "feature_parameters": {
+            "// INTEGRATION": "src/matrix/feature/engineering.py",
+            "DI_threshold": 0.9,
+            "weight_factor": 0.9,
+            "principal_component_analysis": false,
+            "use_SVM_to_remove_outliers": true,
+            "svm_params": {
+                "shuffle": false,
+                "nu": 0.1
+            },
+            "// MATRIX_FEATURES": "Custom feature configuration",
+            "include_timeframes": ["5m", "15m", "1h"],
+            "include_shifted_candles": 2,
+            "include_corr_pairs": []
+        },
+        
+        "// DATA_SPLIT": "Walk-forward without temporal leakage - CRITICAL!",
+        "data_split_parameters": {
+            "test_size": 0.33,
+            "shuffle": false,
+            "// GUARDRAIL": "No shuffle for time series!"
+        },
+        
+        "// MODEL_TYPE": "Placeholder - can be changed as needed",
+        "model_type": "LightGBMRegressor",
+        
+        "// PATHS": "Model storage",
+        "model_save_type": "stable",
+        "conv_width": 2,
+        
+        "// LABELS": "Integration with MATRIX label generation", 
+        "label_period_candles": 24,
+        "// INTEGRATION": "src/matrix/freqai/hooks.py"
+    },
+    
+    "// RISK_INTEGRATION": "Integration with MATRIX risk policy - src/matrix/risk/policy.py",
+    "// TELEMETRY_INTEGRATION": "Metrics for monitoring - src/matrix/telemetry/metrics.py"
+}

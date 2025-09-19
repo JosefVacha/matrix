@@ -1,0 +1,14 @@
+meta:
+  created_at: 2025-09-19T10:00:00+00:00
+  author: jozevec
+  commit: abc123
+  timeframe: 5m
+  pairlist_ref: pairlist.static.json
+  model_tag: baseline
+params:
+  UP: 0.7
+  DN: -0.7
+  hysteresis: 0.1
+  cooldown: 15
+  label.mode: binary
+  label.H: 15

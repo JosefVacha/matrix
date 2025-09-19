@@ -1,0 +1,544 @@
+{
+        "label": "metrics-summary",
+        "type": "shell",
+        "command": "echo",
+        "args": ["'SKELETON: python scripts/metrics/extract_metrics.py --in docs/REPORT_*.md --out docs/summaries/METRICS_SUMMARY_*.md'"],
+        "group": "test",
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "showReuseMessage": true,
+            "clear": false
+        },
+        "problemMatcher": [],
+        "detail": "Extract metrics summary from filled REPORTs (SKELETON - NO FILE I/O)"
+    },
+    {
+        "label": "churn-calc",
+        "type": "shell",
+        "command": "echo",
+        "args": ["python scripts/metrics/calc_churn.py --report docs/REPORTS/REPORT_<DATE>_<TAG>.md"],
+        "group": "test",
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "showReuseMessage": true,
+            "clear": false
+        },
+        "problemMatcher": [],
+        "detail": "Calculate churn rate from REPORT (NO LIVE ACTION; OFFLINE ONLY)"
+    },
+    {
+        "label": "stability-score-calc",
+        "type": "shell",
+        "command": "echo",
+        "args": ["python scripts/metrics/calc_stability_score.py --summaries docs/summaries/SUMMARY_<DATE1>_<TAG1>.md docs/summaries/SUMMARY_<DATE2>_<TAG2>.md"],
+        "group": "test",
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "showReuseMessage": true,
+            "clear": false
+        },
+        "problemMatcher": [],
+        "detail": "Calculate stability score from summaries (NO LIVE ACTION; OFFLINE ONLY)"
+    },
+        "label": "recap-merge",
+        "type": "shell",
+        "command": "echo",
+        "args": ["python scripts/metrics/merge_summaries.py --inputs docs/summaries/SUMMARY_*.md --out docs/STABILITY_RECAP.md"],
+        "group": "test",
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "showReuseMessage": true,
+            "clear": false
+        },
+        "problemMatcher": [],
+        "detail": "Merge metrics summaries into stability recap (NO LIVE ACTION; OFFLINE ONLY)"
+    },
+        "label": "ts-print",
+        "type": "shell",
+        "command": "echo",
+        "args": ["python scripts/thresholds/print_thresholds.py --file docs/thresholds/sets/TS_<DATE>_<TAG>.yml"],
+        "group": "test",
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "showReuseMessage": true,
+            "clear": false
+        },
+        "problemMatcher": [],
+        "detail": "Print key thresholds for copy-paste (NO LIVE ACTION; OFFLINE ONLY)"
+    },
+        "label": "markers-validate",
+        "type": "shell",
+        "command": "echo",
+        "args": ["python scripts/metrics/validate_report_markers.py --report docs/REPORTS/REPORT_<DATE>_<TAG>.md"],
+        "group": "test",
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "showReuseMessage": true,
+            "clear": false
+        },
+        "problemMatcher": [],
+        "detail": "Validate report markers (NO LIVE ACTION; OFFLINE ONLY)"
+    },
+    {
+        "label": "ts-validate",
+        "type": "shell",
+        "command": "echo",
+        "args": ["python scripts/thresholds/validate_threshold_set.py --file docs/thresholds/sets/TS_<DATE>_<TAG>.yml"],
+        "group": "test",
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "showReuseMessage": true,
+            "clear": false
+        },
+        "problemMatcher": [],
+        "detail": "Validate threshold set fields (NO LIVE ACTION; OFFLINE ONLY)"
+    },
+        "label": "metrics-extract-run",
+        "type": "shell",
+        "command": "echo",
+        "args": ["python scripts/metrics/extract_metrics.py --report docs/REPORTS/REPORT_<DATE>_<TAG>.md --out docs/summaries/SUMMARY_<DATE>_<TAG>.md"],
+        "group": "test",
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "showReuseMessage": true,
+            "clear": false
+        },
+        "problemMatcher": [],
+        "detail": "Extract metrics summary from REPORT (NO LIVE ACTION)"
+    },
+    {
+        "label": "thresholds-diff-run",
+        "type": "shell",
+        "command": "echo",
+        "args": ["python scripts/thresholds/diff_thresholds.py --a docs/thresholds/sets/TS_A.yml --b docs/thresholds/sets/TS_B.yml --out docs/diffs/DIFF_TS_A_vs_B.md"],
+        "group": "test",
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "showReuseMessage": true,
+            "clear": false
+        },
+        "problemMatcher": [],
+        "detail": "Diff threshold sets and output Markdown (NO LIVE ACTION)"
+    },
+        "label": "thresholds-diff",
+        "type": "shell",
+        "command": "echo",
+        "args": ["'SKELETON: python scripts/thresholds/diff_thresholds.py --a TS_A.yml --b TS_B.yml --out docs/diffs/DIFF_TS_A_vs_B.md'"],
+        "group": "test",
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "showReuseMessage": true,
+            "clear": false
+        },
+        "problemMatcher": [],
+        "detail": "Generate Markdown diff for threshold sets (SKELETON - NO FILE I/O)"
+    },
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "download-data",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'SKELETON: freqtrade download-data --exchange binance --pairs BTC/USDT ETH/USDT --timeframes 5m 1h --days 30'"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Download sample data for MATRIX backtesting (SKELETON - NO LIVE EXECUTION)"
+        },
+        {
+            "label": "backtest-quick-month",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'SKELETON: freqtrade backtesting --strategy MatrixStrategy --timeframe 5m --timerange 20241201-20241231'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Quick MATRIX backtest for last month (SKELETON - NO LIVE EXECUTION)"
+        },
+        {
+            "label": "hyperopt-quick",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'SKELETON: freqtrade hyperopt --strategy MatrixStrategy --epochs 100 --spaces buy sell'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Quick MATRIX hyperparameter optimization (SKELETON - NO LIVE EXECUTION)"
+        },
+        {
+            "label": "open-ui",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'SKELETON: freqUI --config configs/matrix_config.json'"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Launch FreqUI for MATRIX monitoring (SKELETON - NO LIVE EXECUTION)"
+        },
+        {
+            "label": "webserver",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'SKELETON: freqtrade webserver --config configs/matrix_config.json'"],
+            "group": "build",
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Launch MATRIX Freqtrade webserver (SKELETON - NO LIVE EXECUTION)"
+        },
+        {
+            "label": "validate-contracts",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'SKELETON: python -m pytest tests/test_contracts.py -v'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Validate MATRIX contracts between modules (SKELETON - NO LIVE EXECUTION)"
+        },
+        {
+            "label": "contract-lint",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'SKELETON: Check CONTRACTS.md & test skeletons ...'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Check MATRIX I/O contracts and test skeletons (SKELETON - NO LIVE EXECUTION)"
+        },
+        {
+            "label": "wfo-check",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'SKELETON: Review WFO_CHECKLIST.md and confirm completed/pending ...'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Check Walk-Forward Optimization checklist (SKELETON - NO LIVE EXECUTION)"
+        },
+        {
+            "label": "bt-repro-note",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'SKELETON: BT používá configs/pairlist.static.json (statická pairlist).'"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Reminder for reproducible backtests with static pairlist (SKELETON - NO LIVE EXECUTION)"
+        },
+        {
+            "label": "hooks-scan",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'SKELETON: Scan hooks wiring & contracts (NO LIVE ACTION)'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Scan FreqAI hooks wiring and contracts validation (SKELETON - NO LIVE ACTION)"
+        },
+        {
+            "label": "telemetry-scan",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'SKELETON: Verify telemetry stubs present (NO FILE I/O)'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Verify telemetry stubs are present and functional (SKELETON - NO FILE I/O)"
+        },
+        {
+            "label": "bt-sandbox-plan",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'SANDBOX: Review docs/SANDBOX_BT.md → configs/backtest.sandbox.example.json → WFO blocks'"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Review MATRIX sandbox backtest plan and offline protocol (PLANNING ONLY)"
+        },
+        {
+            "label": "thresholds-plan",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'THRESHOLDS: Review docs/THRESHOLDS.md → Grid Sweep → WFO Evaluation → Stability Check'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Review MATRIX threshold optimization methodology (PLANNING ONLY)"
+        },
+        {
+            "label": "metrics-first",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'METRICS: Review docs/METRICS_CHECKLIST.md → Phase 1 (Data Quality + Signal Behavior)'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Review MATRIX essential metrics checklist for sandbox implementation (PLANNING ONLY)"
+        },
+        {
+            "label": "data-check",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'DATA PLACEMENT: Review data/README.md for OHLCV file structure and validation checklist (OFFLINE ONLY)'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Review data placement documentation and verify local OHLCV files (OFFLINE ONLY)"
+        },
+        {
+            "label": "precheck",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'PRECHECK: Walk through docs/SANDBOX_PRECHECK.md validation boxes before running anything (OFFLINE ONLY)'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Complete SANDBOX_PRECHECK.md validation checklist before first run (OFFLINE ONLY)"
+        },
+        {
+            "label": "bt-sandbox-fill",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'CONFIG COPY: cp configs/backtest.sandbox.example.json configs/backtest.sandbox.json → edit timerange/pairs (OFFLINE ONLY)'"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Copy and customize sandbox backtest configuration locally (OFFLINE ONLY)"
+        },
+        {
+            "label": "bt-sandbox-run", 
+            "type": "shell",
+            "command": "echo",
+            "args": ["'MANUAL RUN: Execute sandbox backtest using your local FreqTrade CLI outside VS Code (OFFLINE ONLY)'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Run sandbox backtest manually using local FreqTrade installation (OFFLINE ONLY)"
+        },
+        {
+            "label": "bt-sandbox-report",
+            "type": "shell", 
+            "command": "echo",
+            "args": ["'REPORT FILL: Complete docs/REPORT_TEMPLATE.md with backtest results and analysis (OFFLINE ONLY)'"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Fill report template with sandbox backtest results and commit findings (OFFLINE ONLY)"
+        },
+        {
+            "label": "thresholds-select",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'THRESHOLDS: Choose TS_*.yml from docs/thresholds/sets for the 2nd offline run.'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Select threshold set for second sandbox run (OFFLINE ONLY)"
+        },
+        {
+            "label": "bt-sandbox-run-2",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'MANUAL RUN: Run 2nd offline sandbox with selected thresholds (manual CLI, OFFLINE ONLY)'"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Run second sandbox backtest manually using selected thresholds (OFFLINE ONLY)"
+        },
+        {
+            "label": "bt-sandbox-report-2",
+            "type": "shell",
+            "command": "echo",
+            "args": ["'REPORT FILL: Fill REPORT using Chosen Threshold Set + Stability notes (OFFLINE ONLY)'"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Fill report template with second sandbox results and stability score (OFFLINE ONLY)"
+        }
+    ]
+}

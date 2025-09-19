@@ -1,0 +1,19 @@
+meta:
+  created_at: YYYY-MM-DD
+  author: PLACEHOLDER
+  commit: PLACEHOLDER
+  timeframe: 5m
+  pairlist_ref: configs/pairlist.static.json
+  model_tag: PLACEHOLDER
+params:
+  UP: PLACEHOLDER
+  DN: PLACEHOLDER
+  hysteresis: PLACEHOLDER
+  cooldown: PLACEHOLDER
+  label:
+    mode: regression
+    H: PLACEHOLDER
+provenance:
+  report_ref: PLACEHOLDER
+  wfo_blocks: PLACEHOLDER
+  notes: PLACEHOLDER

@@ -1,0 +1,11 @@
+meta:
+  created_at: 2025-09-07
+  commit: def456
+  model_tag: grid
+params:
+  UP: 0.8
+  DN: -0.6
+  hysteresis: 0.15
+  cooldown: 4
+  label.mode: binary
+  label.H: 15

@@ -1,0 +1,64 @@
+# Copilot ignore - exclude large data and cache files from Copilot context
+
+# Large data directories
+data/
+user_data/
+backtest_results/
+hyperopt_results/
+logs/
+
+# Cache and temporary files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+.mypy_cache/
+.cache/
+
+# Large model files
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.model
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Compiled extensions
+*.so
+*.dll
+*.dylib
+
+# Package distributions
+build/
+dist/
+*.egg-info/
+
+# Environment files
+.env
+.venv
+venv/
+env/
+
+# IDE cache
+.vscode/
+.idea/
+
+# OS cache
+.DS_Store
+Thumbs.db
+
+# Large binary files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Trading data exports
+*.csv.gz
+*.json.gz
