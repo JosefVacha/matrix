@@ -7,77 +7,170 @@
             "command": "echo python scripts/qa/check_retrain_cadence.py --last-train 2025-09-10 --min-days 7 --max-days 30 --drift none --summaries-dir docs/summaries  # OFFLINE ONLY",
             "problemMatcher": []
         },
-{
-    "label": "sim-plan",
+        {
+            "label": "sim-plan",
+            "type": "shell",
+            "command": "echo",
+            "args": [
+                "Review THRESHOLDS.md Decision Rules and pick simulator parameters (UP, DN, hysteresis, cooldown) for synthetic run."
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Plan synthetic simulator parameters (OFFLINE ONLY)"
+        },
+        {
+            "label": "sim-run",
+            "type": "shell",
+            "command": "echo",
+            "args": [
+                "python scripts/sim/simulate_thresholds.py --len 500 --noise 0.2 --up 0.1 --dn -0.1 --hysteresis 0.02 --cooldown 3 --out docs/summaries/SIM_SUMMARY_SAMPLE.md"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Run synthetic simulator (OFFLINE ONLY)"
+        },
+        {
+            "label": "sim-report",
+            "type": "shell",
+            "command": "echo sim-report placeholder  # OFFLINE ONLY",
+            "problemMatcher": []
+        },
+        {
+            "label": "train-smoke",
+            "type": "shell",
+            "command": "echo python -m tests.test_train_baseline  # OFFLINE ONLY",
+            "problemMatcher": []
+        },
+        {
+            "label": "registry-check",
+            "type": "shell",
+            "command": "echo python scripts/qa/validate_model_metadata.py --file models/M3_SMOKE_RH3/metadata.json  # OFFLINE ONLY",
+            "problemMatcher": []
+        },
+        {
+            "label": "registry-init",
+            "type": "shell",
+            "command": "echo python scripts/registry/init_model_tag.py --tag M3_DEMO  # OFFLINE ONLY",
+            "problemMatcher": []
+        },
+        {
+            "label": "registry-validate",
+            "type": "shell",
+            "command": "echo python scripts/qa/validate_model_metadata.py --file models/M3_DEMO/metadata.json  # OFFLINE ONLY",
+            "problemMatcher": []
     "type": "shell",
-    "command": "echo",
-    "args": [
-        "Review THRESHOLDS.md Decision Rules and pick simulator parameters (UP, DN, hysteresis, cooldown) for synthetic run."
-    ],
-    "group": "test",
-    "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared",
-        "showReuseMessage": true,
-        "clear": false
-    },
-    "problemMatcher": [],
-    "detail": "Plan synthetic simulator parameters (OFFLINE ONLY)"
-},
-{
-    "label": "sim-run",
-    "type": "shell",
-    "command": "echo",
-    "args": [
-        "python scripts/sim/simulate_thresholds.py --len 500 --noise 0.2 --up 0.1 --dn -0.1 --hysteresis 0.02 --cooldown 3 --out docs/summaries/SIM_SUMMARY_SAMPLE.md"
-    ],
-    "group": "test",
-    "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared",
-        "showReuseMessage": true,
-        "clear": false
-    },
-    "problemMatcher": [],
-    "detail": "Run synthetic simulator (OFFLINE ONLY)"
-},
-    {
-        "label": "sim-report",
+            "command": "echo",
+            "args": [
+                "Save SIM summary to docs/summaries/ and reference in STABILITY_RECAP.md (run_tag = SIM_<tag>)"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Document SIM summary and link in recap (OFFLINE ONLY)"
+        },
+        {
+            "label": "metrics-summary",
+            "type": "shell",
+            "command": "echo",
+            "args": [
+                "'SKELETON: python scripts/metrics/extract_metrics.py --in docs/REPORT_*.md --out docs/summaries/METRICS_SUMMARY_*.md'"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Extract metrics summary from filled REPORTs (SKELETON - NO FILE I/O)"
+        },
+        {
+            "label": "churn-calc",
+            "type": "shell",
+            "command": "echo",
+            "args": [
+                "python scripts/metrics/calc_churn.py --report docs/REPORTS/REPORT_<DATE>_<TAG>.md"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Calculate churn rate from REPORT (NO LIVE ACTION; OFFLINE ONLY)"
+        },
+        {
+            "label": "stability-score-calc",
+            "type": "shell",
+            "command": "echo",
+            "args": [
+                "python scripts/metrics/calc_stability_score.py --summaries docs/summaries/SUMMARY_<DATE1>_<TAG1>.md docs/summaries/SUMMARY_<DATE2>_<TAG2>.md"
+            ],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Calculate stability score from summaries (NO LIVE ACTION; OFFLINE ONLY)"
+        },
+        "label": "recap-merge",
         "type": "shell",
-        "command": "echo sim-report placeholder  # OFFLINE ONLY",
-        "problemMatcher": []
+        "command": "echo",
+        "args": [
+            "python scripts/metrics/merge_summaries.py --inputs docs/summaries/SUMMARY_*.md --out docs/STABILITY_RECAP.md"
+        ],
+        "group": "test",
+        "presentation": {
+            "echo": true,
+            "reveal": "always",
+            "focus": false,
+            "panel": "shared",
+            "showReuseMessage": true,
+            "clear": false
+        },
+        "problemMatcher": [],
+        "detail": "Merge metrics summaries into stability recap (NO LIVE ACTION; OFFLINE ONLY)"
     },
-{
-    "label": "train-smoke",
-    "type": "shell",
-    "command": "echo python -m tests.test_train_baseline  # OFFLINE ONLY",
-    "problemMatcher": []
-},
-{
-    "label": "registry-check",
-    "type": "shell",
-    "command": "echo python scripts/qa/validate_model_metadata.py --file models/M3_SMOKE_RH3/metadata.json  # OFFLINE ONLY",
-    "problemMatcher": []
-},
-{
-    "label": "registry-init",
-    "type": "shell",
-    "command": "echo python scripts/registry/init_model_tag.py --tag M3_DEMO  # OFFLINE ONLY",
-    "problemMatcher": []
-},
-{
-    "label": "registry-validate",
-    "type": "shell",
-    "command": "echo python scripts/qa/validate_model_metadata.py --file models/M3_DEMO/metadata.json  # OFFLINE ONLY",
-    "problemMatcher": []
+    "label": "ts-print",
     "type": "shell",
     "command": "echo",
     "args": [
-        "Save SIM summary to docs/summaries/ and reference in STABILITY_RECAP.md (run_tag = SIM_<tag>)"
+        "python scripts/thresholds/print_thresholds.py --file docs/thresholds/sets/TS_<DATE>_<TAG>.yml"
     ],
     "group": "test",
     "presentation": {
@@ -89,70 +182,13 @@
         "clear": false
     },
     "problemMatcher": [],
-    "detail": "Document SIM summary and link in recap (OFFLINE ONLY)"
+    "detail": "Print key thresholds for copy-paste (NO LIVE ACTION; OFFLINE ONLY)"
 },
-{
-    "label": "metrics-summary",
-    "type": "shell",
-    "command": "echo",
-    "args": [
-        "'SKELETON: python scripts/metrics/extract_metrics.py --in docs/REPORT_*.md --out docs/summaries/METRICS_SUMMARY_*.md'"
-    ],
-    "group": "test",
-    "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared",
-        "showReuseMessage": true,
-        "clear": false
-    },
-    "problemMatcher": [],
-    "detail": "Extract metrics summary from filled REPORTs (SKELETON - NO FILE I/O)"
-},
-{
-    "label": "churn-calc",
-    "type": "shell",
-    "command": "echo",
-    "args": [
-        "python scripts/metrics/calc_churn.py --report docs/REPORTS/REPORT_<DATE>_<TAG>.md"
-    ],
-    "group": "test",
-    "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared",
-        "showReuseMessage": true,
-        "clear": false
-    },
-    "problemMatcher": [],
-    "detail": "Calculate churn rate from REPORT (NO LIVE ACTION; OFFLINE ONLY)"
-},
-{
-    "label": "stability-score-calc",
-    "type": "shell",
-    "command": "echo",
-    "args": [
-        "python scripts/metrics/calc_stability_score.py --summaries docs/summaries/SUMMARY_<DATE1>_<TAG1>.md docs/summaries/SUMMARY_<DATE2>_<TAG2>.md"
-    ],
-    "group": "test",
-    "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": false,
-        "panel": "shared",
-        "showReuseMessage": true,
-        "clear": false
-    },
-    "problemMatcher": [],
-    "detail": "Calculate stability score from summaries (NO LIVE ACTION; OFFLINE ONLY)"
-},
-"label": "recap-merge",
+"label": "markers-validate",
 "type": "shell",
 "command": "echo",
 "args": [
-    "python scripts/metrics/merge_summaries.py --inputs docs/summaries/SUMMARY_*.md --out docs/STABILITY_RECAP.md"
+    "python scripts/metrics/validate_report_markers.py --report docs/REPORTS/REPORT_<DATE>_<TAG>.md"
 ],
 "group": "test",
 "presentation": {
@@ -164,42 +200,6 @@
     "clear": false
 },
 "problemMatcher": [],
-"detail": "Merge metrics summaries into stability recap (NO LIVE ACTION; OFFLINE ONLY)"
-},
-"label": "ts-print",
-"type": "shell",
-"command": "echo",
-"args": [
-"python scripts/thresholds/print_thresholds.py --file docs/thresholds/sets/TS_<DATE>_<TAG>.yml"
-],
-"group": "test",
-"presentation": {
-"echo": true,
-"reveal": "always",
-"focus": false,
-"panel": "shared",
-"showReuseMessage": true,
-"clear": false
-},
-"problemMatcher": [],
-"detail": "Print key thresholds for copy-paste (NO LIVE ACTION; OFFLINE ONLY)"
-},
-"label": "markers-validate",
-"type": "shell",
-"command": "echo",
-"args": [
-"python scripts/metrics/validate_report_markers.py --report docs/REPORTS/REPORT_<DATE>_<TAG>.md"
-],
-"group": "test",
-"presentation": {
-"echo": true,
-"reveal": "always",
-"focus": false,
-"panel": "shared",
-"showReuseMessage": true,
-"clear": false
-},
-"problemMatcher": [],
 "detail": "Validate report markers (NO LIVE ACTION; OFFLINE ONLY)"
 },
 {
@@ -207,16 +207,16 @@
 "type": "shell",
 "command": "echo",
 "args": [
-"python scripts/thresholds/validate_threshold_set.py --file docs/thresholds/sets/TS_<DATE>_<TAG>.yml"
+    "python scripts/thresholds/validate_threshold_set.py --file docs/thresholds/sets/TS_<DATE>_<TAG>.yml"
 ],
 "group": "test",
 "presentation": {
-"echo": true,
-"reveal": "always",
-"focus": false,
-"panel": "shared",
-"showReuseMessage": true,
-"clear": false
+    "echo": true,
+    "reveal": "always",
+    "focus": false,
+    "panel": "shared",
+    "showReuseMessage": true,
+    "clear": false
 },
 "problemMatcher": [],
 "detail": "Validate threshold set fields (NO LIVE ACTION; OFFLINE ONLY)"
@@ -919,22 +919,22 @@
 "problemMatcher": []
 },
 {
-        "label": "wfo-plan",
-        "type": "shell",
-        "command": "echo",
-        "args": [
-            "python scripts/planning/wfo_plan.py --from 2025-01-01 --to 2025-01-31 --block-days 3 --gap-days 0  # OFFLINE ONLY"
-        ],
-        "problemMatcher": []
-    },
-    {
-        "label": "wfo-eval-smoke",
-        "type": "shell",
-        "command": "echo",
-        "args": [
-            "python -m tests.test_evaluate_wfo  # OFFLINE ONLY"
-        ],
-        "problemMatcher": []
-        }
-    ]
+"label": "wfo-plan",
+"type": "shell",
+"command": "echo",
+"args": [
+"python scripts/planning/wfo_plan.py --from 2025-01-01 --to 2025-01-31 --block-days 3 --gap-days 0  # OFFLINE ONLY"
+],
+"problemMatcher": []
+},
+{
+"label": "wfo-eval-smoke",
+"type": "shell",
+"command": "echo",
+"args": [
+"python -m tests.test_evaluate_wfo  # OFFLINE ONLY"
+],
+"problemMatcher": []
+}
+]
 }
