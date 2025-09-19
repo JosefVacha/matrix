@@ -8,7 +8,7 @@ Usage:
 import argparse
 import pathlib
 import json
-import datetime
+from datetime import datetime, timezone
 
 
 def main():
@@ -24,7 +24,7 @@ def main():
     # Skeleton metadata
     skeleton = {
         "model_tag": tag,
-        "created_at": datetime.datetime.utcnow().isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
         "label": "<label>",
         "features": [],
         "timeframe": None,

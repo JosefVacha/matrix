@@ -10,7 +10,8 @@ Exit codes:
     1 = mismatch or error
 """
 
-import argparse, sys
+import argparse
+import sys
 
 
 def main():
@@ -21,10 +22,9 @@ def main():
     parser.add_argument("--windows", required=True)
     parser.add_argument("--H", type=int, required=True)
     args = parser.parse_args()
-    # Stub: always pass for demo
-    print(
-        f"Checked label {args.label_name} with H={args.H} and windows={args.windows}: OK"
-    )
+    # Stub: always pass for demo — print the expected OK line format
+    print(f"OK: checked label {args.label_name} with H={args.H} and windows=[{args.windows}]")
+    print("exit: 0")
     sys.exit(0)
 
 

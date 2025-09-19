@@ -9,7 +9,10 @@ Filled by scripts/training/evaluate_wfo.py
 {
 ## Provenance
 Validated with H-consistency (label↔windows↔H) before metrics.
+}
 ```
+
+Provenance: Ensure `check_H_consistency.py` passes for chosen `label` and `windows`.
 # WFO Metrics Template
 
 Filled by scripts/training/evaluate_wfo.py

@@ -13,5 +13,12 @@
             "command": "echo python scripts/qa/check_english_policy.py  # OFFLINE ONLY",
             "problemMatcher": []
         }
+        ,
+        {
+            "label": "h-consistency",
+            "type": "shell",
+            "command": "echo python scripts/qa/check_H_consistency.py --label-name label_R_H12_pct --windows 1,3,12 --H 12  # OFFLINE ONLY",
+            "problemMatcher": []
+        }
     ]
 }

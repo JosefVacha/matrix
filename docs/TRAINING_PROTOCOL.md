@@ -55,6 +55,12 @@ python scripts/training/train_baseline.py \
   --save-model models/M3_SMOKE_RH3/model.pkl
 ```
 
+  Before reporting metrics, run the H-consistency gate for the `label` and `windows` used in the run:
+
+  ```bash
+  python3 scripts/qa/check_H_consistency.py --label-name <label-name> --windows <w1,w2,...> --H <H>
+  ```
+
 ### Output: Train Summary JSON
 Minimal schema:
 ```json

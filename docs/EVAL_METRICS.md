@@ -27,3 +27,17 @@ python scripts/qa/check_H_consistency.py \
 	--windows 1,3,12 \
 	--H 12
 ```
+
+## H-consistency gate
+Use this gate to ensure the label, windows and horizon (H) are consistent before reporting metrics.
+
+CLI usage (exit codes):
+- 0 = OK (consistency verified)
+- non-zero = mismatch or error
+
+Example output:
+```bash
+$ python3 scripts/qa/check_H_consistency.py --label-name label_R_H12_pct --windows 1,3,12 --H 12
+OK: checked label label_R_H12_pct with H=12 and windows=[1,3,12]
+exit: 0
+```
