@@ -23,6 +23,25 @@
 - **Definition**: forward return over H bars
 - **Policy**: last H rows dropped downstream
 
+## Enforcement by builder
+- Right-aligned windows for all features
+- Warmup drop: first max(window, H) rows
+- Trailing label NaNs dropped
+- Columns: f_* + label
+- UTC timezone-aware index
+- Enforced by: scripts/training/build_dataset.py
+
+### Example CLI
+```
+python scripts/training/build_dataset.py \
+  --ohlcv docs/REPORTS/RAW/OHLCV_SAMPLE.csv \
+  --timeframe 5m \
+  --H 12 \
+  --transform pct \
+  --windows 1,3,12 \
+  --out data/dataset_SAMPLE.parquet
+```
+
 ## Example Table (Synthetic)
 | datetime            | open   | high   | low    | close  | volume  | f_ret_1 | f_ret_3 | f_ret_12 | f_hl_range | f_oc_range | f_vol_z | label_R_H12 |
 |---------------------|--------|--------|--------|--------|---------|---------|---------|----------|------------|------------|---------|-------------|

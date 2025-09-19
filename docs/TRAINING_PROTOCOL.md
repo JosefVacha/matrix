@@ -27,6 +27,18 @@
 ## Pipeline
 OHLCV → features (same for train/test) → label R(Return_H) → model
 
+### Dataset builder CLI
+```
+python scripts/training/build_dataset.py \
+  --ohlcv docs/REPORTS/RAW/OHLCV_SAMPLE.csv \
+  --timeframe 5m \
+  --H 12 \
+  --transform pct \
+  --windows 1,3,12 \
+  --out data/dataset_SAMPLE.parquet
+```
+Builder enforces DATASET_SCHEMA.md and writes a sidecar JSON with shape + parameters.
+
 ## Reproducibility
 - Record commit hashes: CONTRACTS, LABELS, HOOKS
 - TS set name

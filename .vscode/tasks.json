@@ -1,4 +1,4 @@
-    {
+{
         "label": "sim-plan",
         "type": "shell",
         "command": "echo",
@@ -833,6 +833,19 @@
 },
 "problemMatcher": [],
 "detail": "Fill report template with second sandbox results and stability score (OFFLINE ONLY)"
-}
+},
+{
+        "label": "ds-build-plan",
+        "type": "shell",
+        "command": "echo",
+        "args": ["python scripts/training/build_dataset.py --ohlcv docs/REPORTS/RAW/OHLCV_SAMPLE.csv --timeframe 5m --H 12 --transform pct --windows 1,3,12 --out data/dataset.parquet  # OFFLINE ONLY"],
+        "problemMatcher": []
+    },
+    {
+        "label": "ds-build-smoke",
+        "type": "shell",
+        "command": "echo",
+        "args": ["python -m tests.test_build_dataset  # OFFLINE ONLY"],
+        "problemMatcher": []
+    }
 ]
-}
