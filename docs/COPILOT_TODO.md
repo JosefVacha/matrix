@@ -49,4 +49,6 @@
 
 ## PHASE M3.4
 
+- [✅] CI: GitHub Actions workflow (.github/workflows/smoke-validators.yml) for validators + optional smoke
+
 - [ ] H-consistency integration: ensure usage in EVAL_METRICS.md and WFO provenance; add echo task

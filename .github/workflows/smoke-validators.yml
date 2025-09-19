@@ -1,0 +1,63 @@
+name: Smoke & Validators (offline)
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+permissions:
+  contents: read
+jobs:
+  validators:
+    name: validators (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.11", "3.12" ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Show Python
+        run: python -V
+      - name: H-consistency (stdlib)
+        run: |
+          python scripts/qa/check_H_consistency.py \
+            --label-name label_R_H12_pct --windows 1,3,12 --H 12
+      - name: Model registry metadata validate (stdlib)
+        run: |
+          # Prefer validating an example first; if models/<tag>/metadata.json exists, validate it too.
+          if [ -f docs/schemas/example_model_metadata.json ]; then
+            python scripts/qa/validate_model_metadata.py \
+              --file docs/schemas/example_model_metadata.json \
+              --schema docs/schemas/model_metadata.schema.json
+          fi
+          if [ -f models/BASELINE_LIN_H3/metadata.json ]; then
+            python scripts/qa/validate_model_metadata.py \
+              --file models/BASELINE_LIN_H3/metadata.json \
+              --schema docs/schemas/model_metadata.schema.json
+          fi
+  smoke:
+    name: smoke (py${{ matrix.python-version }}) — optional
+    runs-on: ubuntu-latest
+    if: always()
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.11", "3.12" ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Show Python
+        run: python -V
+      - name: Run baseline smoke if present
+        shell: bash
+        run: |
+          if [ -f tests/test_train_baseline.py ]; then
+            python -m tests.test_train_baseline
+          else
+            echo "No test_train_baseline.py; skipping smoke."
+          fi
