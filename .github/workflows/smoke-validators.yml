@@ -38,6 +38,9 @@ jobs:
               --file models/BASELINE_LIN_H3/metadata.json \
               --schema docs/schemas/model_metadata.schema.json
           fi
+      - name: English policy check (stdlib)
+        run: |
+          python scripts/qa/check_english_policy.py
   smoke:
     name: smoke (py${{ matrix.python-version }}) — optional
     runs-on: ubuntu-latest

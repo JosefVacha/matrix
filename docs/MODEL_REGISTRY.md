@@ -66,6 +66,8 @@ Validate registry metadata:
 python scripts/qa/validate_model_metadata.py --file models/M3_DEMO/metadata.json --schema docs/schemas/model_metadata.schema.json
 ```
 
+Note: a quick echo task exists in `.vscode/tasks.json` named `registry-check` which prints the validation command for `models/BASELINE_LIN_H3/metadata.json`.
+
 ### Example
 See above for full metadata example.
 
@@ -89,12 +91,12 @@ python scripts/qa/validate_model_metadata.py --file models/BASELINE_LIN_H3/metad
 	"model_tag": "BASELINE_LIN_H3",
 	"created_at": "2025-09-19T12:00:00Z",
 	"label": "label_R_H3_pct",
+	"features": ["f_ret_1", "f_ret_3", "f_vol_12"],
 	"timeframe": "5m",
-	"features": ["f_ret_1", "f_ret_3", "f_ret_12", "f_oc_range", "f_vol_z"],
-	"trainer": {"type": "linear", "alpha": 0.1},
-	"provenance": {"commit": "<GIT_SHA>", "builder": "train_baseline.py"},
-	"metrics": {"wfo_blocks": 0, "mean_R": null, "hit_rate": null},
-	"notes": "Initialized for offline experiments; metrics to be filled after WFO run."
+	"train_window": {"from": "2025-01-01", "to": "2025-01-08", "rows": 123},
+	"algo": {"name": "ridge", "params": {"alpha": 0.1}},
+	"artifacts": {"pickle_path": null},
+	"provenance": {"dataset_path": "data/dataset_SMOKE.parquet", "commit": "<GIT_SHA>", "generator": "scripts/training/train_baseline.py"}
 }
 ```
 

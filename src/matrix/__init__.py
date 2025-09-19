@@ -1,8 +1,8 @@
 """
-MATRIX - Modulární vrstva nad Freqtrade + FreqAI.
+MATRIX - Modular layer on top of Freqtrade + FreqAI.
 
-Tento balíček poskytuje tenkou vrstvu nad Freqtrade a FreqAI frameworkem
-s koncepty uzlů inspirovanými Superalgos.
+This package provides a thin layer on top of Freqtrade and FreqAI
+with node concepts inspired by Superalgos.
 """
 
 __version__ = "0.1.0"

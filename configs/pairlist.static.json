@@ -1,10 +1,10 @@
 {
-    "// POZNÁMKA": "Statická pairlist pro reprodukovatelné backtesty",
-    "// ÚČEL": "Garantuje konzistentní výsledky WFO - NIKDY neměnit během BT",
-    "// BEZPEČNOST": "Pouze pro backtesting - NEPROVÁDÍ live trading",
+    "// NOTE": "Static pairlist for reproducible backtests",
+    "// PURPOSE": "Guarantees consistent WFO results - NEVER change during BT",
+    "// SAFETY": "For backtesting only - does NOT perform live trading",
     "exchange": "binance",
     "stake_currency": "USDT",
-    "// STATIC_PAIRS": "Fixní seznam pro wszystkie MATRIX backtesty",
+    "// STATIC_PAIRS": "Fixed pairlist for all MATRIX backtests",
     "pairs": [
         "BTC/USDT",
         "ETH/USDT",
@@ -15,7 +15,7 @@
         "LINK/USDT",
         "UNI/USDT"
     ],
-    "// TIMEFRAMES": "Podporované časové rámce",
+    "// TIMEFRAMES": "Supported timeframes",
     "timeframes": [
         "5m",
         "15m",
@@ -23,7 +23,7 @@
         "4h",
         "1d"
     ],
-    "// FILTERS": "Základní filtry pro kvalitu dat",
+    "// FILTERS": "Basic quality filters for data",
     "volume_filter": {
         "min_24h_volume_usdt": 1000000,
         "description": "Min 1M USDT 24h volume pro stabilitu"
@@ -32,12 +32,12 @@
         "max_spread_ratio": 0.005,
         "description": "Max 0.5% spread pro minimalizaci slippage"
     },
-    "// MAINTENANCE": "Jak udržovat tuto pairlist",
+    "// MAINTENANCE": "How to maintain this pairlist",
     "maintenance_notes": [
-        "Přidat nové páry pouze na konci seznamu",
-        "NIKDY neměnit pořadí existujících párů",
-        "Změny provádět pouze mimo aktivní WFO backtesty",
-        "Dokumentovat důvod změn v commit message",
-        "Pro live trading použij dynamickou pairlist v main config"
+        "Add new pairs only at the end of the list",
+        "NEVER change the ordering of existing pairs",
+        "Apply changes only outside active WFO backtests",
+        "Document reason for changes in the commit message",
+        "For live trading, use a dynamic pairlist in the main config"
     ]
 }

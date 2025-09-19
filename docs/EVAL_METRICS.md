@@ -21,7 +21,7 @@
 
 ## H-consistency Usage
 ```bash
-# H-consistency — ověř vazbu label ↔ okno ↔ H (exit 0 = OK, jinak mismatch)
+# H-consistency — verify label ↔ window ↔ H linkage (exit 0 = OK, non-zero = mismatch)
 python scripts/qa/check_H_consistency.py \
 	--label-name label_R_H12_pct \
 	--windows 1,3,12 \

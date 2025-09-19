@@ -1,8 +1,8 @@
 """
-Risk policy modul.
+Risk policy module.
 
-Řídí pozice sizing a risk management.
-Kontrakt: size_and_risk(signal, context) → {stake, sl, tp/roi}.
+Controls position sizing and risk management.
+Contract: size_and_risk(signal, context) -> {stake, sl, tp/roi}.
 """
 
 from typing import Dict, Any, Optional
@@ -12,23 +12,23 @@ def size_and_risk(
     signal: Dict[str, bool], context: Dict[str, Any]
 ) -> Dict[str, Optional[float]]:
     """
-    Vypočítá velikost pozice a risk parametry.
+    Compute position size and risk parameters.
 
     Args:
-        signal: Trading signál z strategy/core.py
-        context: Kontextové info (balance, volatility, apod.)
+        signal: Trading signal from strategy/core.py
+        context: Context info (balance, volatility, etc.)
 
     Returns:
-        Dict s risk parametry: {
-            'stake': float,          # velikost pozice
-            'stop_loss': float,      # SL úroveň
-            'take_profit': float,    # TP úroveň nebo None
-            'roi': Dict              # ROI table pro Freqtrade
+        Dict of risk parameters, e.g. {
+            'stake': float,          # position size
+            'stop_loss': float,      # SL level
+            'take_profit': float,    # TP level or None
+            'roi': Dict              # ROI table for Freqtrade
         }
 
     Guardrails:
-        - Maximální risk per trade
-        - Portfolio heat kontrola
+        - Maximum risk per trade
+        - Portfolio heat check
         - Volatility-based sizing
     """
     pass

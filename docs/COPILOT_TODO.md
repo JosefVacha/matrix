@@ -39,8 +39,8 @@
 
 ## PHASE M3.2
 
-- [ ] Complete scripts/registry/init_model_tag.py (idempotent), add scripts/qa/validate_model_metadata.py checks
-- [ ] Docs/MODEL_REGISTRY.md: finalize schema + examples
+- [x] Complete scripts/registry/init_model_tag.py (idempotent) and scripts/qa/validate_model_metadata.py checks — idempotent init proven and metadata validated against schema; registry-check wired.
+ - [x] Docs/MODEL_REGISTRY.md: schema link, CLI usage, example JSON present and referencing registry-check task
 
 ## PHASE M3.3
 
