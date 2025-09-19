@@ -1,6 +1,18 @@
 # WFO Metrics Template
 
 Filled by scripts/training/evaluate_wfo.py
+| train_from | train_to | test_from | test_to | n | nan_ratio | trigger_rate | mean_R | hit_rate | dd_min |
+|------------|----------|-----------|---------|---|-----------|-------------|--------|----------|--------|
+| <PH>       | <PH>     | <PH>      | <PH>    | <PH> | <PH>      | <PH>        | <PH>   | <PH>     | <PH>   |
+## JSON keys example
+```
+{
+## Provenance
+Validated with H-consistency (label↔windows↔H) before metrics.
+```
+# WFO Metrics Template
+
+Filled by scripts/training/evaluate_wfo.py
 
 | train_from | train_to | test_from | test_to | n | nan_ratio | trigger_rate | mean_R | hit_rate | dd_min |
 |------------|----------|-----------|---------|---|-----------|-------------|--------|----------|--------|

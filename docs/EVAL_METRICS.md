@@ -1,16 +1,12 @@
 # Evaluation Metrics (Stub)
 
 ## Regression proxies
-- MAE, MAPE, R² (qualitative)
 
 ## Signal hygiene
-- trigger_rate, long/short balance, churn_rate, avg hold bars
 
 ## Risk proxies
-- max drawdown (simple), exposure
 
 ## Aggregation
-- Per WFO block + cross-block stability comments
 
 ## Mapping to SUMMARY markers
 | metric         | marker key         |
@@ -22,3 +18,12 @@
 | churn_rate     | churn_rate        |
 | max drawdown   | max_dd            |
 | exposure       | exposure          |
+
+## H-consistency Usage
+```bash
+# H-consistency — ověř vazbu label ↔ okno ↔ H (exit 0 = OK, jinak mismatch)
+python scripts/qa/check_H_consistency.py \
+	--label-name label_R_H12_pct \
+	--windows 1,3,12 \
+	--H 12
+```
