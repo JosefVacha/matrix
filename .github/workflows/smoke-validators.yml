@@ -77,6 +77,14 @@ jobs:
       - name: Run baseline smoke if present
         shell: bash
         run: |
+          # Generate a tiny SMOKE dataset for the smoke test if generator exists
+          if [ -f scripts/qa/generate_smoke_dataset.py ]; then
+            echo 'Generating small SMOKE dataset for smoke test'
+            python -m scripts.qa.generate_smoke_dataset
+          else
+            echo 'No generator found; relying on repository dataset if present.'
+          fi
+
           if [ -f tests/test_train_baseline.py ]; then
             python -m tests.test_train_baseline
           else
