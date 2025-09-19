@@ -52,3 +52,7 @@
 - [✅] CI: GitHub Actions workflow (.github/workflows/smoke-validators.yml) for validators + optional smoke
 
 - [ ] H-consistency integration: ensure usage in EVAL_METRICS.md and WFO provenance; add echo task
+
+## Guardrail enforcement
+
+- [x] Add a pre-edit guardrail check: run `python3 scripts/qa/check_copilot_guardrails.py` to verify `AGENTS.md` and `.github/copilot-instructions.md` are present and readable. This check must be run before making edits that change repo guardrails.
