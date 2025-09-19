@@ -8,18 +8,18 @@ This script is lightweight and depends only on pandas and numpy (installed
 via requirements-dev.txt in CI).
 """
 import pathlib
-import datetime
+# datetime module not required; pandas.date_range is used
 import numpy as np
 import pandas as pd
 
 
-def generate(path: str = "data/dataset_SMOKE.parquet") -> pathlib.Path:
+def generate(path: str = "data/dataset_SMOKE.parquet", start: str = "2025-01-01", end: str = "2025-01-08") -> pathlib.Path:
     p = pathlib.Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
 
-    # Create 20 rows of minute-spaced timestamps starting at UTC now - 20 minutes
-    now = datetime.datetime.utcnow().replace(second=0, microsecond=0)
-    idx = pd.to_datetime([now - datetime.timedelta(minutes=i) for i in range(20)][::-1])
+    # By default, generate data that covers the smoke test train window
+    # The dates are daily between start and end inclusive.
+    idx = pd.date_range(start=start, end=end, freq="D")
 
     # Synthetic features
     np.random.seed(42)
@@ -29,8 +29,10 @@ def generate(path: str = "data/dataset_SMOKE.parquet") -> pathlib.Path:
         "f_vol_12": np.abs(np.random.normal(1, 0.5, size=len(idx))),
     }
 
-    # Simple label derived from f_ret_1 (float)
+    # Simple labels derived from f_ret_1 (float)
     data["label_R_H3"] = data["f_ret_1"] * 0.5 + 0.1
+    # The smoke test expects 'label_R_H3_pct' specifically; include it.
+    data["label_R_H3_pct"] = data["f_ret_1"] * 0.5 + 0.1
 
     df = pd.DataFrame(data, index=idx)
     # Ensure index name is datetime-like and monotonic increasing

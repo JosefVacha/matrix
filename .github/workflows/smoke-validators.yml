@@ -19,6 +19,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install system build dependencies (for optional pyarrow)
+        run: |
+          sudo apt-get update && sudo apt-get install -y cmake build-essential
       - name: Install dev dependencies
         run: |
           python -m pip install --upgrade pip
@@ -37,6 +40,15 @@ jobs:
       - name: Workspace health unit test
         run: |
           python3 -m tests.test_workspace_health
+      - name: Install system build dependencies (for optional pyarrow)
+        run: |
+          sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - name: Install dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements-dev.txt ]; then
+            python -m pip install -r requirements-dev.txt
+          fi
       - name: Show Python
         run: python -V
       - name: H-consistency (stdlib)

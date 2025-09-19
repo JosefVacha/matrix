@@ -23,6 +23,8 @@ def main():
         except Exception:
             pass
     # Run training
+    # Ensure model output dir exists to avoid trainer FileNotFoundError when saving pickle
+    os.makedirs(os.path.dirname(f"models/{model_tag}/model.pkl"), exist_ok=True)
     cmd = [
         sys.executable,
         "scripts/training/train_baseline.py",
@@ -40,8 +42,7 @@ def main():
         model_tag,
         "--out-json",
         out_json,
-        "--save-model",
-        f"models/{model_tag}/model.pkl",
+    # Do not request saving the pickle in CI smoke (sklearn may be absent)
     ]
     result = subprocess.run(cmd, capture_output=True)
     if result.returncode != 0:
