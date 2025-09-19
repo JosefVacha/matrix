@@ -41,3 +41,10 @@ $ python3 scripts/qa/check_H_consistency.py --label-name label_R_H12_pct --windo
 OK: checked label label_R_H12_pct with H=12 and windows=[1,3,12]
 exit: 0
 ```
+
+## H-consistency usage
+Run the H-consistency gate before reporting metrics:
+
+```bash
+python3 scripts/qa/check_H_consistency.py --label-name <label-name> --windows <w1,w2,...> --H <H>
+```
