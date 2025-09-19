@@ -8,6 +8,39 @@ MANDATORY: Before any reasoning or edits, run `python3 scripts/qa/check_copilot_
 Guardrail check: ran check_copilot_guardrails.py — PASS
 Files reloaded: copilot-instructions.md, AGENTS.md, PROJECT_STATE.md
 
+---
+
+Pre-reply Guardrail Checklist (MUST before every turn)
+
+1) Run guardrail script (stdlib only):
+  python3 scripts/qa/check_copilot_guardrails.py
+  - Must exit 0.
+  - Must list Critical reloaded ⟶ ['.github/copilot-instructions.md','AGENTS.md','Knowledge/PROJECT_STATE.md'].
+
+2) Reload the critical trio into your context (ALWAYS):
+  - .github/copilot-instructions.md
+  - AGENTS.md
+  - Knowledge/PROJECT_STATE.md
+
+3) Reload conditional files based on scope (load if they exist; skip only if truly irrelevant):
+  - docs/COPILOT_TODO.md, .vscode/tasks.json, .github/workflows/smoke-validators.yml
+  - docs/LANGUAGE_AUDIT.md (EN-only policy)
+  - Contracts: docs/CONTRACTS.md, docs/TRAINING_PROTOCOL.md, docs/LABELS.md
+  - Registry/WFO when touched: docs/MODEL_REGISTRY.md, scripts/registry/*, scripts/training/*, scripts/qa/*
+
+4) Prepend the exact two-line audit preface at the top of your reply (MANDATORY, verbatim):
+  Guardrail check: ran check_copilot_guardrails.py — PASS
+  Files reloaded: copilot-instructions.md, AGENTS.md, PROJECT_STATE.md [+ conditional: <comma-separated list>]
+
+On FAILURE (any step above):
+- Print exactly:
+  Guardrail check: FAIL
+  Missing/invalid: <short reason>
+  Next actions: <what you will fix>
+- Then repair files or ask for permission to apply the minimal fix. Do NOT continue with the requested task.
+
+MUST before every turn
+
 ## Mission
 Thin, modular layer on top of Freqtrade + FreqAI. Use Superalgos only as a mental map of nodes/edges. Phases = design + skeleton; no live keys or exchange execution.
 
