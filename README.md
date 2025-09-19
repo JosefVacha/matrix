@@ -47,6 +47,20 @@ sensor(OHLCV) → feature(gen) → trainer(FreqAI) → server(FreqAI.predict) �
 
 *Detailed documentation will be added during project development.*
 
+### Guardrails quick check
+
+Run the guardrail script directly:
+
+```bash
+python3 scripts/qa/check_copilot_guardrails.py
+```
+
+Run the stdlib-only unit test (exits 0 on pass; prints `guardrails_test: pass`):
+
+```bash
+python3 -m tests.test_guardrails
+```
+
 ## License
 
 MIT License - viz LICENSE soubor.

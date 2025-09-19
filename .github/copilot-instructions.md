@@ -1,5 +1,9 @@
 # MATRIX - Repo-instructions for Copilot (PRIORITNE CTI PRED KAZDOU ODPOVED)
 
+## Audit Preface
+
+> The following two-line block is mandatory and must remain verbatim.
+
 MANDATORY: Before any reasoning or edits, run `python3 scripts/qa/check_copilot_guardrails.py` and log:
 Guardrail check: ran check_copilot_guardrails.py — PASS
 Files reloaded: copilot-instructions.md, AGENTS.md, PROJECT_STATE.md
