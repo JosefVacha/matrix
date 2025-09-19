@@ -5,6 +5,7 @@ Run with:
 
 Exits 0 on pass, 1 on fail. Prints machine-readable single-line status.
 """
+
 import subprocess
 import sys
 from pathlib import Path
@@ -16,6 +17,7 @@ EXPECTED_PREFACE = (
     "Guardrail check: ran check_copilot_guardrails.py — PASS\n"
     "Files reloaded: copilot-instructions.md, AGENTS.md, PROJECT_STATE.md"
 )
+
 
 def main():
     # 1) script exists and returns 0
@@ -46,5 +48,6 @@ def main():
     print("guardrails_test: pass")
     sys.exit(0)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

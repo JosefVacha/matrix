@@ -23,7 +23,9 @@ def main():
     parser.add_argument("--H", type=int, required=True)
     args = parser.parse_args()
     # Stub: always pass for demo — print the expected OK line format
-    print(f"OK: checked label {args.label_name} with H={args.H} and windows=[{args.windows}]")
+    print(
+        f"OK: checked label {args.label_name} with H={args.H} and windows=[{args.windows}]"
+    )
     print("exit: 0")
     sys.exit(0)
 

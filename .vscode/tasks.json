@@ -12,8 +12,7 @@
             "type": "shell",
             "command": "echo python scripts/qa/check_english_policy.py  # OFFLINE ONLY",
             "problemMatcher": []
-        }
-        ,
+        },
         {
             "label": "h-consistency",
             "type": "shell",

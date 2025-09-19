@@ -6,6 +6,7 @@ are readable and contain required headers. Exit 0 on success, 1 on failure.
 Usage:
   python3 scripts/qa/check_copilot_guardrails.py
 """
+
 import sys
 import subprocess
 from pathlib import Path
@@ -32,6 +33,7 @@ CONDITIONAL_MAP = {
     "ci": [".github/workflows/*.yml"],
 }
 
+
 def exists_readable(path: str) -> bool:
     p = Path(path)
     # support simple glob patterns
@@ -40,10 +42,13 @@ def exists_readable(path: str) -> bool:
         return any(m.exists() for m in matches)
     return p.exists()
 
+
 def get_changed_scope() -> List[str]:
     # Try to detect staged/changed files and map to conditional scopes.
     try:
-        out = subprocess.check_output(["git", "diff", "--name-only", "--staged"], text=True)
+        out = subprocess.check_output(
+            ["git", "diff", "--name-only", "--staged"], text=True
+        )
     except Exception:
         try:
             out = subprocess.check_output(["git", "diff", "--name-only"], text=True)
@@ -62,12 +67,14 @@ def get_changed_scope() -> List[str]:
             scopes.add("docs")
     return list(scopes)
 
+
 def check_files(files: List[str]) -> List[str]:
     missing = []
     for f in files:
         if not exists_readable(f):
             missing.append(f)
     return missing
+
 
 def main():
     failed = []
@@ -81,7 +88,9 @@ def main():
     conditional_checked = []
     conditional_missing = []
     # Always check some default conditionals (docs and tasks) to be conservative
-    default_conditionals = CONDITIONAL_MAP.get("docs", []) + CONDITIONAL_MAP.get("tasks", [])
+    default_conditionals = CONDITIONAL_MAP.get("docs", []) + CONDITIONAL_MAP.get(
+        "tasks", []
+    )
     to_check = set(default_conditionals)
     # Expand with scopes detected
     for s in scopes:
@@ -97,7 +106,10 @@ def main():
     if failed:
         print("Guardrail check: FAIL")
         print("Critical reloaded:", [c for c in CRITICAL if c not in missing_critical])
-        print("Conditional reloaded:", [c for c in conditional_checked if c not in conditional_missing])
+        print(
+            "Conditional reloaded:",
+            [c for c in conditional_checked if c not in conditional_missing],
+        )
         for f in failed:
             print(" -", f)
         sys.exit(1)
@@ -108,5 +120,5 @@ def main():
     sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
