@@ -30,3 +30,18 @@
 - [✅] Add WFO evaluation smoke test
 - [✅] Update WFO metrics template with provenance note and JSON keys
 - [✅] Add echo tasks for WFO planning and evaluation smoke
+
+## PHASE M3.1
+
+- [ ] Implement scripts/training/train_baseline.py (offline, takes dataset + label, outputs metrics JSON + models/<tag>/metadata.json; model.pkl ignored)
+- [ ] Docs/TRAINING_PROTOCOL.md: add “Training Runner CLI” block + example
+
+## PHASE M3.2
+
+- [ ] Complete scripts/registry/init_model_tag.py (idempotent), add scripts/qa/validate_model_metadata.py checks
+- [ ] Docs/MODEL_REGISTRY.md: finalize schema + examples
+
+## PHASE M3.3
+
+- [ ] Docs/RETRAIN_POLICY.md: wire cadence → validator inputs/outputs
+- [ ] scripts/qa/check_retrain_cadence.py (stub; exit 0/1); add echo task

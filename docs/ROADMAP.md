@@ -53,22 +53,28 @@
   - One trained model artifact + metadata
   - WFO evaluation summary + decision note
   - All steps reproducible offline
+  - [x] Milestone M2 complete — see [CHECKPOINT_v2.md](docs/checkpoints/CHECKPOINT_v2.md)
 **Risks:**
   - Feature/label drift between train/test
   - Leakage via label/feature windows
   - Incomplete metadata or audit trail
 
-### M3: Telemetry & Semi-Automatic Summaries
+### M3: Training, Registry, Retrain Cadence
 **Goals:**
-  - Add telemetry plumbing
-  - Automate summary/diff generation
-  - Compare threshold sets
+  - M3.1 Training Runner (CLI + docs-first, stdlib+pandas/numpy + scikit-learn-like API stub if needed)
+  - M3.2 Model Registry helpers (metadata schema, init/validate)
+  - M3.3 Retrain Cadence (policy doc + stub validator), exit criteria
 **Deliverables:**
-  - Telemetry hooks
-  - Automated metrics extraction
-  - Threshold diff reports
+  - scripts/training/train_baseline.py (offline, takes dataset + label, outputs metrics JSON + models/<tag>/metadata.json; model.pkl ignored)
+  - Docs/TRAINING_PROTOCOL.md: add “Training Runner CLI” block + example
+  - scripts/registry/init_model_tag.py (idempotent), scripts/qa/validate_model_metadata.py checks
+  - Docs/MODEL_REGISTRY.md: finalize schema + examples
+  - Docs/RETRAIN_POLICY.md: wire cadence → validator inputs/outputs
+  - scripts/qa/check_retrain_cadence.py (stub; exit 0/1); add echo task
 **Exit Criteria:**
-  - Summaries/diffs generated with one command
+  - Training runner produces metrics and metadata
+  - Registry helpers and validator pass
+  - Retrain cadence policy and check script in place
 **Risks:**
-  - Incomplete metrics coverage
-  - Drift in feature definitions
+  - Incomplete training/registry coverage
+  - Cadence logic not wired to exit criteria
