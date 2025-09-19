@@ -5,6 +5,7 @@ that they define a callable `main` attribute. It exits 0 when all checks
 pass, non-zero otherwise. It's intended to ensure tests can import CLI
 modules without running side-effects.
 """
+
 import importlib.util
 import sys
 from pathlib import Path

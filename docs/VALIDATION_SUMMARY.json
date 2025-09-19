@@ -1,23 +1,23 @@
 {
-  "date": "2025-09-19",
-  "guardrail_check": "PASS",
-  "guardrail_reloaded": [
-    ".github/copilot-instructions.md",
-    "AGENTS.md",
-    "Knowledge/PROJECT_STATE.md"
-  ],
-  "workspace_health": {
-    "ws_health": "PASS",
-    "en_policy_exit": 0,
-    "registry_check_exact": true,
-    "h_consistency_exact": true,
-    "validators_ci_present": true,
-    "code_fence_check_exit": 0,
-    "todo_audit": "en_policy_exit:0;registry_init:0,0;registry_validate:0;hcons_exit:0;cli_export_exit:0",
-    "git_clean": false
-  },
-  "tests": {
-    "total_passed": 39,
-    "total_failed": 0
-  }
+    "date": "2025-09-19",
+    "guardrail_check": "PASS",
+    "guardrail_reloaded": [
+        ".github/copilot-instructions.md",
+        "AGENTS.md",
+        "Knowledge/PROJECT_STATE.md"
+    ],
+    "workspace_health": {
+        "ws_health": "PASS",
+        "en_policy_exit": 0,
+        "registry_check_exact": true,
+        "h_consistency_exact": true,
+        "validators_ci_present": true,
+        "code_fence_check_exit": 0,
+        "todo_audit": "en_policy_exit:0;registry_init:0,0;registry_validate:0;hcons_exit:0;cli_export_exit:0",
+        "git_clean": false
+    },
+    "tests": {
+        "total_passed": 39,
+        "total_failed": 0
+    }
 }

@@ -117,6 +117,7 @@ def main():
     # Run code-fence checker (fail guardrail if any .py contains the three-backtick sequence)
     try:
         import subprocess
+
         rc = subprocess.call(["python3", "scripts/qa/check_code_fences.py"])
         if rc != 0:
             print("Guardrail check: FAIL")

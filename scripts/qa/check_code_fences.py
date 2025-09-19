@@ -9,6 +9,7 @@ Exit codes:
  - 0: clean
  - 1: one or more Python files contain the three-backtick sequence
 """
+
 import sys
 from pathlib import Path
 

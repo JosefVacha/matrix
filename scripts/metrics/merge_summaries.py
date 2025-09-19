@@ -49,8 +49,12 @@ def main():
     parser = argparse.ArgumentParser(
         description="Merge metrics summaries into stability recap table."
     )
-    parser.add_argument("--inputs", nargs="+", help="List of SUMMARY_*.md files", required=True)
-    parser.add_argument("--out", type=str, required=True, help="Path to STABILITY_RECAP.md")
+    parser.add_argument(
+        "--inputs", nargs="+", help="List of SUMMARY_*.md files", required=True
+    )
+    parser.add_argument(
+        "--out", type=str, required=True, help="Path to STABILITY_RECAP.md"
+    )
     args = parser.parse_args()
     results = []
     for fname in args.inputs:
@@ -66,7 +70,14 @@ def main():
     for r in results:
         lines.append(f"file: {r.get('file')}")
         # include some common fields if present
-        for k in ("trigger_rate", "long_rate", "short_rate", "churn_rate", "max_drawdown", "run_tag"):
+        for k in (
+            "trigger_rate",
+            "long_rate",
+            "short_rate",
+            "churn_rate",
+            "max_drawdown",
+            "run_tag",
+        ):
             if k in r:
                 lines.append(f"{k}: {r[k]}")
         lines.append("")

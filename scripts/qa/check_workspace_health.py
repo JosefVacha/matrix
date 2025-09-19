@@ -212,7 +212,7 @@ def main():
     en_code, en_out = run_cmd(["python3", "scripts/qa/check_english_policy.py"])
 
     # Code-fence check (stdlib checker)
-    cf_code, cf_out = run_cmd(["python3", "scripts/qa/check_code_fences.py"]) 
+    cf_code, cf_out = run_cmd(["python3", "scripts/qa/check_code_fences.py"])
 
     # C: Tasks.json
     registry_ok, h_ok = check_tasks_json(auto_fix=True)
