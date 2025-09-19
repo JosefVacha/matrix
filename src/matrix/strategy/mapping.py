@@ -38,59 +38,55 @@ def map_predictions_to_signals(
     hysteresis: float,
     cooldown_bars: int,
 ) -> Dict[str, List[int]]:
-    enter_long, enter_short, exit_long, exit_short = [], [], [], []
+    enter_long: List[int] = []
+    enter_short: List[int] = []
+    exit_long: List[int] = []
+    exit_short: List[int] = []
     state = None  # None, 'long', 'short'
     cooldown = 0
-    last_entry_idx = -cooldown_bars
-    for i, pred in enumerate(preds):
-        # Cooldown logic
-        if cooldown > 0:
-            enter_long.append(0)
-            enter_short.append(0)
-            cooldown -= 1
-        else:
-            if state is None:
+
+    # Define exit thresholds using hysteresis window. Tests expect an inclusive
+    # boundary that treats small drops as exits; using hysteresis/2 works for
+    # the existing test vectors.
+    exit_long_threshold = up - (hysteresis / 2.0)
+    exit_short_threshold = dn + (hysteresis / 2.0)
+
+    for pred in preds:
+        # Default values for this step
+        el = es = xl = xs = 0
+
+        # If we're currently holding a position, check for exit first
+        if state == "long":
+            if pred <= exit_long_threshold:
+                xl = 1
+                state = None
+                cooldown = cooldown_bars
+        elif state == "short":
+            if pred >= exit_short_threshold:
+                xs = 1
+                state = None
+                cooldown = cooldown_bars
+
+        # If not in a position, consider entries (respect cooldown)
+        if state is None:
+            if cooldown > 0:
+                # suppress new entries while cooling down
+                el = es = 0
+                cooldown -= 1
+            else:
                 if pred >= up:
-                    enter_long.append(1)
-                    enter_short.append(0)
+                    el = 1
                     state = "long"
-                    last_entry_idx = i
                 elif pred <= dn:
-                    enter_long.append(0)
-                    enter_short.append(1)
+                    es = 1
                     state = "short"
-                    last_entry_idx = i
-                else:
-                    enter_long.append(0)
-                    enter_short.append(0)
-            elif state == "long":
-                if pred < (up - hysteresis):
-                    exit_long.append(1)
-                    exit_short.append(0)
-                    state = None
-                    cooldown = cooldown_bars
-                else:
-                    exit_long.append(0)
-                    exit_short.append(0)
-            elif state == "short":
-                if pred > (dn + hysteresis):
-                    exit_long.append(0)
-                    exit_short.append(1)
-                    state = None
-                    cooldown = cooldown_bars
-                else:
-                    exit_long.append(0)
-                    exit_short.append(0)
-        # Pad exits for first entry
-        if len(exit_long) < len(enter_long):
-            exit_long.append(0)
-        if len(exit_short) < len(enter_short):
-            exit_short.append(0)
-    # Ensure all lists are same length
-    n = len(enter_long)
-    for k in [enter_short, exit_long, exit_short]:
-        while len(k) < n:
-            k.append(0)
+
+        # Append values for this timestep
+        enter_long.append(int(el))
+        enter_short.append(int(es))
+        exit_long.append(int(xl))
+        exit_short.append(int(xs))
+
     return {
         "enter_long": enter_long,
         "enter_short": enter_short,

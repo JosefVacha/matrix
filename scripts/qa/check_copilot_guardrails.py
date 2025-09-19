@@ -114,6 +114,31 @@ def main():
             print(" -", f)
         sys.exit(1)
 
+    # Run code-fence checker (fail guardrail if any .py contains the three-backtick sequence)
+    try:
+        import subprocess
+        rc = subprocess.call(["python3", "scripts/qa/check_code_fences.py"])
+        if rc != 0:
+            print("Guardrail check: FAIL")
+            print("Critical reloaded:", CRITICAL)
+            print("Conditional reloaded:", conditional_checked)
+            print(" - code-fence-check: failed")
+            sys.exit(1)
+        # CLI export checker
+        rc2 = subprocess.call(["python3", "scripts/qa/check_cli_exports.py"])
+        if rc2 != 0:
+            print("Guardrail check: FAIL")
+            print("Critical reloaded:", CRITICAL)
+            print("Conditional reloaded:", conditional_checked)
+            print(" - cli-export-check: failed")
+            sys.exit(1)
+    except Exception:
+        print("Guardrail check: FAIL")
+        print("Critical reloaded:", CRITICAL)
+        print("Conditional reloaded:", conditional_checked)
+        print(" - code-fence-check: error")
+        sys.exit(1)
+
     print("Guardrail check: PASS")
     print("Critical reloaded:", CRITICAL)
     print("Conditional reloaded:", conditional_checked)

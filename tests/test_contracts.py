@@ -295,7 +295,7 @@ class TestTelemetryContracts(unittest.TestCase):
         pass
 
     # Offline smoke tests; real test runner to be wired later.
-    def test_extract_metrics_stub():
+    def test_extract_metrics_stub(self):
         from pathlib import Path
         from scripts.metrics.extract_metrics import scan_report
 
@@ -303,7 +303,7 @@ class TestTelemetryContracts(unittest.TestCase):
         data = scan_report(sample)
         assert "RUN_META" in data, "RUN_META marker missing"
 
-    def test_thresholds_diff_stub():
+    def test_thresholds_diff_stub(self):
         from pathlib import Path
         from scripts.thresholds.diff_thresholds import parse_simple_yaml, diff_params
 
