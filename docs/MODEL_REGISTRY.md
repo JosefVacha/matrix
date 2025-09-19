@@ -68,3 +68,34 @@ python scripts/qa/validate_model_metadata.py --file models/M3_DEMO/metadata.json
 
 ### Example
 See above for full metadata example.
+
+## Schema (JSON)
+Refer to the canonical schema at `docs/schemas/model_metadata.schema.json` (draft-07).
+
+## CLI helpers
+Init a model tag (idempotent skeleton):
+```bash
+python scripts/registry/init_model_tag.py --tag BASELINE_LIN_H3 --out models/BASELINE_LIN_H3/metadata.json
+```
+
+Validate metadata file against schema:
+```bash
+python scripts/qa/validate_model_metadata.py --file models/BASELINE_LIN_H3/metadata.json --schema docs/schemas/model_metadata.schema.json
+```
+
+## Example metadata.json
+```json
+{
+	"model_tag": "BASELINE_LIN_H3",
+	"created_at": "2025-09-19T12:00:00Z",
+	"label": "label_R_H3_pct",
+	"timeframe": "5m",
+	"features": ["f_ret_1", "f_ret_3", "f_ret_12", "f_oc_range", "f_vol_z"],
+	"trainer": {"type": "linear", "alpha": 0.1},
+	"provenance": {"commit": "<GIT_SHA>", "builder": "train_baseline.py"},
+	"metrics": {"wfo_blocks": 0, "mean_R": null, "hit_rate": null},
+	"notes": "Initialized for offline experiments; metrics to be filled after WFO run."
+}
+```
+
+Notes: the example is intentionally lightweight (no binary artifacts). Use the CLI helpers above to init and validate.

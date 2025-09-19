@@ -44,5 +44,9 @@
 
 ## PHASE M3.3
 
-- [ ] Docs/RETRAIN_POLICY.md: wire cadence → validator inputs/outputs
-- [ ] scripts/qa/check_retrain_cadence.py (stub; exit 0/1); add echo task
+- [✅] Docs/RETRAIN_POLICY.md: wire cadence → validator inputs/outputs
+- [✅] scripts/qa/check_retrain_cadence.py (stub; exit 0/1); add echo task
+
+## PHASE M3.4
+
+- [ ] H-consistency integration: ensure usage in EVAL_METRICS.md and WFO provenance; add echo task
