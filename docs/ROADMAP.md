@@ -1,80 +1,128 @@
-# MATRIX Roadmap
+# MATRIX Roadmap — complete plan toward paper trading and production readiness
 
-## Milestones
+This roadmap expands the existing milestones and lays out a clear path from the current offline sandbox to paper trading (simulation) using FreqAI for model-driven signals and finally to a safe, documented production workflow.
 
-### M0 (now): Offline Sandbox Foundations
-- **Goals:**
-  - Build offline sandbox for reproducible threshold/signal workflow
-  - Implement summaries, diffs, validators, synthetic simulator, reference mapping
-- **Deliverables:**
-  - TS_*.yml versioning, diff, rollback
-  - Pure Python mapping function
-  - Synthetic simulator + summary
-  - Governance docs (ADRs, contributing, standards)
-- **Exit Criteria:**
-  - All workflows run offline, deterministic
-  - Mapping function unit-tested
-  - SIM summary and recap table populated
-- **Risks:**
-  - Overfitting to synthetic data
-  - Manual errors in threshold selection
+Recent updates (quick links):
 
-### M1: Freqtrade-Compatible Strategy (Offline)
-  - Integrate mapping logic into Freqtrade strategy skeleton
-  - Run first reproducible backtest (offline)
-  - Strategy wiring (no live trading)
-  - Backtest protocol docs
-  - Strategy runs with static data, produces summary
-  - Freqtrade API changes
-  - Data leakage in mapping
-  - Adapter skeleton (src/matrix/adapter/freqtrade_strategy_adapter.py)
-  - DRY backtest protocol doc (docs/DRY_BACKTEST_PROTOCOL.md)
-  - Example config (configs/strategy.adapter.example.json)
-  - Test skeletons (tests/test_adapter_contracts.py)
-  - Risks: mismatch between mapping.py docstrings and adapter behavior → run “contract review” before DRY run
-  - Exit criteria: first reproducible DRY BT using MatrixAdapterStrategy + REPORT + SUMMARY + STABILITY_RECAP row + ingest Freqtrade reports into SUMMARY + update STABILITY_RECAP.md
-  - DRY runbook (docs/RUNBOOK_DRY.md) and rehearsal helper (scripts/runbook/dry_run_rehearsal.py)
-  - Thresholds changelog (docs/thresholds/CHANGELOG.md, scripts/thresholds/changelog_from_diffs.py)
-  - Exit criteria box: see RUNBOOK_DRY.md and STABILITY_RECAP.md row
-  - [x] Milestone M1 exit criteria met — see [TS_DECISION_20250919_SAMPLE.md](docs/DECISIONS/TS_DECISION_20250919_SAMPLE.md)
+- Last updated: 2025-09-20
+- Draft PR with the guardrails & baseline automation changes: https://github.com/JosefVacha/matrix/pull/10 (branch: chore/qa-guardrails-notifier-ready)
 
-### M2: Minimal FreqAI Features, Labels, and Training Protocol
-**Goals:**
-  - Implement minimal, real feature set and label semantics (offline, docs-first)
-  - Document training protocol (walk-forward splits, baseline model spec, reproducibility)
-  - Establish model registry and metadata structure
-  - Offline evaluation and summary
-**Deliverables:**
-  - FreqAI hooks with documented feature/label contracts
-  - TRAINING_PROTOCOL.md and config placeholders
-  - Model registry docs and file layout
-  - WFO evaluation summary template
-**Exit Criteria:**
-  - One trained model artifact + metadata
-  - WFO evaluation summary + decision note
-  - All steps reproducible offline
-  - [x] Milestone M2 complete — see [CHECKPOINT_v2.md](docs/checkpoints/CHECKPOINT_v2.md)
-**Risks:**
-  - Feature/label drift between train/test
-  - Leakage via label/feature windows
-  - Incomplete metadata or audit trail
 
-### M3: Training, Registry, Retrain Cadence
-**Goals:**
-  - [x] M3.1 Training Runner (CLI + docs-first, stdlib+pandas/numpy + scikit-learn-like API stub if needed)
-  - [ ] M3.2 Model Registry helpers (metadata schema, init/validate)
-  - [ ] M3.3 Retrain Cadence (policy doc + stub validator), exit criteria
-**Deliverables:**
-  - [x] scripts/training/train_baseline.py (offline, takes dataset + label, outputs metrics JSON + models/<tag>/metadata.json; model.pkl ignored)
-  - [x] Docs/TRAINING_PROTOCOL.md: add “Training Runner CLI” block + example
-  - [ ] scripts/registry/init_model_tag.py (idempotent), scripts/qa/validate_model_metadata.py checks
-  - [ ] Docs/MODEL_REGISTRY.md: finalize schema + examples
-  - [ ] Docs/RETRAIN_POLICY.md: wire cadence → validator inputs/outputs
-  - [ ] scripts/qa/check_retrain_cadence.py (stub; exit 0/1); add echo task
-**Exit Criteria:**
-  - [x] Training runner produces metrics and metadata
-  - [ ] Registry helpers and validator pass
-  - [ ] Retrain cadence policy and check script in place
-**Risks:**
-  - Incomplete training/registry coverage
-  - Cadence logic not wired to exit criteria
+## Overarching phases
+- Phase 0 — Offline foundations & QA (current)
+- Phase 1 — Strategy adapter & reproducible backtest (Freqtrade-compatible, offline only)
+- Phase 2 — Training and evaluation (FreqAI hooks, WFO, model registry)
+- Phase 3 — Paper trading (simulator + exchange-sim layer, no real orders)
+- Phase 4 — Controlled live testing (small position sizes, monitoring, kill-switch)
+
+---
+
+## Phase 0 — Offline foundations & QA (M0)
+- Goals: deterministic offline experiments, robust guardrails, developer hygiene.
+- Deliverables: guardrail runner, unit tests, smoke dataset, docs, maintainers guide.
+- Exit criteria: validators pass locally and in CI; reproducible smoke runs.
+
+Status update (completed):
+- Guardrail runner implemented (`scripts/qa/check_copilot_guardrails.py`) with JSON output mode and preface checks.
+- Notifier implemented and made safe-by-default (`scripts/qa/notify_guardrail_failure.py`).
+- Paper-trading simulator implemented and smoke-run added (`scripts/trading/paper_trading_sim.py`).
+- CI: opt-in manual workflow `paper_trade_smoke.yml` added; baseline metrics stored in `ci/baselines/paper_trade_metrics_baseline.json` and comparison step supports a relative tolerance.
+
+Next immediate items (short-term):
+- Automate baseline PR suggestions: when an approved run improves metrics, create a PR with the proposed baseline to be reviewed by maintainers.
+- Add a small CI badge/process to show smoke-run status in the repository README.
+- Document a maintainer checklist for enabling notifications safely (via `ALLOW_NOTIFICATIONS`).
+
+## Phase 1 — Strategy adapter & reproducible backtest (M1)
+- Goals: adapter that converts model predictions to Freqtrade-style signals, reproducible dry backtests.
+- Deliverables:
+  - Adapter skeleton (MatrixAdapterStrategy) and contract tests
+  - DRY backtest protocol and runbook
+  - Example config and static pairlist
+- Exit criteria: dry backtest produces SUMMARY + REPORT and ingests into stability recap.
+
+## Phase 2 — Training, registry, and WFO (M2)
+- Goals: minimal feature set, labels, and training pipeline; model registry & metadata.
+- Deliverables:
+  - FreqAI-compatible feature hooks and label logic
+  - Training runner with walk-forward split, metrics output, and WFO summary
+  - Model registry with validation scripts and metadata schema
+- Exit criteria: one trained model evaluated via WFO and committed to registry.
+
+## Phase 3 — Paper trading (M3)
+- Goals: run a realistic paper-trading simulation that consumes OHLCV data and model predictions (or rule-based signals) and simulates order execution, fees, slippage, and P&L.
+- Deliverables:
+  - Safe paper-trading simulator (scripts/trading/paper_trading_sim.py)
+  - Standardized dataset format (OHLCV with datetime index) and example dataset `data/dataset_SMOKE.parquet`
+  - Metrics & reports (equity curve, drawdown, trade list, per-trade P&L)
+  - Integration with FreqAI predictions: document how to use a trained model to generate signals for the simulator
+  - Tests and smoke-run example
+- Exit criteria:
+  - Paper-trading run reproduces expected results against the smoke dataset
+  - Reports generated and artifacts uploaded for review
+
+## Phase 4 — Controlled live testing (M4)
+- Goals: move from paper to controlled live testing with manual approvals and strict limits.
+- Deliverables:
+  - Risk rules, kill-switch, telemetry (latency, hit-rate), and notifications
+  - Small-size live testing plan (no market orders > X% of free capital)
+  - Audit logs & monitoring
+- Exit criteria: maintained P&L, acceptable risk metrics, and documented process for scaling to larger sizes.
+
+---
+
+## Immediate roadmap items (next 30 days)
+1. Finalize the paper-trading simulator and example run (this PR)
+  - Owner: engineering (dev who maintains `scripts/trading/paper_trading_sim.py`)
+  - Artifacts: `outputs/paper_trade_report.json`, `outputs/paper_trade_report_trades.csv`, example CLI invocation in `Makefile`
+  - Exit criteria: a local run reproduces the committed baseline metrics and writes artifacts under `outputs/`.
+
+2. Create a short how-to for converting a trained FreqAI model to simulator signals
+  - Owner: ML lead or contributor who built the model
+  - Artifacts: short doc `docs/convert_model_to_signals.md` and an example script `scripts/training/export_for_simulator.py`
+  - Exit criteria: given a saved model artifact, the how-to and script produce a `predictions.csv` aligned to the smoke dataset index and a short example run that feeds those predictions into the simulator.
+
+3. Add a CI smoke job that runs the paper-trading simulator with a tiny dataset to catch regressions
+  - Owner: CI maintainer
+  - Artifacts: `.github/workflows/paper_trade_smoke.yml` (manual -> add scheduled or push-based optional job), and `ci/baselines/paper_trade_metrics_baseline.json`
+  - Exit criteria: the workflow runs in CI, uploads `paper_trade_metrics.json` as an artifact, and fails only when regressions exceed the configured relative tolerance.
+
+4. Prepare a playbook for maintainers to enable notifications and monitor failures
+  - Owner: Ops/maintainer
+  - Artifacts: `docs/NOTIFIER_USAGE.md` (how to enable `ALLOW_NOTIFICATIONS`, required secrets, and review checklist), and optional `scripts/qa/watch_pr_ci_polling.sh` usage examples
+  - Exit criteria: maintainers can follow the playbook to enable notifications for a single workflow run and verify remote notifications are triggered in a controlled manner.
+
+5. (Optional) Expand smoke metrics and automation
+  - Owner: engineering/ML
+  - Artifacts: `scripts/qa/extract_paper_trade_metrics.py` expanded to include drawdown and per-trade P&L; CI comparison script accepts multiple metrics and per-metric tolerances.
+  - Exit criteria: CI comparison step reports all metrics and the baseline PR flow includes a clear metrics diff for reviewers.
+
+## How this maps to repository artifacts
+- `scripts/qa/check_copilot_guardrails.py` — guardrails
+- `scripts/qa/notify_guardrail_failure.py` — notifier (safe-by-default)
+- `scripts/training/*` & `scripts/registry/*` — training & registry helpers
+- `scripts/trading/paper_trading_sim.py` — paper trading simulator (new)
+- `data/dataset_SMOKE.parquet` — canonical smoke dataset (existing)
+- `Makefile` targets: `make paper-trade-sim`, `make run-guardrails`, `make simulate-notifier`
+
+## Notes on safety and reproducibility
+- Paper-trade simulator is offline-only and writes artifacts; by default it will not connect to exchanges or post notifications.
+- The notifier requires explicit enablement (flags + `ALLOW_NOTIFICATIONS=1`) to perform remote actions.
+
+---
+
+If you approve, we can run the safe paper-trading simulator smoke run in CI or locally using the documented Makefile target.
+
+## FAQ — quick answers
+
+- Q: Should we use Freqtrade/FreqAI instead of our simulator?
+  - A: Use the repo simulator for fast, deterministic CI smoke runs and for developer feedback. For full backtests, retraining, and live model serving prefer the official Freqtrade + FreqAI tooling; this repo is intentionally light-weight and designed to produce reproducible artifacts suitable for baseline comparisons.
+
+- Q: Is the notifier re-implementing any official GitHub/Freqtrade feature?
+  - A: No — notifier is an ops helper that automates repo-specific workflows (issue creation, Slack alerts) for guardrail failures. It is safe-by-default and requires explicit enablement. Do not enable in production without following the RUNBOOK checklist.
+
+- Q: How do I convert FreqAI model outputs to simulator predictions?
+  - A: See `docs/convert_model_to_signals.md` for the exact export format (CSV/Parquet with `date,pair,prediction`), alignment rules (no lookahead), and an example export command.
+
+
+```

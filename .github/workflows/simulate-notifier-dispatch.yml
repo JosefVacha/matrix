@@ -1,0 +1,60 @@
+name: Simulate notifier (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      allow_notifications:
+        description: 'Set to true to attempt remote notifications (requires ALLOW_NOTIFICATIONS secret)'
+        required: false
+        default: 'false'
+
+jobs:
+  simulate-notifier-dispatch:
+    name: simulate notifier (manual)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install minimal deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pandas numpy || true
+      - name: Backup copilot-instructions.md
+        run: |
+          cp .github/copilot-instructions.md /tmp/copilot.orig || true
+      - name: Create failing copilot-instructions.md (simulate missing Czech rule)
+        run: |
+          # Remove lines containing 'czech' or 'češt' (case-insensitive)
+          awk 'BEGIN{IGNORECASE=1} !/czech/ && !/češt/' .github/copilot-instructions.md > /tmp/copilot.modified
+          mv /tmp/copilot.modified .github/copilot-instructions.md
+          echo 'Wrote modified copilot-instructions.md'
+      - name: Run guardrail and notifier (best-effort)
+        env:
+          ALLOW_NOTIFICATIONS: ${{ secrets.ALLOW_NOTIFICATIONS }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          python3 scripts/qa/check_copilot_guardrails.py --json > /tmp/guard.json || true
+          cat /tmp/guard.json || true
+          # Only attempt remote actions when both the workflow input and repo secret allow it
+          if [ "${{ github.event.inputs.allow_notifications }}" = "true" ] && [ "${ALLOW_NOTIFICATIONS:-}" = "1" ]; then
+            echo 'Attempting remote notifier (guarded)'
+            ENABLE_ARGS=""
+            if [ -n "${SLACK_WEBHOOK:-}" ]; then ENABLE_ARGS="${ENABLE_ARGS} --enable-slack"; fi
+            if [ -n "${GITHUB_TOKEN:-}" ]; then ENABLE_ARGS="${ENABLE_ARGS} --enable-issues"; fi
+            python3 scripts/qa/notify_guardrail_failure.py --input-file /tmp/guard.json $ENABLE_ARGS --dry-run || true
+          else
+            echo 'Remote notifications not enabled for this dispatch; running dry-run only'
+            python3 scripts/qa/notify_guardrail_failure.py --input-file /tmp/guard.json --dry-run || true
+          fi
+      - name: Restore original copilot-instructions.md
+        run: |
+          if [ -f /tmp/copilot.orig ]; then cp /tmp/copilot.orig .github/copilot-instructions.md; fi
+      - name: Upload outputs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: guardrail-outputs
+          path: outputs/

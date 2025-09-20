@@ -6,10 +6,13 @@ on:
     branches: [ "main" ]
 permissions:
   contents: read
+  issues: write
 jobs:
   validators:
     name: validators (py${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     strategy:
       fail-fast: false
       matrix:
@@ -19,18 +22,51 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install system build dependencies (for optional pyarrow)
+        run: |
+          sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - name: Install dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements-dev.txt ]; then
+            python -m pip install -r requirements-dev.txt
+          fi
       - name: Guardrail check (copilot)  # must pass before other validators
         run: |
           python3 scripts/qa/check_copilot_guardrails.py
+      - name: Check PR preface (CI)
+        if: github.event_name == 'pull_request'
+        run: |
+          python3 scripts/qa/check_pr_preface.py
+      - name: Reply template presence check
+        run: |
+          python3 scripts/qa/check_reply_template_presence.py
       - name: Guardrails unit test
         run: |
           python3 -m tests.test_guardrails
+      - name: Pre-commit hooks (non-fatal)
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pre-commit || true
+          pre-commit run --all-files || true
       - name: Workspace health gate
         run: |
           python3 scripts/qa/check_workspace_health.py
       - name: Workspace health unit test
         run: |
           python3 -m tests.test_workspace_health
+      - name: Run linters (non-fatal)
+        run: |
+          make ci-lint || true
+      - name: Install system build dependencies (for optional pyarrow)
+        run: |
+          sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - name: Install dev dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements-dev.txt ]; then
+            python -m pip install -r requirements-dev.txt
+          fi
       - name: Show Python
         run: python -V
       - name: H-consistency (stdlib)
@@ -53,6 +89,29 @@ jobs:
       - name: English policy check (stdlib)
         run: |
           python scripts/qa/check_english_policy.py
+      - name: Notify on guardrail failure (best-effort)
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          AUTOMATION_GH_TOKEN: ${{ secrets.AUTOMATION_GH_TOKEN }}
+          ALLOW_NOTIFICATIONS: ${{ secrets.ALLOW_NOTIFICATIONS }}
+        run: |
+          echo 'Guardrail/validators failed — producing artifact and attempting notifier (best-effort)'
+          python3 scripts/qa/check_copilot_guardrails.py --json > outputs/guardrail_check.json || true
+          # Default to dry-run unless repo secret ALLOW_NOTIFICATIONS == '1'
+          if [ "${ALLOW_NOTIFICATIONS:-}" = "1" ]; then
+            echo 'ALLOW_NOTIFICATIONS=1; running notifier with enabled actions if configured'
+            ENABLE_ARGS=""
+            if [ -n "${SLACK_WEBHOOK:-}" ]; then ENABLE_ARGS="${ENABLE_ARGS} --enable-slack"; fi
+            if [ -n "${AUTOMATION_GH_TOKEN:-}" ] || [ -n "${GITHUB_TOKEN:-}" ]; then ENABLE_ARGS="${ENABLE_ARGS} --enable-issues"; fi
+            # Maintainers can still choose to remove --dry-run from this step if they intentionally want remote actions
+            python3 scripts/qa/notify_guardrail_failure.py --input-file outputs/guardrail_check.json $ENABLE_ARGS --dry-run || true
+          else
+            echo 'ALLOW_NOTIFICATIONS not set to 1; writing artifact only (no remote notifications)'
+            python3 scripts/qa/notify_guardrail_failure.py --input-file outputs/guardrail_check.json --dry-run || true
+          fi
   smoke:
     name: smoke (py${{ matrix.python-version }}) — optional
     runs-on: ubuntu-latest
@@ -71,8 +130,58 @@ jobs:
       - name: Run baseline smoke if present
         shell: bash
         run: |
+          # Generate a tiny SMOKE dataset for the smoke test if generator exists
+          # Ensure minimal runtime deps are available for the generator (avoid full dev install here)
+          python -m pip install --upgrade pip
+          python -m pip install pandas numpy
+          if [ -f scripts/qa/generate_smoke_dataset.py ]; then
+            echo 'Generating small SMOKE dataset for smoke test'
+            python -m scripts.qa.generate_smoke_dataset
+          else
+            echo 'No generator found; relying on repository dataset if present.'
+          fi
+
           if [ -f tests/test_train_baseline.py ]; then
             python -m tests.test_train_baseline
           else
             echo "No test_train_baseline.py; skipping smoke."
           fi
+
+  simulate-notifier:
+    name: simulate notifier (non-blocking)
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/chore/qa-guardrails'
+    needs: []
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install minimal deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pandas numpy || true
+      - name: Backup copilot-instructions.md
+        run: |
+          cp .github/copilot-instructions.md /tmp/copilot.orig || true
+      - name: Create failing copilot-instructions.md (simulate missing Czech rule)
+        run: |
+          # Remove lines containing 'czech' or 'češt' (case-insensitive)
+          awk 'BEGIN{IGNORECASE=1} !/czech/ && !/češt/' .github/copilot-instructions.md > /tmp/copilot.modified
+          mv /tmp/copilot.modified .github/copilot-instructions.md
+          echo 'Wrote modified copilot-instructions.md'
+      - name: Run guardrail and notifier (best-effort)
+        run: |
+          set -e
+          python3 scripts/qa/check_copilot_guardrails.py --json > /tmp/guard.json || true
+          cat /tmp/guard.json || true
+          # Always attempt notifier on failure, but continue on errors
+          python3 scripts/qa/notify_guardrail_failure.py --input-file /tmp/guard.json || true
+      - name: Restore original copilot-instructions.md
+        run: |
+          if [ -f /tmp/copilot.orig ]; then cp /tmp/copilot.orig .github/copilot-instructions.md; fi
+      - name: Upload outputs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: guardrail-outputs
+          path: outputs/

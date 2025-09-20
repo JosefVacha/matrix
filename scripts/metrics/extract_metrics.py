@@ -17,6 +17,44 @@ No external dependencies; stdlib only. No file I/O logic yet (just stubs).
 """
 
 from typing import Optional, Dict, Any
+import re
+from pathlib import Path
+
+
+def parse_kv_marker(line: str) -> Dict[str, str]:
+    """Parse a marker line like <!-- KEY: a=1; b=2 --> into a dict.
+
+    Returns dict with '_section' for KEY and key-value pairs as strings.
+    """
+    m = re.match(r"<!--\s*(\w+):\s*(.*?)\s*-->", line)
+    if not m:
+        return {}
+    section, kvs = m.groups()
+    out = {"_section": section}
+    for pair in kvs.split(";"):
+        pair = pair.strip()
+        if "=" in pair:
+            k, v = pair.split("=", 1)
+            out[k.strip()] = v.strip()
+    return out
+
+
+def scan_report(path: Path) -> Dict[str, Any]:
+    """Scan a REPORT_*.md file for all markers, merge into nested dict.
+
+    Returns a dict with sections as keys and their key/value pairs as nested dicts.
+    """
+    data: Dict[str, Any] = {}
+    try:
+        for line in path.read_text().splitlines():
+            marker = parse_kv_marker(line)
+            if marker and "_section" in marker:
+                sec = marker["_section"]
+                data[sec] = {k: v for k, v in marker.items() if k != "_section"}
+    except Exception as e:
+        print(f"Error reading report: {e}")
+        return {}
+    return data
 
 
 def parse_report_md(report_path: str) -> Optional[Dict[str, Any]]:

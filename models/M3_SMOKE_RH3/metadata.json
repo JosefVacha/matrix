@@ -1,0 +1,30 @@
+{
+  "model_tag": "M3_SMOKE_RH3",
+  "created_at": "2025-09-19T21:39:07.643752",
+  "label": "label_R_H3_pct",
+  "features": [
+    "f_ret_1",
+    "f_ret_3",
+    "f_vol_12"
+  ],
+  "timeframe": null,
+  "train_window": {
+    "from": "2025-01-01",
+    "to": "2025-01-08",
+    "rows": 8
+  },
+  "algo": {
+    "name": "ols",
+    "params": {
+      "lmbd": 0.0
+    }
+  },
+  "artifacts": {
+    "pickle_path": null
+  },
+  "provenance": {
+    "dataset_path": "data/dataset_SMOKE.pkl",
+    "commit": "b929e0cadc9967096511914c12d5d89d5260c4d5",
+    "generator": "scripts/training/train_baseline.py"
+  }
+}

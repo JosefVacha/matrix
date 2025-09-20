@@ -143,7 +143,7 @@ def ensure_eval_metrics_block(auto_fix: bool = True) -> bool:
     if want in txt:
         return True
     if auto_fix:
-        add = "\n## H-consistency usage\nRun the H-consistency gate before reporting metrics:\n\n```bash\npython3 scripts/qa/check_H_consistency.py --label-name <label-name> --windows <w1,w2,...> --H <H>\n```\n"
+        add = "\n## H-consistency usage\nRun the H-consistency gate before reporting metrics:\n\nExample:\n    python3 scripts/qa/check_H_consistency.py --label-name <label-name> --windows <w1,w2,...> --H <H>\n"
         EVAL_METRICS.write_text(txt + add, encoding="utf-8")
         return True
     return False
@@ -188,6 +188,9 @@ def todo_audit() -> str:
         ]
     )
     summary.append(f"hcons_exit:{hcode}")
+    # CLI export check
+    cli_code, _ = run_cmd(["python3", "scripts/qa/check_cli_exports.py"])
+    summary.append(f"cli_export_exit:{cli_code}")
     return ";".join(summary)
 
 
@@ -207,6 +210,9 @@ def main():
 
     # B: Language policy
     en_code, en_out = run_cmd(["python3", "scripts/qa/check_english_policy.py"])
+
+    # Code-fence check (stdlib checker)
+    cf_code, cf_out = run_cmd(["python3", "scripts/qa/check_code_fences.py"])
 
     # C: Tasks.json
     registry_ok, h_ok = check_tasks_json(auto_fix=True)
@@ -247,6 +253,7 @@ def main():
     print(f"registry_check_exact:{str(registry_ok).lower()}")
     print(f"h_consistency_exact:{str(h_ok).lower()}")
     print(f"validators_ci_present:{str(ci_ok).lower()}")
+    print(f"code_fence_check_exit:{cf_code}")
     print(f"todo_audit:{todo_summary}")
     print(f"git_clean:{str(clean).lower()}")
 

@@ -63,6 +63,8 @@ sensor(OHLCV) → feature(gen) → trainer(FreqAI) → server(FreqAI.predict) �
 - Do not modify base OHLCV columns; keep features in a clear namespace.
 - Telemetry: log inference latency, %NaN per feature, feature drift, label hit-rate (proposal only).
 
+NOTE: Canonical reply template (Czech) lives in `Knowledge/REPLY_TEMPLATES.md` — follow it for agent replies.
+
 ## Workflow
 1) For each reply, re-scan: .github/copilot-instructions.md → AGENTS.md → Knowledge/PROJECT_STATE.md.
 2) If context is missing, write a proposal to Knowledge/RUNBOOK.md and request approval.
@@ -75,6 +77,9 @@ sensor(OHLCV) → feature(gen) → trainer(FreqAI) → server(FreqAI.predict) �
   - Use official Freqtrade/FreqAI terms; avoid mixed-language terminology
 - **Czech allowed only in**: Knowledge/PROJECT_STATE.md (bilingual OK) and ad-hoc notes (README_cs.md optional)
 - **If user asks in Czech, answer in Czech, but produce code/docs/commits in English**
+  - **Operational rule (explicit):** For conversational replies to the user (chat, PR comments, code review discussion) respond in Czech when the user uses Czech. Always keep repository artifacts (filenames, code, commits, docs) in English per repo standard. This file (copilot-instructions.md) remains authoritative.
+
+- **MANDATORY (Czech): Pokud uživatel píše v češtině, odpověz v češtině.**
 
 ## Links (term references)
 - Freqtrade/FreqAI docs: https://www.freqtrade.io/

@@ -1,0 +1,26 @@
+{
+  "run_tag": "LOCAL_SMOKE",
+  "label": "label_R_H3_pct",
+  "features": [
+    "f_ret_1",
+    "f_ret_3",
+    "f_vol_12"
+  ],
+  "train": {
+    "from": "2025-01-01",
+    "to": "2025-01-08",
+    "n": 8
+  },
+  "model": {
+    "type": "fallback",
+    "note": "stdlib summary"
+  },
+  "metrics": {
+    "mae": 0.2907332914856262,
+    "mse": 0.12936628721152,
+    "r2": null,
+    "resid_mean": 0.0,
+    "resid_std": 0.0
+  },
+  "created_at": "2025-09-19T22:26:52.917691"
+}

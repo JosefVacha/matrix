@@ -56,3 +56,62 @@ Pokud Copilot narazí na:
 - "Spusť live trading na Binance" (bezpečnostní riziko)
 - "Změň OHLCV sloupce" (porušuje guardrails)
 - "Použij budoucí data pro trénink" (temporal leakage)
+
+## Baseline & Notifier Playbook
+
+This section documents the safe, reviewable process for updating performance baselines and enabling remote notifications from CI.
+
+1) Local verification
+- Run the smoke simulator locally and extract metrics:
+
+```bash
+python3 scripts/trading/paper_trading_sim.py --dataset data/dataset_SMOKE.parquet --output outputs/paper_trade_report.json
+python3 scripts/qa/extract_paper_trade_metrics.py --input outputs/paper_trade_report.json --output outputs/paper_trade_metrics.json
+```
+
+- Compare to existing baseline (example):
+
+```bash
+python3 scripts/qa/compare_metrics_to_baseline.py --metrics '{"final_net": 0.05, "max_drawdown": 0.10}'
+```
+
+2) Propose baseline update (manual PR)
+- If metrics improve or a new metric (e.g. `max_drawdown`) is available, prepare a PR in which:
+  - `ci/baselines/paper_trade_metrics_baseline.json` is updated with the proposed values.
+  - The PR description includes: run command used, environment (python/pandas versions), and a short explanation for the change.
+- Include maintainers as reviewers and wait for at least one approval before merging.
+
+3) Enabling remote notifications (safe pattern)
+- Always perform at least one manual verification run (dry-run) and inspect artifacts before enabling automation.
+- To enable notifications for a single run (manual):
+  - Use the workflow dispatch input `allow_notifications=true` when running `ci_paper_trade_smoke.yml` or `simulate-notifier-dispatch.yml`.
+  - Ensure `ALLOW_NOTIFICATIONS` repository secret is set to `1` (see below).
+- To enable repo-wide automation:
+  - Add repository secret `ALLOW_NOTIFICATIONS` with value `1` in Settings → Secrets.
+  - Ensure `SLACK_WEBHOOK` and/or a bot `GITHUB_TOKEN` are present and scoped minimally.
+  - Do NOT merge a change that removes `--dry-run` until the manual verification is approved.
+
+4) Rollback & audit
+- To disable notifier automation immediately, set `ALLOW_NOTIFICATIONS` to `0` or delete the secret.
+- Audit created issues/PRs and check the GitHub Actions logs for token usage.
+
+Checklist before merging any automation changes
+- [ ] At least one dry-run verification completed and reviewed
+- [ ] Baseline tolerances documented and agreed
+- [ ] Secrets reviewed and scoped (ALLOW_NOTIFICATIONS, SLACK_WEBHOOK)
+- [ ] Workflow inputs configured so remote actions remain opt-in per dispatch
+
+End of playbook
+
+## Quick commands (examples)
+
+Set ALLOW_NOTIFICATIONS via GH CLI:
+
+```
+gh secret set ALLOW_NOTIFICATIONS --body "1" --repo $GITHUB_REPOSITORY
+```
+
+Run the propose baseline PR workflow (manual dispatch example):
+
+1. In GitHub UI: Actions → Propose baseline PR → Run workflow → set `allow_push=true`.
+2. Or use the API / gh cli to dispatch the workflow (advanced).
