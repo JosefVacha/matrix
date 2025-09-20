@@ -65,6 +65,19 @@ By default, automatic notifications are disabled. This repository follows a cons
 	2. Set `ALLOW_NOTIFICATIONS=1` in the job environment (or as a repository secret) — this acts as a second guardrail.
 	3. Ensure the job has `permissions: issues: write` if you want to use the built-in `GITHUB_TOKEN`.
 
+Automation & ALLOW_NOTIFICATIONS
+
+If a workflow may perform remote writes (create branches, push changes, open PRs or issues), it is gated by the
+`ALLOW_NOTIFICATIONS` safety flag. This flag must be set to `1` in the workflow environment for the workflow to perform
+network writes; otherwise the workflow runs in dry-run mode and will only output the proposed changes.
+
+Usage example (manual dispatch):
+
+	- In the Actions workflow dispatch or when running locally, set `ALLOW_NOTIFICATIONS=1` to allow remote writes.
+	- Prefer to review the dry-run output before enabling `ALLOW_NOTIFICATIONS` for the first run.
+
+This reduces accidental pushes from CI runs and makes baseline updates explicit and auditable.
+
 This two-step approach (explicit flags + ALLOW_NOTIFICATIONS) reduces the risk of accidental notifications from local runs or forks. See `docs/NOTIFIER_USAGE.md` for usage examples and safety notes.
 
 
