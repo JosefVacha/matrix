@@ -76,6 +76,13 @@ def main():
         f"- new_trades_count: {int(new.get('trades_count',0))}",
     ]
 
+    # If running in GitHub Actions, add a link to the workflow run and artifact hints
+    gh_run_id = os.environ.get('GITHUB_RUN_ID')
+    gh_server = os.environ.get('GITHUB_SERVER_URL', 'https://github.com')
+    if gh_run_id and repo:
+        run_url = f"{gh_server}/{repo}/actions/runs/{gh_run_id}"
+        body_lines.extend(['', 'CI run and artifacts:', f'- Workflow run: {run_url}', '- Artifacts: see workflow run Artifacts tab'])
+
     payload = {
         'title': 'chore(ci): update baseline metrics (auto)',
         'head': branch,
