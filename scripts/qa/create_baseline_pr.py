@@ -44,11 +44,33 @@ def main():
     run(f"git push https://x-access-token:{token}@github.com/{repo} HEAD:{branch}")
 
     # create PR
+    # compute diff for PR body
+    old = None
+    base_file = Path('ci/baselines/paper_trade_metrics_baseline.json')
+    if base_file.exists():
+        old = json.loads(base_file.read_text())
+    new = data
+    old_final = float(old.get('final_net')) if old else None
+    new_final = float(new.get('final_net'))
+    delta = new_final - (old_final if old_final is not None else 0.0)
+    pct = (delta / old_final * 100.0) if old_final not in (None, 0.0) else None
+
+    body_lines = [
+        'Auto-generated baseline update from smoke run.',
+        '',
+        'Metrics change:',
+        f"- old_final_net: {old_final if old_final is not None else 'n/a'}",
+        f"- new_final_net: {new_final}",
+        f"- delta: {delta}",
+        f"- delta_pct: {pct if pct is not None else 'n/a'}",
+        f"- new_trades_count: {int(new.get('trades_count',0))}",
+    ]
+
     payload = json.dumps({
         'title': 'chore(ci): update baseline metrics (auto)',
         'head': branch,
         'base': 'main',
-        'body': 'Auto-generated baseline update from smoke run.'
+        'body': '\n'.join(body_lines)
     })
     run(f"curl -s -X POST -H \"Authorization: token {token}\" -H \"Content-Type: application/json\" -d '{payload}' https://api.github.com/repos/{repo}/pulls")
     print('PR created (attempted)')
