@@ -1,21 +1,22 @@
-name: Auto-update baseline (manual)
+name: Auto-update baseline
+
+name: Auto-update baseline
 
 on:
+  schedule:
+    - cron: '0 7 * * *'
   workflow_dispatch:
     inputs:
       create_pr:
-        description: 'If true, create a PR when metrics improve (requires ALLOW_NOTIFICATIONS=1 secret)'
         required: false
         default: 'false'
       tolerance_up:
-        description: 'Relative improvement fraction required to consider updating baseline (e.g. 0.0 = any improvement)'
         required: false
         default: '0.0'
 
 jobs:
-  update_baseline:
+  update-baseline:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,52 +26,232 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install minimal deps
+      - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pandas pyarrow
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
 
-      - name: Ensure smoke dataset
+      - name: Ensure dataset + run smoke
         run: |
-          # If the canonical smoke dataset isn't present, generate it so CI runs are deterministic.
-          if [ -f data/dataset_SMOKE.parquet ] || [ -f data/dataset_SMOKE.pkl ]; then
-            echo "Smoke dataset present, skipping generation"
-          else
-            echo "Smoke dataset missing — generating with scripts/qa/generate_smoke_dataset.py"
-            python3 scripts/qa/generate_smoke_dataset.py
+          mkdir -p data outputs
+          if [ ! -f data/dataset_SMOKE.parquet ] && [ ! -f data/dataset_SMOKE.pkl ]; then
+            python3 scripts/qa/generate_smoke_dataset.py --path data/dataset_SMOKE.parquet --days 30 || true
           fi
-
-      - name: Run paper-trade simulator
-        run: |
-          mkdir -p outputs
-          make paper-trade-sim
+          python3 scripts/trading/paper_trading_sim.py --dataset data/dataset_SMOKE.parquet --output outputs/paper_trade_report.json || \
+          python3 scripts/trading/paper_trading_sim.py --dataset data/dataset_SMOKE.pkl --output outputs/paper_trade_report.json
 
       - name: Extract metrics
         run: |
           python3 scripts/qa/extract_paper_trade_metrics.py --input outputs/paper_trade_report.json --output outputs/paper_trade_metrics.json
 
-      - name: Decide if baseline should be updated
-        id: decide
+      - name: Decide and optionally create baseline PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALLOW_NOTIFICATIONS: ${{ secrets.ALLOW_NOTIFICATIONS }}
         run: |
-          python3 scripts/qa/should_update_baseline.py --tol ${{ github.event.inputs.tolerance_up }} > decide.out
+          TOL='${{ github.event.inputs.tolerance_up }}'
+          python3 scripts/qa/should_update_baseline.py --tol ${TOL} > decide.out || true
           cat decide.out
-          # Write explicit key=value lines to GITHUB_OUTPUT. Use printf to avoid writing bare 'false' which
-          # GitHub Actions rejects as invalid format for ::set-output style files.
-          SHOULD_PR=$(grep '^should_pr=' decide.out | sed 's/should_pr=//')
-          CURRENT_FINAL=$(grep '^current_final=' decide.out | sed 's/current_final=//')
-          printf 'should_pr=%s\n' "${SHOULD_PR}" >> $GITHUB_OUTPUT
-          printf 'current_final=%s\n' "${CURRENT_FINAL}" >> $GITHUB_OUTPUT
-
-      - name: Create PR with updated baseline (optional)
-        if: ${{ steps.decide.outputs.should_pr == 'true' && github.event.inputs.create_pr == 'true' }}
-        run: |
-          if [ "${ALLOW_NOTIFICATIONS:-}" != "1" ]; then
-            echo "ALLOW_NOTIFICATIONS not set or not 1; skipping PR creation"
-            exit 0
+          SHOULD_PR=$(grep '^should_pr=' decide.out | sed 's/should_pr=//') || true
+          CREATE_PR='${{ github.event.inputs.create_pr }}'
+          echo "should_pr=$SHOULD_PR, create_pr=$CREATE_PR"
+          if [ "$SHOULD_PR" = "true" ] && [ "$CREATE_PR" = "true" ]; then
+            if [ "${ALLOW_NOTIFICATIONS:-}" = "1" ]; then
+              python3 scripts/qa/create_baseline_pr.py --allow-push
+            else
+              echo "ALLOW_NOTIFICATIONS != 1; skipping push/create PR"
+            fi
+          else
+            echo "Not creating PR (should_pr=$SHOULD_PR, create_pr=$CREATE_PR)"
           fi
-          python3 scripts/qa/create_baseline_pr.py
 
-      - name: Report decision
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-update-artifacts
+          path: |
+            outputs/paper_trade_report.json
+            outputs/paper_trade_metrics.json
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+    inputs:
+      create_pr:
+        required: false
+        default: 'false'
+      tolerance_up:
+        required: false
+        default: '0.0'
+
+jobs:
+  update-baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
         run: |
-          echo "should_pr=${{ steps.decide.outputs.should_pr }}"
-          echo "current_final=${{ steps.decide.outputs.current_final }}"
+          python -m pip install --upgrade pip
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+
+      - name: Ensure dataset + run smoke
+        run: |
+          mkdir -p data outputs
+          if [ ! -f data/dataset_SMOKE.parquet ] && [ ! -f data/dataset_SMOKE.pkl ]; then
+            python3 scripts/qa/generate_smoke_dataset.py --path data/dataset_SMOKE.parquet --days 30 || true
+          fi
+          python3 scripts/trading/paper_trading_sim.py --dataset data/dataset_SMOKE.parquet --output outputs/paper_trade_report.json || \
+          python3 scripts/trading/paper_trading_sim.py --dataset data/dataset_SMOKE.pkl --output outputs/paper_trade_report.json
+
+      - name: Extract metrics
+        run: |
+          python3 scripts/qa/extract_paper_trade_metrics.py --input outputs/paper_trade_report.json --output outputs/paper_trade_metrics.json
+
+      - name: Decide and optionally create baseline PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALLOW_NOTIFICATIONS: ${{ secrets.ALLOW_NOTIFICATIONS }}
+        run: |
+          TOL='${{ github.event.inputs.tolerance_up }}'
+          python3 scripts/qa/should_update_baseline.py --tol ${TOL} > decide.out || true
+          cat decide.out
+          SHOULD_PR=$(grep '^should_pr=' decide.out | sed 's/should_pr=//') || true
+          CREATE_PR='${{ github.event.inputs.create_pr }}'
+          echo "should_pr=$SHOULD_PR, create_pr=$CREATE_PR"
+          if [ "$SHOULD_PR" = "true" ] && [ "$CREATE_PR" = "true" ]; then
+            if [ "${ALLOW_NOTIFICATIONS:-}" = "1" ]; then
+              python3 scripts/qa/create_baseline_pr.py --allow-push
+            else
+              echo "ALLOW_NOTIFICATIONS != 1; skipping push/create PR"
+            fi
+          else
+            echo "Not creating PR (should_pr=$SHOULD_PR, create_pr=$CREATE_PR)"
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-update-artifacts
+          path: |
+            outputs/paper_trade_report.json
+            outputs/paper_trade_metrics.json
+  workflow_dispatch:
+    inputs:
+      create_pr:
+        description: 'If true, create a PR when metrics improve (requires ALLOW_NOTIFICATIONS=1)'
+        required: false
+        default: 'false'
+      tolerance_up:
+        description: 'Relative improvement fraction required to consider updating baseline (e.g. 0.0 = any improvement)'
+        required: false
+        default: '0.0'
+name: Auto-update baseline
+
+on:
+  schedule:
+    - cron: '0 7 * * *' # daily 07:00 UTC
+  workflow_dispatch:
+    inputs:
+      create_pr:
+        description: 'If true, create a PR when metrics improve (requires ALLOW_NOTIFICATIONS=1)'
+        required: false
+        default: 'false'
+      tolerance_up:
+        description: 'Relative improvement fraction required to consider updating baseline (e.g. 0.0 = any improvement)'
+        required: false
+        default: '0.0'
+
+name: Auto-update baseline
+
+on:
+  schedule:
+    - cron: '0 7 * * *' # daily 07:00 UTC
+  workflow_dispatch:
+    inputs:
+      create_pr:
+        description: 'If true, create a PR when metrics improve (requires ALLOW_NOTIFICATIONS=1)'
+        required: false
+        default: 'false'
+      tolerance_up:
+        description: 'Relative improvement fraction required to consider updating baseline (e.g. 0.0 = any improvement)'
+        required: false
+        default: '0.0'
+
+jobs:
+  update-baseline:
+    name: Auto-update baseline
+
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+    inputs:
+      create_pr:
+        required: false
+        default: 'false'
+      tolerance_up:
+        required: false
+        default: '0.0'
+
+jobs:
+  update-baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+
+      - name: Ensure dataset + run smoke
+        run: |
+          mkdir -p data outputs
+          if [ ! -f data/dataset_SMOKE.parquet ] && [ ! -f data/dataset_SMOKE.pkl ]; then
+            python3 scripts/qa/generate_smoke_dataset.py --path data/dataset_SMOKE.parquet --days 30 || true
+          fi
+          python3 scripts/trading/paper_trading_sim.py --dataset data/dataset_SMOKE.parquet --output outputs/paper_trade_report.json || \
+          python3 scripts/trading/paper_trading_sim.py --dataset data/dataset_SMOKE.pkl --output outputs/paper_trade_report.json
+
+      - name: Extract metrics
+        run: |
+          python3 scripts/qa/extract_paper_trade_metrics.py --input outputs/paper_trade_report.json --output outputs/paper_trade_metrics.json
+
+      - name: Decide and optionally create baseline PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALLOW_NOTIFICATIONS: ${{ secrets.ALLOW_NOTIFICATIONS }}
+        run: |
+          TOL='${{ github.event.inputs.tolerance_up }}'
+          python3 scripts/qa/should_update_baseline.py --tol ${TOL} > decide.out || true
+          cat decide.out
+          SHOULD_PR=$(grep '^should_pr=' decide.out | sed 's/should_pr=//') || true
+          CREATE_PR='${{ github.event.inputs.create_pr }}'
+          echo "should_pr=$SHOULD_PR, create_pr=$CREATE_PR"
+          if [ "$SHOULD_PR" = "true" ] && [ "$CREATE_PR" = "true" ]; then
+            if [ "${ALLOW_NOTIFICATIONS:-}" = "1" ]; then
+              python3 scripts/qa/create_baseline_pr.py --allow-push
+            else
+              echo "ALLOW_NOTIFICATIONS != 1; skipping push/create PR"
+            fi
+          else
+            echo "Not creating PR (should_pr=$SHOULD_PR, create_pr=$CREATE_PR)"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: auto-update-artifacts
+          path: |
+            outputs/paper_trade_report.json
+            outputs/paper_trade_metrics.json

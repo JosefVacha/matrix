@@ -1,0 +1,53 @@
+name: Notify on workflow failure
+
+on:
+  workflow_run:
+    workflows: ["Workflow lint + Smoke dry-run", "auto_update_baseline", "smoke-backtest", "smoke-report"]
+    types: [completed]
+
+jobs:
+  notify:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare payload
+        id: payload
+        run: |
+          python - <<'PY' > /tmp/payload.json
+          import json, os
+          with open(os.environ['GITHUB_EVENT_PATH']) as f:
+              e = json.load(f)
+          run = e.get('workflow_run', {})
+          payload = {
+              "workflow": run.get('name'),
+              "run_id": run.get('id'),
+              "url": run.get('html_url'),
+              "repo": os.environ.get('GITHUB_REPOSITORY'),
+              "conclusion": run.get('conclusion')
+          }
+          print(json.dumps(payload))
+          PY
+          echo "payload<<EOF" >> $GITHUB_OUTPUT
+          cat /tmp/payload.json >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Send to webhook or create issue
+        run: |
+          PAYLOAD='${{ steps.payload.outputs.payload }}'
+          if [ -n "$NOTIFIER_WEBHOOK" ]; then
+            curl -s -X POST -H "Content-Type: application/json" -d "$PAYLOAD" "$NOTIFIER_WEBHOOK" || true
+          else
+            echo "$PAYLOAD" > /tmp/ci_payload.json
+            echo "title=CI: Workflow failed: ${{ github.event.workflow_run.name }}" > /tmp/issue_meta.txt
+            echo "body=A workflow run failed. See the run: ${{ github.event.workflow_run.html_url }}" >> /tmp/issue_meta.txt
+            # create issue using action by reading file (fallback)
+            cat /tmp/ci_payload.json
+          fi
+        env:
+          NOTIFIER_WEBHOOK: $NOTIFIER_WEBHOOK
+
+      - name: Read secret into environment (if present)
+        run: |
+          if [ -n "${{ secrets.NOTIFIER_WEBHOOK }}" ]; then
+            echo "NOTIFIER_WEBHOOK=${{ secrets.NOTIFIER_WEBHOOK }}" >> $GITHUB_ENV
+          fi

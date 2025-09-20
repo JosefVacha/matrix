@@ -1,3 +1,41 @@
+# Notifier & Baseline PR usage
+
+This document explains how to safely enable the notifier and the automated baseline PR flow.
+
+Important safety notes
+- The notifier and baseline PR automation are gated behind the `ALLOW_NOTIFICATIONS` flag and require a valid `GITHUB_TOKEN` in the environment or repository secrets.
+- Do NOT enable `ALLOW_NOTIFICATIONS` in a public fork or unreviewed branch. Only repository maintainers should enable it.
+
+Short checklist to enable automatic baseline PRs in CI
+1. Add a repository secret `GITHUB_TOKEN` (already present in GitHub Actions runners) and `ALLOW_NOTIFICATIONS` with value `1` when you are ready to allow pushes from CI.
+2. Optionally set `DEFAULT_PR_REVIEWERS` and `DEFAULT_PR_LABELS` repository secrets to suggest reviewers/labels.
+3. Verify that the `ci/baselines/paper_trade_metrics_baseline.json` file is present and correct.
+4. Run the smoke CI workflow manually (`Actions -> Smoke backtest -> Run workflow`) and inspect the dry-run output of `scripts/qa/create_baseline_pr.py` in the logs.
+5. If dry-run output looks good, enable `ALLOW_NOTIFICATIONS=1` and re-run the workflow to allow the script to push and create the PR.
+
+Local dry-run example
+
+```bash
+# run smoke locally (create dataset, run sim, extract metrics)
+python3 scripts/qa/generate_smoke_dataset.py --path data/dataset_SMOKE.parquet --days 30
+python3 scripts/trading/paper_trading_sim.py --dataset data/dataset_SMOKE.parquet --output outputs/paper_trade_report.json
+python3 scripts/qa/extract_paper_trade_metrics.py --input outputs/paper_trade_report.json --output outputs/paper_trade_metrics.json
+python3 scripts/qa/create_baseline_pr.py
+```
+
+To perform the push and create the PR locally (requires GITHUB_TOKEN and ALLOW_NOTIFICATIONS=1):
+
+```bash
+export GITHUB_TOKEN=ghp_xxx
+export ALLOW_NOTIFICATIONS=1
+python3 scripts/qa/create_baseline_pr.py --allow-push
+```
+
+Rollback and safety
+- If a baseline PR was created accidentally, maintainers can revert the baseline file in `ci/baselines/` and re-run the workflow after setting `ALLOW_NOTIFICATIONS=0`.
+
+Contact and ownership
+- Owner: repository maintainers (see `CONTRIBUTING.md` or project owners list)
 # Notifier usage and safe enablement
 
 This document explains how to safely enable remote notifications (GitHub issues, Slack, etc.) from CI or local scripts. Remote actions are intentionally gated and require explicit repository-level opt-in.

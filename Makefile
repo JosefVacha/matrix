@@ -11,8 +11,27 @@ detect-secrets-scan:
 	python3 -m pip install detect-secrets==1.4.0
 	./scripts/ci/run_detect_secrets.sh || true
 
+PYTHON := $(shell if [ -x .venv/bin/python ]; then echo ./.venv/bin/python; else echo python3; fi)
+
 venv:
-	python3 -m venv .venv && . .venv/bin/activate && python3 -m pip install -r requirements-dev.txt
+	python3 -m venv .venv && . .venv/bin/activate && $(PYTHON) -m pip install -r requirements-dev.txt
+
+
+ingest-data:
+	@echo "Generating canonical data/latest.parquet (default 14 days)"
+	$(PYTHON) -c "from scripts.qa.generate_smoke_dataset import generate; generate(path='data/latest.parquet', start='2025-09-01', end='2025-09-14')"
+
+validate-data:
+	@echo "Validating data/latest.parquet"
+	$(PYTHON) scripts/qa/validate_data_ingest.py --path data/latest.parquet
+
+backtest:
+	@echo "Run a quick paper-trade backtest using the smoke dataset"
+	python3 scripts/run_smoke_local.py --dataset data/latest.parquet --output outputs/paper_trade_report.json || true
+
+smoke-ci-run:
+	@echo "Run CI smoke-run locally (ingest + backtest)"
+	make ingest-data && make backtest
 # Makefile: helper targets for maintainers
 
 

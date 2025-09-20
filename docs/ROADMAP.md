@@ -49,6 +49,17 @@ Next immediate items (short-term):
   - Model registry with validation scripts and metadata schema
 - Exit criteria: one trained model evaluated via WFO and committed to registry.
 
+New explicit goal: FreqAI sandbox integration for inference-driven smoke-runs
+- Purpose: provide a lightweight, repeatable path to run FreqAI inference in sandbox mode and feed predictions into the paper-trading simulator for end-to-end validation without any network/exchange access.
+- Deliverables:
+  - `configs/freqai.json` example (copy of `configs/freqai.example.json`) configured for offline inference
+  - `scripts/training/export_for_simulator.py` (small helper to convert model outputs to `predictions.csv` with `date,pair,prediction`)
+  - CI job that runs inference-only (or uses a small test-model) and produces `predictions.csv` as an artifact
+- Acceptance criteria:
+  - `predictions.csv` is produced and aligns to `data/dataset_SMOKE.parquet` index (no lookahead)
+  - The paper-trading simulator can consume `predictions.csv` and produce `outputs/paper_trade_report.json` reproducibly in CI/local runs
+  - All inference runs are offline-only and do not require secrets or external services
+
 ## Phase 3 — Paper trading (M3)
 - Goals: run a realistic paper-trading simulation that consumes OHLCV data and model predictions (or rule-based signals) and simulates order execution, fees, slippage, and P&L.
 - Deliverables:

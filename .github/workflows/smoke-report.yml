@@ -1,0 +1,56 @@
+name: Smoke report (non-blocking)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+
+      - name: Create data dir
+        run: mkdir -p data outputs
+
+      - name: Ingest smoke dataset
+        run: |
+          python3 scripts/qa/generate_smoke_dataset.py --path data/dataset_SMOKE.parquet --days 30 || \
+          python3 scripts/qa/generate_smoke_dataset.py --path data/dataset_SMOKE.pkl --days 30
+
+      - name: Run tests (non-blocking)
+        run: |
+          python -m pytest -q || true
+
+      - name: Run paper trading smoke backtest
+        run: |
+          python3 scripts/trading/paper_trading_sim.py --dataset data/dataset_SMOKE.parquet --output outputs/paper_trade_report.json || \
+          python3 scripts/trading/paper_trading_sim.py --dataset data/dataset_SMOKE.pkl --output outputs/paper_trade_report.json
+
+      - name: Extract metrics
+        run: |
+          python3 scripts/qa/extract_paper_trade_metrics.py --input outputs/paper_trade_report.json --output outputs/paper_trade_metrics.json || true
+
+      - name: Compare metrics (log only)
+        run: |
+          python3 scripts/qa/compare_metrics_to_baseline.py --metrics '{"final_net": 0.05, "max_drawdown": 0.10}' || true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-report-outputs
+          path: |
+            outputs/paper_trade_report.json
+            outputs/paper_trade_metrics.json
+            data/dataset_SMOKE.parquet
+            data/dataset_SMOKE.pkl

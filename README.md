@@ -79,3 +79,29 @@ Run quick developer checks using the repository Makefile:
 - `make precommit` — run pre-commit hooks locally
 - `make detect-secrets-scan` — run a detect-secrets scan using the repository baseline (if present)
 - `make venv` — create a local virtualenv and install dev requirements
+
+## Smoke-run CI and local reproduction
+
+The repository includes a deterministic smoke dataset generator, a small paper-trading simulator, and CI jobs that run nightly/manual smoke-runs.
+
+To reproduce the smoke-run locally:
+
+```bash
+# create venv (if not already created)
+make venv
+source .venv/bin/activate
+
+# generate the canonical smoke dataset (30 days example)
+python3 scripts/qa/generate_smoke_dataset.py --path data/dataset_SMOKE.parquet --days 30
+
+# run the simulator and extract metrics
+python3 scripts/trading/paper_trading_sim.py --dataset data/dataset_SMOKE.parquet --output outputs/paper_trade_report.json
+python3 scripts/qa/extract_paper_trade_metrics.py --input outputs/paper_trade_report.json --output outputs/paper_trade_metrics.json
+
+# (optional) propose baseline PR dry-run
+python3 scripts/qa/create_baseline_pr.py
+```
+
+CI behavior:
+- The `Smoke backtest` workflow runs on-demand and nightly. It will run unit tests, the simulator, extract metrics, and compare metrics to the stored baseline. If a regression is detected the job fails.
+- Automatic baseline PR creation is gated and will only push/create PRs when `ALLOW_NOTIFICATIONS` is explicitly set to `1` in repository secrets.
