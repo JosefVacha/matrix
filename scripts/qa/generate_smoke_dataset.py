@@ -1,19 +1,13 @@
 """Generate a tiny SMOKE dataset for CI smoke tests.
 
-This generator prefers to use pandas/fastparquet/pyarrow when available
-to write a Parquet file (`data/dataset_SMOKE.parquet`). If pandas/numpy
-are not installed in the environment (for example in minimal CI runners),
-the script falls back to a pure-stdlib implementation that writes a
-pickle file (`data/dataset_SMOKE.pkl`). The produced file contains the
-minimal columns expected by `scripts/training/train_baseline.py`:
-  - f_ret_1, f_ret_3, f_vol_12, label_R_H3, label_R_H3_pct
-and a monotonic date index named `date`.
-
-The fallback keeps the same public API: `generate(path, start, end) -> Path`.
+This generator prefers pandas (to write Parquet). If pandas/numpy are
+not available, it falls back to a stdlib pickled list-of-dicts. The
+output includes minimal features expected by downstream scripts.
 """
 
 from __future__ import annotations
 
+import argparse
 import datetime
 import pathlib
 import pickle
@@ -29,7 +23,6 @@ def _stdlib_generate_rows(start: str, end: str) -> List[Dict]:
     rows: List[Dict] = []
     for i in range(days):
         d = start_d + datetime.timedelta(days=i)
-        # simple synthetic features
         f_ret_1 = random.gauss(0, 1)
         f_ret_3 = random.gauss(0, 1)
         f_vol_12 = abs(random.gauss(1, 0.5))
@@ -47,21 +40,15 @@ def _stdlib_generate_rows(start: str, end: str) -> List[Dict]:
     return rows
 
 
-def generate(
-    path: str = "data/dataset_SMOKE.parquet",
-    start: str = "2025-01-01",
-    end: str = "2025-01-08",
-) -> pathlib.Path:
-    """Generate a tiny SMOKE dataset.
+def generate(path: str = "data/latest.parquet", start: str = "2025-01-01", end: str = "2025-01-08") -> pathlib.Path:
+    """Generate a tiny SMOKE dataset and write to `path`.
 
-    Tries the pandas route first; if pandas isn't available, uses stdlib
-    and writes a pickle file with a list-of-dicts. Returns the Path to
-    the written file.
+    Returns the pathlib.Path of the written file (parquet or .pkl).
     """
     p = pathlib.Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
 
-    # Prefer using pandas (if available) to keep parity with existing code
+    # Prefer pandas if available
     try:
         import numpy as np  # type: ignore
         import pandas as pd  # type: ignore
@@ -78,7 +65,6 @@ def generate(
         df = pd.DataFrame(data, index=idx)
         df.index.name = "date"
         assert df.index.is_monotonic_increasing
-        # Try parquet first, fallback to pickle via pandas
         try:
             df.to_parquet(p)
             return p
@@ -88,7 +74,6 @@ def generate(
             return pkl
 
     except Exception:
-        # Stdlib fallback: write a pickled list-of-dicts (date isoformat strings)
         rows = _stdlib_generate_rows(start, end)
         pkl = p.with_suffix(".pkl")
         with pkl.open("wb") as fh:
@@ -96,6 +81,24 @@ def generate(
         return pkl
 
 
-if __name__ == "__main__":
-    out = generate()
+def _cli() -> None:
+    parser = argparse.ArgumentParser(description="Generate deterministic smoke dataset")
+    parser.add_argument("--path", default="data/latest.parquet", help="Output path (parquet or pickle)")
+    parser.add_argument("--start", help="Start date YYYY-MM-DD", default=None)
+    parser.add_argument("--end", help="End date YYYY-MM-DD", default=None)
+    parser.add_argument("--days", type=int, default=14, help="Number of days to generate if start/end not provided")
+    args = parser.parse_args()
+
+    if not args.start or not args.end:
+        today = datetime.date.today()
+        end = today
+        start = end - datetime.timedelta(days=args.days - 1)
+        args.start = start.strftime("%Y-%m-%d")
+        args.end = end.strftime("%Y-%m-%d")
+
+    out = generate(path=args.path, start=args.start, end=args.end)
     print(f"Generated SMOKE dataset at: {out}")
+
+
+if __name__ == "__main__":
+    _cli()

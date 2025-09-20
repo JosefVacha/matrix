@@ -7,67 +7,55 @@ on:
 
 jobs:
   smoke-backtest:
-    name: Smoke backtest (scheduled/manual)
+    name: Smoke backtest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    on:
-      workflow_dispatch: {}
-      schedule:
-        - cron: '0 3 * * *'  # daily at 03:00 UTC
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    jobs:
-      smoke-backtest:
-        runs-on: ubuntu-latest
-        name: Smoke backtest
-        steps:
-          - name: Checkout
-            uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
 
-          - name: Set up Python
-            uses: actions/setup-python@v4
-            with:
-              python-version: '3.11'
+      - name: Create directories
+        run: mkdir -p data outputs
 
-          - name: Install dependencies
-            run: |
-              python -m pip install --upgrade pip
-              if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+      - name: Run data ingest tests (fail-fast)
+        run: python -m pytest -q tests/test_data_ingest.py
 
-          - name: Create directories
-            run: mkdir -p data outputs
+      - name: Generate ingest dataset
+        run: make ingest-data
 
-          - name: Run data ingest tests (fail-fast)
-            run: python -m pytest -q tests/test_data_ingest.py
+      - name: Export predictions
+        run: python3 scripts/training/export_for_simulator.py --dataset data/latest.parquet --output outputs/predictions.csv
 
-          - name: Generate ingest dataset
-            run: make ingest-data
+      - name: Run paper trading simulator with predictions
+        run: python3 scripts/trading/paper_trading_sim.py --dataset data/latest.parquet --predictions outputs/predictions.csv --output outputs/paper_trade_report.json
 
-          - name: Export predictions
-            run: python3 scripts/training/export_for_simulator.py --dataset data/latest.parquet --output outputs/predictions.csv
+      - name: Extract metrics
+        run: python3 scripts/qa/extract_paper_trade_metrics.py --input outputs/paper_trade_report.json --output outputs/paper_trade_metrics.json
 
-          - name: Run paper trading simulator with predictions
-            run: python3 scripts/trading/paper_trading_sim.py --dataset data/latest.parquet --predictions outputs/predictions.csv --output outputs/paper_trade_report.json
+      - name: Compare metrics to baseline
+        run: python3 scripts/qa/compare_metrics_to_baseline.py --metrics '{"final_net":0.05,"max_drawdown":0.10}'
 
-          - name: Extract metrics
-            run: python3 scripts/qa/extract_paper_trade_metrics.py --input outputs/paper_trade_report.json --output outputs/paper_trade_metrics.json
+      - name: Upload smoke artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-artifacts
+          path: |
+            outputs/predictions.csv
+            outputs/paper_trade_report.json
+            outputs/paper_trade_metrics.json
 
-          - name: Compare metrics to baseline
-            run: python3 scripts/qa/compare_metrics_to_baseline.py --metrics '{"final_net":0.05,"max_drawdown":0.10}'
+      - name: Notify Slack on failure (placeholder)
+        if: failure()
+        run: |
+          echo "Smoke backtest failed for repo: ${GITHUB_REPOSITORY} run: ${GITHUB_RUN_ID}"
+          echo "To enable Slack notifications, set the SLACK_WEBHOOK_URL repository secret."
 
-          - name: Upload smoke artifacts
-            uses: actions/upload-artifact@v4
-            with:
-              name: smoke-artifacts
-              path: |
-                outputs/predictions.csv
-                outputs/paper_trade_report.json
-                outputs/paper_trade_metrics.json
-
-          - name: Notify Slack on failure
-            if: failure()
-            env:
-              SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-            run: |
-              if [ -z "${SLACK_WEBHOOK_URL}" ]; then echo "No SLACK_WEBHOOK_URL set; skipping"; exit 0; fi
-              payload=$(jq -n --arg run "${{ github.run_id }}" --arg repo "${{ github.repository }}" '{text: ("Smoke backtest failed for repo: " + $repo + " run: " + $run)}')
-              curl -s -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL" || true
-                  path: |

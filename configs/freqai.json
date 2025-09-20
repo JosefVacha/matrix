@@ -1,0 +1,33 @@
+{
+    "// NOTE": "Offline-friendly FreqAI configuration for MATRIX - safe defaults",
+    "freqai": {
+        "enabled": true,
+        "purge_old_models": false,
+        "train_period_days": 30,
+        "backtest_period_days": 7,
+        "identifier": "matrix_local_smoke",
+        "save_backtest_models": false,
+        "model_training_parameters": {
+            "n_estimators": 100,
+            "learning_rate": 0.1,
+            "max_depth": 4,
+            "random_state": 42
+        },
+        "feature_parameters": {
+            "DI_threshold": 0.9,
+            "weight_factor": 0.9,
+            "principal_component_analysis": false,
+            "use_SVM_to_remove_outliers": false,
+            "include_timeframes": ["5m"],
+            "include_shifted_candles": 0
+        },
+        "data_split_parameters": {
+            "test_size": 0.33,
+            "shuffle": false
+        },
+        "model_type": "LightGBMRegressor",
+        "model_save_type": "local",
+        "model_local_path": "models/LOCAL_SMOKE/",
+        "label_period_candles": 24
+    }
+}
