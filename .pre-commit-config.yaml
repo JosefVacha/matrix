@@ -24,3 +24,16 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets-hook
+        args: ['--baseline', '.secrets.baseline']
+
+  - repo: https://github.com/pre-commit/mirrors-git-secrets
+    rev: v1.3.1
+    hooks:
+      - id: git-secrets
