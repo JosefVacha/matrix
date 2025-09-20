@@ -1,7 +1,12 @@
 name: Paper-trade smoke (manual)
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      regression_tolerance:
+        description: 'Relative tolerance for regression detection (fraction, e.g. 0.01)'
+        required: false
+        default: '0.01'
 
 jobs:
   paper_trade_smoke:
@@ -56,5 +61,6 @@ jobs:
         env:
           REGRESSION_TOLERANCE: 0.01
         run: |
-          echo "Comparing metrics to baseline with tolerance=${REGRESSION_TOLERANCE}"
-          python3 scripts/qa/compare_metrics_to_baseline.py --tol ${REGRESSION_TOLERANCE}
+          RT=${{ github.event.inputs.regression_tolerance || env.REGRESSION_TOLERANCE }}
+          echo "Comparing metrics to baseline with tolerance=${RT}"
+          python3 scripts/qa/compare_metrics_to_baseline.py --tol ${RT}
