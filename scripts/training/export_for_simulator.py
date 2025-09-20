@@ -6,6 +6,7 @@ Two safe modes:
 
 This script is offline-only and does not contact external services.
 """
+
 import argparse
 import pandas as pd
 from pandas import DatetimeIndex
@@ -44,11 +45,15 @@ def reindex_predictions(pred_df: pd.DataFrame, index: DatetimeIndex) -> pd.DataF
     return pred_df[["prediction"]].reset_index().rename(columns={"index": "datetime"})
 
 
-def predict_from_pickle(pickle_path: str, index: DatetimeIndex, features_fn=None) -> pd.DataFrame:
+def predict_from_pickle(
+    pickle_path: str, index: DatetimeIndex, features_fn=None
+) -> pd.DataFrame:
     try:
         import joblib
     except Exception:
-        raise RuntimeError("joblib is required to load model pickles. Install it in your environment.")
+        raise RuntimeError(
+            "joblib is required to load model pickles. Install it in your environment."
+        )
 
     model = joblib.load(pickle_path)
     # features_fn(index) should return a DataFrame X aligned to index
@@ -72,9 +77,13 @@ def predict_from_pickle(pickle_path: str, index: DatetimeIndex, features_fn=None
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--smoke", default="data/dataset_SMOKE.parquet", help="Path to smoke dataset")
+    p.add_argument(
+        "--smoke", default="data/dataset_SMOKE.parquet", help="Path to smoke dataset"
+    )
     p.add_argument("--model-pickle", default=None, help="Path to a local model pickle")
-    p.add_argument("--predictions-csv", default=None, help="Existing predictions CSV to reindex")
+    p.add_argument(
+        "--predictions-csv", default=None, help="Existing predictions CSV to reindex"
+    )
     p.add_argument("--output", default="predictions.csv", help="Output CSV path")
     args = p.parse_args()
 

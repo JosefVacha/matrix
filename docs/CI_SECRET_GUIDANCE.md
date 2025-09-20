@@ -18,3 +18,12 @@ Mitigation steps if a secret is found in git history
 1. Immediately rotate the exposed credential.
 2. Remove the secret from history using `git filter-repo` or BFG and force-push to main branches (coordinate with other contributors).
 3. Revoke and recreate any tokens/keys associated, and audit usage logs for suspicious activity.
+
+Local developer quick-start
+
+- Use the Makefile targets to run checks locally:
+	- `make precommit` — run configured pre-commit hooks
+	- `make detect-secrets-scan` — run a detect-secrets scan using the repository baseline if present
+
+- To set up a quick virtualenv for development:
+	- `make venv`

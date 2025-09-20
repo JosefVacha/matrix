@@ -1,3 +1,18 @@
+## Developer convenience targets for local CI hygiene
+
+.PHONY: precommit detect-secrets-scan venv
+
+precommit:
+	@echo "Running pre-commit hooks (install pre-commit first: pip install pre-commit)"
+	pre-commit run --all-files
+
+detect-secrets-scan:
+	@echo "Running detect-secrets scan (uses .secrets.baseline if present)"
+	python3 -m pip install detect-secrets==1.4.0
+	./scripts/ci/run_detect_secrets.sh || true
+
+venv:
+	python3 -m venv .venv && . .venv/bin/activate && python3 -m pip install -r requirements-dev.txt
 # Makefile: helper targets for maintainers
 
 

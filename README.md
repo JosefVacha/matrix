@@ -71,3 +71,11 @@ python3 -m tests.test_guardrails
 ## License
 
 MIT License - viz LICENSE soubor.
+
+## Developer commands
+
+Run quick developer checks using the repository Makefile:
+
+- `make precommit` — run pre-commit hooks locally
+- `make detect-secrets-scan` — run a detect-secrets scan using the repository baseline (if present)
+- `make venv` — create a local virtualenv and install dev requirements

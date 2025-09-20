@@ -22,7 +22,7 @@ def main():
         type=str,
         default=None,
         help=(
-            "JSON string mapping metric->relative_tolerance, e.g. '{\"final_net\": 0.05, \"max_drawdown\": 0.1}'"
+            'JSON string mapping metric->relative_tolerance, e.g. \'{"final_net": 0.05, "max_drawdown": 0.1}\''
         ),
     )
     args = p.parse_args()
@@ -72,7 +72,9 @@ def main():
             continue
 
         # Direction: for most metrics higher is better (final_net). For drawdown, lower is better.
-        if metric.lower().endswith("drawdown") or metric.lower().startswith("max_drawdown"):
+        if metric.lower().endswith("drawdown") or metric.lower().startswith(
+            "max_drawdown"
+        ):
             # drawdown: regression if current > baseline * (1 + tol)
             allowed = bnum * (1.0 + float(tol))
             if cnum > allowed:

@@ -15,6 +15,7 @@ from typing import List, Dict, Any
 
 # Import the pure-Python mapping function implemented elsewhere in the repo.
 from src.matrix.strategy.mapping import map_predictions_to_signals
+
 try:
     import pandas as pd
 except Exception:
@@ -54,7 +55,9 @@ def preds_to_signal_cols(preds: List[float], thresholds: dict) -> Dict[str, List
     cooldown = int(thresholds.get("cooldown", thresholds.get("cooldown_bars", 0)))
 
     # Delegate to the canonical mapping implementation
-    mapped = map_predictions_to_signals(preds, up=up, dn=dn, hysteresis=hysteresis, cooldown_bars=cooldown)
+    mapped = map_predictions_to_signals(
+        preds, up=up, dn=dn, hysteresis=hysteresis, cooldown_bars=cooldown
+    )
 
     # Ensure outputs are lists of ints and match length
     out = {}
@@ -63,7 +66,7 @@ def preds_to_signal_cols(preds: List[float], thresholds: dict) -> Dict[str, List
         out[k] = [int(v) for v in list(vals)]
         # Guarantee same length as preds
         if len(out[k]) != len(preds):
-            out[k] = ([0] * len(preds))
+            out[k] = [0] * len(preds)
     return out
 
 

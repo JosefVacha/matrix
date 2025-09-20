@@ -2,6 +2,12 @@
 
 This roadmap expands the existing milestones and lays out a clear path from the current offline sandbox to paper trading (simulation) using FreqAI for model-driven signals and finally to a safe, documented production workflow.
 
+Recent updates (quick links):
+
+- Last updated: 2025-09-20
+- Draft PR with the guardrails & baseline automation changes: https://github.com/JosefVacha/matrix/pull/10 (branch: chore/qa-guardrails-notifier-ready)
+
+
 ## Overarching phases
 - Phase 0 — Offline foundations & QA (current)
 - Phase 1 — Strategy adapter & reproducible backtest (Freqtrade-compatible, offline only)

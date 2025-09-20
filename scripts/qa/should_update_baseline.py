@@ -7,6 +7,7 @@ Prints to stdout two lines:
 
 Exit code 0 always.
 """
+
 import argparse
 import json
 from pathlib import Path
@@ -14,7 +15,9 @@ from pathlib import Path
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--tol", type=float, default=0.0, help="relative improvement fraction required")
+    p.add_argument(
+        "--tol", type=float, default=0.0, help="relative improvement fraction required"
+    )
     args = p.parse_args()
 
     base = Path("ci/baselines/paper_trade_metrics_baseline.json")

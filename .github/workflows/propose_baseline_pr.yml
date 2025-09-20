@@ -31,9 +31,24 @@ jobs:
         run: |
           python3 scripts/trading/paper_trading_sim.py --dataset data/dataset_SMOKE.parquet --output outputs/paper_trade_report.json
 
+      - name: Upload simulator outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper-trade-report
+          path: |
+            outputs/paper_trade_report.json
+            outputs/paper_trade_report_trades.csv
+            outputs/paper_trade_metrics.json
+
       - name: Extract metrics
         run: |
           python3 scripts/qa/extract_paper_trade_metrics.py --input outputs/paper_trade_report.json --output outputs/paper_trade_metrics.json
+
+      - name: Upload extracted metrics
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper-trade-metrics
+          path: outputs/paper_trade_metrics.json
 
       - name: Compare to baseline
         run: |

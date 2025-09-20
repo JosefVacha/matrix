@@ -12,7 +12,12 @@ def test_reindex_predictions(tmp_path: Path):
     smoke.to_parquet(smoke_path)
 
     # Create a small predictions CSV that misses one timestamp
-    pred_df = pd.DataFrame({"datetime": [idx[0].isoformat(), idx[2].isoformat()], "prediction": [0.5, -0.2]})
+    pred_df = pd.DataFrame(
+        {
+            "datetime": [idx[0].isoformat(), idx[2].isoformat()],
+            "prediction": [0.5, -0.2],
+        }
+    )
     pred_csv = tmp_path / "preds.csv"
     pred_df.to_csv(pred_csv, index=False)
 

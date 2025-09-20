@@ -102,7 +102,7 @@ Checklist before merging any automation changes
 - [ ] Workflow inputs configured so remote actions remain opt-in per dispatch
 
 End of playbook
- 
+
 ## Quick commands (examples)
 
 Set ALLOW_NOTIFICATIONS via GH CLI:

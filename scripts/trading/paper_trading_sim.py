@@ -54,7 +54,13 @@ def run_sim(df: pd.DataFrame, initial_cash: float, fee: float, slippage_pct: flo
                 # record buy trade; pnl unknown until closed
                 last_buy_price_full = fill_price + fee
                 trades.append(
-                    {"ts": str(ts), "side": "buy", "price": fill_price, "cash": cash, "pnl": None}
+                    {
+                        "ts": str(ts),
+                        "side": "buy",
+                        "price": fill_price,
+                        "cash": cash,
+                        "pnl": None,
+                    }
                 )
         elif sig == -1 and position >= 0:
             # sell existing position
@@ -70,7 +76,13 @@ def run_sim(df: pd.DataFrame, initial_cash: float, fee: float, slippage_pct: flo
                     except Exception:
                         pnl = None
                 trades.append(
-                    {"ts": str(ts), "side": "sell", "price": fill_price, "cash": cash, "pnl": pnl}
+                    {
+                        "ts": str(ts),
+                        "side": "sell",
+                        "price": fill_price,
+                        "cash": cash,
+                        "pnl": pnl,
+                    }
                 )
                 position = 0
                 last_buy_price_full = None
