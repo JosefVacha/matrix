@@ -86,6 +86,6 @@ Next immediate items (short-term):
 
 ---
 
-If you approve, I'll add the safe paper-trading simulator script and a Makefile target and run a smoke paper-trade using `data/dataset_SMOKE.parquet`.
+If you approve, we can run the safe paper-trading simulator smoke run in CI or locally using the documented Makefile target.
 
 ```
