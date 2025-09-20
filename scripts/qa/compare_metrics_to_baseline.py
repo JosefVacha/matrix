@@ -8,6 +8,7 @@ Exits with:
 Usage:
   python3 scripts/qa/compare_metrics_to_baseline.py --tol 0.01
 """
+
 import argparse
 import json
 import sys
@@ -16,7 +17,14 @@ from pathlib import Path
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--tol", type=float, default=0.01, help="relative tolerance (fraction) allowed drop from baseline final_net")
+    p.add_argument(
+        "--metrics",
+        type=str,
+        default=None,
+        help=(
+            "JSON string mapping metric->relative_tolerance, e.g. '{\"final_net\": 0.05, \"max_drawdown\": 0.1}'"
+        ),
+    )
     args = p.parse_args()
 
     base = Path("ci/baselines/paper_trade_metrics_baseline.json")
@@ -33,18 +41,55 @@ def main():
     b = json.loads(base.read_text())
     c = json.loads(cur.read_text())
 
-    baseline_final = float(b.get("final_net", 0.0))
-    current_final = float(c.get("final_net", 0.0))
+    # Default metric set
+    if args.metrics:
+        try:
+            metric_tols = json.loads(args.metrics)
+        except Exception as e:
+            print("Invalid --metrics JSON:", e)
+            return 4
+    else:
+        metric_tols = {"final_net": 0.05}
 
-    print("baseline final_net:", baseline_final)
-    print("current  final_net:", current_final)
+    regressions = []
+    for metric, tol in metric_tols.items():
+        bval = b.get(metric)
+        cval = c.get(metric)
+        print(f"metric={metric} baseline={bval} current={cval} tol={tol}")
+        if bval is None:
+            print(f"Baseline missing metric {metric}; skipping")
+            continue
+        if cval is None:
+            print(f"Current metrics missing {metric}; failing")
+            regressions.append((metric, "missing_current"))
+            continue
 
-    allowed = baseline_final * (1.0 - args.tol)
-    if current_final < allowed:
-        print(f"Regression detected: final_net {current_final} < allowed {allowed} (tol={args.tol})")
+        try:
+            bnum = float(bval)
+            cnum = float(cval)
+        except Exception:
+            print(f"Non-numeric metric {metric}; skipping")
+            continue
+
+        # Direction: for most metrics higher is better (final_net). For drawdown, lower is better.
+        if metric.lower().endswith("drawdown") or metric.lower().startswith("max_drawdown"):
+            # drawdown: regression if current > baseline * (1 + tol)
+            allowed = bnum * (1.0 + float(tol))
+            if cnum > allowed:
+                regressions.append((metric, cnum, allowed))
+        else:
+            # higher is better: regression if current < baseline * (1 - tol)
+            allowed = bnum * (1.0 - float(tol))
+            if cnum < allowed:
+                regressions.append((metric, cnum, allowed))
+
+    if regressions:
+        print("Regressions detected:")
+        for r in regressions:
+            print(r)
         return 3
 
-    print("No regression within tolerance")
+    print("No regression within tolerances")
     return 0
 
 

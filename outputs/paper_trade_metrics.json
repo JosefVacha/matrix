@@ -1,4 +1,9 @@
 {
   "final_net": 1156.1794799759316,
-  "trades_count": 3
+  "trades_count": 3,
+  "trade_pnl_mean": 157.27741521682614,
+  "trade_pnl_median": 157.27741521682614,
+  "trade_pnl_max": 157.27741521682614,
+  "trade_pnl_min": 157.27741521682614,
+  "max_drawdown": 0.011985992634555916
 }

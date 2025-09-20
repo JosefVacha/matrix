@@ -34,6 +34,8 @@ def run_sim(df: pd.DataFrame, initial_cash: float, fee: float, slippage_pct: flo
     cash = initial_cash
     position = 0.0
     trades = []
+    equity = []
+    last_buy_price_full = None
 
     signals = simple_signal(df)
 
@@ -49,8 +51,10 @@ def run_sim(df: pd.DataFrame, initial_cash: float, fee: float, slippage_pct: flo
             if cash >= cost:
                 cash -= cost
                 position = 1.0
+                # record buy trade; pnl unknown until closed
+                last_buy_price_full = fill_price + fee
                 trades.append(
-                    {"ts": str(ts), "side": "buy", "price": fill_price, "cash": cash}
+                    {"ts": str(ts), "side": "buy", "price": fill_price, "cash": cash, "pnl": None}
                 )
         elif sig == -1 and position >= 0:
             # sell existing position
@@ -58,20 +62,35 @@ def run_sim(df: pd.DataFrame, initial_cash: float, fee: float, slippage_pct: flo
             proceeds = fill_price - fee
             if position > 0:
                 cash += proceeds
+                # compute pnl against last buy cost if available
+                pnl = None
+                if last_buy_price_full is not None:
+                    try:
+                        pnl = proceeds - last_buy_price_full
+                    except Exception:
+                        pnl = None
                 trades.append(
-                    {"ts": str(ts), "side": "sell", "price": fill_price, "cash": cash}
+                    {"ts": str(ts), "side": "sell", "price": fill_price, "cash": cash, "pnl": pnl}
                 )
                 position = 0
+                last_buy_price_full = None
+
+        # record equity after this step (mark-to-market at next close)
+        current_close = float(df.iloc[i + 1]["close"])
+        equity.append(cash + position * current_close)
 
     # final mark-to-market
     final_close = float(df.iloc[-1]["close"])
     net = cash + position * final_close
+    # append final equity point
+    equity.append(net)
     return {
         "initial_cash": initial_cash,
         "final_net": net,
         "cash": cash,
         "position": position,
         "trades": trades,
+        "equity": equity,
     }
 
 

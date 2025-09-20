@@ -2,6 +2,8 @@
 
 ![guardrails](https://github.com/JosefVacha/matrix/actions/workflows/smoke-validators.yml/badge.svg)
 ![paper-trade smoke (manual)](https://github.com/JosefVacha/matrix/actions/workflows/paper_trade_smoke.yml/badge.svg)
+![paper-trade smoke (weekly)](https://github.com/JosefVacha/matrix/actions/workflows/ci_paper_trade_smoke.yml/badge.svg)
+![propose baseline PR](https://github.com/JosefVacha/matrix/actions/workflows/propose_baseline_pr.yml/badge.svg)
 
 MATRIX = thin modular layer over Freqtrade + FreqAI; Superalgos only as mental node map.
 
@@ -37,6 +39,8 @@ sensor(OHLCV) → feature(gen) → trainer(FreqAI) → server(FreqAI.predict) �
 - [Freqtrade Documentation](https://www.freqtrade.io/)
 - [FreqAI Documentation](https://www.freqtrade.io/en/stable/freqai/)
 - [Superalgos Documentation](https://superalgos.org/) (conceptual inspiration)
+ - [Notifier usage and safe enablement](docs/NOTIFIER_USAGE.md)
+ - [RUNBOOK (maintainer playbook)](Knowledge/RUNBOOK.md)
 
 ## Getting Started
 

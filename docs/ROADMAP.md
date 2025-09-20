@@ -1,4 +1,3 @@
-```markdown
 # MATRIX Roadmap — complete plan toward paper trading and production readiness
 
 This roadmap expands the existing milestones and lays out a clear path from the current offline sandbox to paper trading (simulation) using FreqAI for model-driven signals and finally to a safe, documented production workflow.
@@ -68,9 +67,29 @@ Next immediate items (short-term):
 
 ## Immediate roadmap items (next 30 days)
 1. Finalize the paper-trading simulator and example run (this PR)
+  - Owner: engineering (dev who maintains `scripts/trading/paper_trading_sim.py`)
+  - Artifacts: `outputs/paper_trade_report.json`, `outputs/paper_trade_report_trades.csv`, example CLI invocation in `Makefile`
+  - Exit criteria: a local run reproduces the committed baseline metrics and writes artifacts under `outputs/`.
+
 2. Create a short how-to for converting a trained FreqAI model to simulator signals
+  - Owner: ML lead or contributor who built the model
+  - Artifacts: short doc `docs/convert_model_to_signals.md` and an example script `scripts/training/export_for_simulator.py`
+  - Exit criteria: given a saved model artifact, the how-to and script produce a `predictions.csv` aligned to the smoke dataset index and a short example run that feeds those predictions into the simulator.
+
 3. Add a CI smoke job that runs the paper-trading simulator with a tiny dataset to catch regressions
+  - Owner: CI maintainer
+  - Artifacts: `.github/workflows/paper_trade_smoke.yml` (manual -> add scheduled or push-based optional job), and `ci/baselines/paper_trade_metrics_baseline.json`
+  - Exit criteria: the workflow runs in CI, uploads `paper_trade_metrics.json` as an artifact, and fails only when regressions exceed the configured relative tolerance.
+
 4. Prepare a playbook for maintainers to enable notifications and monitor failures
+  - Owner: Ops/maintainer
+  - Artifacts: `docs/NOTIFIER_USAGE.md` (how to enable `ALLOW_NOTIFICATIONS`, required secrets, and review checklist), and optional `scripts/qa/watch_pr_ci_polling.sh` usage examples
+  - Exit criteria: maintainers can follow the playbook to enable notifications for a single workflow run and verify remote notifications are triggered in a controlled manner.
+
+5. (Optional) Expand smoke metrics and automation
+  - Owner: engineering/ML
+  - Artifacts: `scripts/qa/extract_paper_trade_metrics.py` expanded to include drawdown and per-trade P&L; CI comparison script accepts multiple metrics and per-metric tolerances.
+  - Exit criteria: CI comparison step reports all metrics and the baseline PR flow includes a clear metrics diff for reviewers.
 
 ## How this maps to repository artifacts
 - `scripts/qa/check_copilot_guardrails.py` — guardrails
@@ -87,5 +106,17 @@ Next immediate items (short-term):
 ---
 
 If you approve, we can run the safe paper-trading simulator smoke run in CI or locally using the documented Makefile target.
+
+## FAQ — quick answers
+
+- Q: Should we use Freqtrade/FreqAI instead of our simulator?
+  - A: Use the repo simulator for fast, deterministic CI smoke runs and for developer feedback. For full backtests, retraining, and live model serving prefer the official Freqtrade + FreqAI tooling; this repo is intentionally light-weight and designed to produce reproducible artifacts suitable for baseline comparisons.
+
+- Q: Is the notifier re-implementing any official GitHub/Freqtrade feature?
+  - A: No — notifier is an ops helper that automates repo-specific workflows (issue creation, Slack alerts) for guardrail failures. It is safe-by-default and requires explicit enablement. Do not enable in production without following the RUNBOOK checklist.
+
+- Q: How do I convert FreqAI model outputs to simulator predictions?
+  - A: See `docs/convert_model_to_signals.md` for the exact export format (CSV/Parquet with `date,pair,prediction`), alignment rules (no lookahead), and an example export command.
+
 
 ```

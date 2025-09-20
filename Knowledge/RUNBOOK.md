@@ -102,3 +102,16 @@ Checklist before merging any automation changes
 - [ ] Workflow inputs configured so remote actions remain opt-in per dispatch
 
 End of playbook
+ 
+## Quick commands (examples)
+
+Set ALLOW_NOTIFICATIONS via GH CLI:
+
+```
+gh secret set ALLOW_NOTIFICATIONS --body "1" --repo $GITHUB_REPOSITORY
+```
+
+Run the propose baseline PR workflow (manual dispatch example):
+
+1. In GitHub UI: Actions → Propose baseline PR → Run workflow → set `allow_push=true`.
+2. Or use the API / gh cli to dispatch the workflow (advanced).
