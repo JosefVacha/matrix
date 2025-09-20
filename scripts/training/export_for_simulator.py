@@ -4,6 +4,7 @@ This lightweight exporter reads `data/latest.parquet` (or .pkl) and writes
 `outputs/predictions.csv` with columns date,pair,prediction. It is offline-only
 and deterministic for smoke tests.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -26,7 +27,9 @@ def _load_dataset(path: str):
         return pd.read_pickle(p)
 
 
-def export_predictions(dataset_path: str = "data/latest.parquet", output: str = "outputs/predictions.csv") -> pathlib.Path:
+def export_predictions(
+    dataset_path: str = "data/latest.parquet", output: str = "outputs/predictions.csv"
+) -> pathlib.Path:
     p = pathlib.Path(output)
     p.parent.mkdir(parents=True, exist_ok=True)
 
@@ -47,7 +50,11 @@ def export_predictions(dataset_path: str = "data/latest.parquet", output: str = 
         random.seed(42)
         for r in data:
             d = r.get("date") if isinstance(r, dict) else str(r)
-            pred = float(r.get("f_ret_1", 0)) * 0.5 if isinstance(r, dict) and "f_ret_1" in r else random.gauss(0, 1)
+            pred = (
+                float(r.get("f_ret_1", 0)) * 0.5
+                if isinstance(r, dict) and "f_ret_1" in r
+                else random.gauss(0, 1)
+            )
             rows.append((d, "BTC/USD", pred))
 
     with open(p, "w", newline="") as fh:
@@ -77,4 +84,3 @@ def _cli():
 
 if __name__ == "__main__":
     _cli()
-

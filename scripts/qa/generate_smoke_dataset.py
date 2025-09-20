@@ -40,7 +40,11 @@ def _stdlib_generate_rows(start: str, end: str) -> List[Dict]:
     return rows
 
 
-def generate(path: str = "data/latest.parquet", start: str = "2025-01-01", end: str = "2025-01-08") -> pathlib.Path:
+def generate(
+    path: str = "data/latest.parquet",
+    start: str = "2025-01-01",
+    end: str = "2025-01-08",
+) -> pathlib.Path:
     """Generate a tiny SMOKE dataset and write to `path`.
 
     Returns the pathlib.Path of the written file (parquet or .pkl).
@@ -83,10 +87,17 @@ def generate(path: str = "data/latest.parquet", start: str = "2025-01-01", end: 
 
 def _cli() -> None:
     parser = argparse.ArgumentParser(description="Generate deterministic smoke dataset")
-    parser.add_argument("--path", default="data/latest.parquet", help="Output path (parquet or pickle)")
+    parser.add_argument(
+        "--path", default="data/latest.parquet", help="Output path (parquet or pickle)"
+    )
     parser.add_argument("--start", help="Start date YYYY-MM-DD", default=None)
     parser.add_argument("--end", help="End date YYYY-MM-DD", default=None)
-    parser.add_argument("--days", type=int, default=14, help="Number of days to generate if start/end not provided")
+    parser.add_argument(
+        "--days",
+        type=int,
+        default=14,
+        help="Number of days to generate if start/end not provided",
+    )
     args = parser.parse_args()
 
     if not args.start or not args.end:

@@ -109,7 +109,11 @@ def run_sim(df: pd.DataFrame, initial_cash: float, fee: float, slippage_pct: flo
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", default="data/dataset_SMOKE.parquet")
-    parser.add_argument("--predictions", default=None, help="Optional predictions CSV (date,pair,prediction) to drive signals")
+    parser.add_argument(
+        "--predictions",
+        default=None,
+        help="Optional predictions CSV (date,pair,prediction) to drive signals",
+    )
     parser.add_argument("--initial-cash", type=float, default=1000.0)
     parser.add_argument("--fee", type=float, default=0.1)
     parser.add_argument("--slippage-pct", type=float, default=0.001)

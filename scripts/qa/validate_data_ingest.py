@@ -6,12 +6,12 @@ Checks:
 - No NaNs in OHLCV-like columns (f_ret_1,f_ret_3,f_vol_12)
 - Index is monotonic (for DataFrame)
 """
+
 from __future__ import annotations
 
 import argparse
 import pathlib
 import pickle
-
 
 
 def validate(path: str) -> bool:

@@ -6,14 +6,17 @@ import pandas as pd
 def make_test_dataset(path: pathlib.Path):
     # 5 rows of deterministic sample OHLCV-like DataFrame with datetime index
     idx = pd.date_range(start="2025-09-01T00:00:00", periods=5, freq="H")
-    df = pd.DataFrame({
-        "open": [100 + i for i in range(5)],
-        "high": [101 + i for i in range(5)],
-        "low": [99 + i for i in range(5)],
-        "close": [100 + i for i in range(5)],
-        "volume": [10 * (i + 1) for i in range(5)],
-        "f_ret_1": [0.01 * i for i in range(5)],
-    }, index=idx)
+    df = pd.DataFrame(
+        {
+            "open": [100 + i for i in range(5)],
+            "high": [101 + i for i in range(5)],
+            "low": [99 + i for i in range(5)],
+            "close": [100 + i for i in range(5)],
+            "volume": [10 * (i + 1) for i in range(5)],
+            "f_ret_1": [0.01 * i for i in range(5)],
+        },
+        index=idx,
+    )
     path.parent.mkdir(parents=True, exist_ok=True)
     df.to_parquet(path)
     return df
@@ -30,7 +33,9 @@ def test_exporter_writes_csv(tmp_path):
     # run exporter function directly
     from scripts.training import export_for_simulator as exporter
 
-    out_path = exporter.export_predictions(dataset_path=str(test_data), output=str(out_csv))
+    out_path = exporter.export_predictions(
+        dataset_path=str(test_data), output=str(out_csv)
+    )
     assert out_path.exists()
 
     # validate CSV structure

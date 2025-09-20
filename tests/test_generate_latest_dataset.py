@@ -2,18 +2,23 @@ import pathlib
 from scripts.qa import generate_smoke_dataset
 
 
-
 def test_generate_writes_file(tmp_path):
     out = tmp_path / "latest.parquet"
-    path = generate_smoke_dataset.generate(path=str(out), start="2025-01-01", end="2025-01-07")
+    path = generate_smoke_dataset.generate(
+        path=str(out), start="2025-01-01", end="2025-01-07"
+    )
     assert pathlib.Path(path).exists()
 
 
 def test_generate_deterministic(tmp_path):
     out1 = tmp_path / "a.parquet"
     out2 = tmp_path / "b.parquet"
-    p1 = generate_smoke_dataset.generate(path=str(out1), start="2025-01-01", end="2025-01-07")
-    p2 = generate_smoke_dataset.generate(path=str(out2), start="2025-01-01", end="2025-01-07")
+    p1 = generate_smoke_dataset.generate(
+        path=str(out1), start="2025-01-01", end="2025-01-07"
+    )
+    p2 = generate_smoke_dataset.generate(
+        path=str(out2), start="2025-01-01", end="2025-01-07"
+    )
     # Prefer comparing DataFrame content when pandas is available; fallback to binary compare
     try:
         import pandas as pd
