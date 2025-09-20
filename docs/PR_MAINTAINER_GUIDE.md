@@ -32,7 +32,7 @@ Via `gh` CLI (example):
 gh secret set SLACK_WEBHOOK --body "https://hooks.slack.com/services/ABC/DEF/GHI" --repo $GITHUB_REPOSITORY
 
 # add automation token
-gh secret set AUTOMATION_GH_TOKEN --body "ghp_..." --repo $GITHUB_REPOSITORY
+gh secret set AUTOMATION_GH_TOKEN --body "__PASTE_YOUR_PAT_HERE__" --repo $GITHUB_REPOSITORY
 ```
 
 3) Run guardrails locally

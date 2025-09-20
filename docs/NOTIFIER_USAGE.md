@@ -33,7 +33,7 @@ python3 scripts/qa/notify_guardrail_failure.py \
 ```bash
 export ALLOW_NOTIFICATIONS=1
 export SLACK_WEBHOOK='https://hooks.slack.com/services/..'   # optional
-export GITHUB_TOKEN='ghp_...'
+export GITHUB_TOKEN='__EXAMPLE_GITHUB_TOKEN__'
 export GITHUB_REPOSITORY='owner/repo'
 python3 scripts/qa/notify_guardrail_failure.py --input-file outputs/guardrail_failure-YYYYMMDD-HHMMSS.json --enable-issues --enable-slack
 ```
@@ -72,7 +72,7 @@ python3 scripts/qa/notify_guardrail_failure.py --input-file outputs/guardrail_fa
 ```bash
 export ALLOW_NOTIFICATIONS=1
 export SLACK_WEBHOOK='https://hooks.slack.com/services/..'
-export GITHUB_TOKEN='ghp_...'
+export GITHUB_TOKEN='__EXAMPLE_GITHUB_TOKEN__'
 export GITHUB_REPOSITORY='owner/repo'
 python3 scripts/qa/notify_guardrail_failure.py --input-file outputs/guardrail_failure-20250920-021225.json --enable-issues --enable-slack
 ```
