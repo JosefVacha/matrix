@@ -79,6 +79,8 @@ NOTE: Canonical reply template (Czech) lives in `Knowledge/REPLY_TEMPLATES.md` �
 - **If user asks in Czech, answer in Czech, but produce code/docs/commits in English**
   - **Operational rule (explicit):** For conversational replies to the user (chat, PR comments, code review discussion) respond in Czech when the user uses Czech. Always keep repository artifacts (filenames, code, commits, docs) in English per repo standard. This file (copilot-instructions.md) remains authoritative.
 
+- **MANDATORY (Czech): Pokud uživatel píše v češtině, odpověz v češtině.**
+
 ## Links (term references)
 - Freqtrade/FreqAI docs: https://www.freqtrade.io/
 - Superalgos docs: https://superalgos.org/

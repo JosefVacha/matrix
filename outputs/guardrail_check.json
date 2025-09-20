@@ -1,0 +1,29 @@
+{
+  "missing_critical": [],
+  "conditional_checked": [
+    ".github/workflows/*.yml",
+    ".vscode/tasks.json",
+    "docs/CONTRACTS.md",
+    "docs/COPILOT_TODO.md",
+    "docs/LABELS.md",
+    "docs/LANGUAGE_AUDIT.md",
+    "docs/MODEL_REGISTRY.md",
+    "docs/TRAINING_PROTOCOL.md"
+  ],
+  "missing_conditionals": [],
+  "code_fence": {
+    "code": 0,
+    "output": "No code-fence artifacts found in Python files\n"
+  },
+  "cli_export": {
+    "code": 0,
+    "output": ""
+  },
+  "preface_ok": true,
+  "language_ok": true,
+  "ok": true,
+  "scopes_detected": [
+    "ci",
+    "docs"
+  ]
+}

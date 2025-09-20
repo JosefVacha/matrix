@@ -103,6 +103,9 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-file", help="Path to guardrail JSON output (optional)")
+    parser.add_argument("--enable-issues", action="store_true", help="Allow creating GitHub issues (off by default)")
+    parser.add_argument("--enable-slack", action="store_true", help="Allow posting to Slack webhook (off by default)")
+    parser.add_argument("--dry-run", action="store_true", help="Do not perform any remote actions; print what would be done")
     args = parser.parse_args()
 
     if args.input_file:
@@ -128,9 +131,17 @@ def main():
         + json.dumps(data, indent=2)
         + "\n"
     )
-    # Optionally post to Slack if a webhook is configured
+    # Optionally post to Slack if a webhook is configured and the caller enabled it
+    # Additionally require ALLOW_NOTIFICATIONS=1 in the environment to permit any remote actions.
+    allow = os.environ.get("ALLOW_NOTIFICATIONS") == "1"
     slack_webhook = os.environ.get("SLACK_WEBHOOK")
-    if slack_webhook:
+    if not allow and (args.enable_slack or args.enable_issues):
+        print("Remote notifications are disabled. Set ALLOW_NOTIFICATIONS=1 to allow creating issues or posting to Slack.")
+
+    if args.dry_run:
+        print("Dry-run mode: no remote actions will be performed even if enables/ALLOW_NOTIFICATIONS are set")
+
+    if args.enable_slack and slack_webhook and allow and (not args.dry_run):
         try:
             payload = json.dumps(
                 {
@@ -143,7 +154,19 @@ def main():
             print("Posted Slack notification (webhook)")
         except Exception as e:
             print("Failed posting to Slack webhook:", e)
-    created = try_create_issue(title, body)
+    elif not args.enable_slack and slack_webhook:
+        print("Slack webhook available but not enabled (use --enable-slack to allow posting)")
+
+    created = False
+    if args.enable_issues and allow and (not args.dry_run):
+        created = try_create_issue(title, body)
+    elif args.enable_issues and not allow:
+        print("Issue creation requested but ALLOW_NOTIFICATIONS!=1; skipping issue creation")
+    elif args.enable_issues and args.dry_run:
+        print("Dry-run: would create GitHub issue but --dry-run was set; not creating")
+    else:
+        print("Issue creation disabled (use --enable-issues to allow creating GitHub issues)")
+
     if not created:
         print("To create an issue manually, run:")
         print(f'  gh issue create --title "{title}" --body-file {art}')

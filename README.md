@@ -1,5 +1,7 @@
 # MATRIX
 
+![guardrails](https://github.com/JosefVacha/matrix/actions/workflows/smoke-validators.yml/badge.svg)
+
 MATRIX = thin modular layer over Freqtrade + FreqAI; Superalgos only as mental node map.
 
 ## What is MATRIX

@@ -4,6 +4,8 @@ Tento dokument obsahuje oficiální šablonu pro odpovědi, které generuje Copi
 
 POVINNÉ: Před každou odpovědí spusťte `python3 scripts/qa/check_copilot_guardrails.py` a začněte odpověď přesnou auditní preface, kterou skript vyžaduje (viz .github/copilot-instructions.md). Tato preface musí být první dvě řádky odpovědi.
 
+MANDATORY: Pokud uživatel píše v češtině, odpověz v češtině.
+
 ----
 
 ŠABLONA ODPOVĚDI (používejte přesně tento formát)

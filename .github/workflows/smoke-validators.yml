@@ -11,6 +11,8 @@ jobs:
   validators:
     name: validators (py${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     strategy:
       fail-fast: false
       matrix:
@@ -32,18 +34,30 @@ jobs:
       - name: Guardrail check (copilot)  # must pass before other validators
         run: |
           python3 scripts/qa/check_copilot_guardrails.py
+      - name: Check PR preface (CI)
+        if: github.event_name == 'pull_request'
+        run: |
+          python3 scripts/qa/check_pr_preface.py
       - name: Reply template presence check
         run: |
           python3 scripts/qa/check_reply_template_presence.py
       - name: Guardrails unit test
         run: |
           python3 -m tests.test_guardrails
+      - name: Pre-commit hooks (non-fatal)
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pre-commit || true
+          pre-commit run --all-files || true
       - name: Workspace health gate
         run: |
           python3 scripts/qa/check_workspace_health.py
       - name: Workspace health unit test
         run: |
           python3 -m tests.test_workspace_health
+      - name: Run linters (non-fatal)
+        run: |
+          make ci-lint || true
       - name: Install system build dependencies (for optional pyarrow)
         run: |
           sudo apt-get update && sudo apt-get install -y cmake build-essential
