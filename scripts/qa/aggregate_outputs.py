@@ -4,6 +4,7 @@
 This script looks for files like outputs/guardrail_check.json and combines
 selected keys into a compact summary for maintainers.
 """
+
 import json
 from pathlib import Path
 
@@ -21,7 +22,16 @@ for p in OUT.glob("*.json"):
     except Exception:
         continue
     if p.name == "guardrail_check.json" or p.name.startswith("guardrail"):
-        summary["guardrail"] = {k: data.get(k) for k in ["ok","preface_ok","language_ok","missing_critical","missing_conditionals"]}
+        summary["guardrail"] = {
+            k: data.get(k)
+            for k in [
+                "ok",
+                "preface_ok",
+                "language_ok",
+                "missing_critical",
+                "missing_conditionals",
+            ]
+        }
     else:
         summary[p.name] = data
 

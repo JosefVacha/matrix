@@ -171,7 +171,10 @@ def check_language_rules() -> bool:
             rule_ok = True
 
     # Be forgiving about path case when checking for template reference
-    template_ref = "knowledge/reply_templates.md" in txt or "knowledge/reply_templates.md" in txt.replace("\r", "")
+    template_ref = (
+        "knowledge/reply_templates.md" in txt
+        or "knowledge/reply_templates.md" in txt.replace("\r", "")
+    )
     # also ensure the canonical template file exists and contains Czech headings
     template_path = Path("Knowledge/REPLY_TEMPLATES.md")
     template_exists = template_path.exists()

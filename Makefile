@@ -36,3 +36,7 @@ watch-pr-ci:
 	if [ -z "$$PR" ]; then echo "Please set PR=<pr-or-branch>"; exit 2; fi; \
 	INTERVAL=$${INTERVAL:-30}; ONCE=$${ONCE:-0}; \
 	bash scripts/qa/watch_pr_ci_polling.sh $$PR --interval $$INTERVAL $$( [ "$$ONCE" -eq 1 ] && echo --once )
+
+paper-trade-sim:
+	@echo "Run paper trading simulator against smoke dataset"
+	@python3 scripts/trading/paper_trading_sim.py --dataset data/dataset_SMOKE.parquet --output outputs/paper_trade_report.json || true

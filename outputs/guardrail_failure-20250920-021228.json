@@ -1,7 +1,0 @@
-{
-  "ok": false,
-  "missing_critical": [
-    ".github/copilot-instructions.md"
-  ],
-  "reason": "fake"
-}

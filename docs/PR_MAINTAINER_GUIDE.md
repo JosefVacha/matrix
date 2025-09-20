@@ -55,6 +55,19 @@ cat outputs/guardrail_check.json
 
 If you'd like, I can add a tiny GitHub Actions badge or a scripted `Makefile` target to make local guardrail runs even easier.
 
+## Auto-notify policy (recommended)
+
+By default, automatic notifications are disabled. This repository follows a conservative policy:
+
+- The notifier will always write a local artifact, but will not create issues or post to Slack unless explicitly allowed.
+- To enable remote notifications in CI, a maintainer must:
+	1. Add the required secrets (`SLACK_WEBHOOK`, and/or `AUTOMATION_GH_TOKEN`) in the repository settings.
+	2. Set `ALLOW_NOTIFICATIONS=1` in the job environment (or as a repository secret) — this acts as a second guardrail.
+	3. Ensure the job has `permissions: issues: write` if you want to use the built-in `GITHUB_TOKEN`.
+
+This two-step approach (explicit flags + ALLOW_NOTIFICATIONS) reduces the risk of accidental notifications from local runs or forks. See `docs/NOTIFIER_USAGE.md` for usage examples and safety notes.
+
+
 ## Pre-commit (recommended)
 
 We recommend installing `pre-commit` locally so contributors get automatic formatting and linting.

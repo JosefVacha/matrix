@@ -5,6 +5,7 @@ Usage (CI - automatic): the script reads GITHUB_EVENT_PATH env var set by Action
 and extracts pull_request.body. Locally you can pass --file PATH to check a body
 file.
 """
+
 import argparse
 import json
 import os
@@ -13,9 +14,7 @@ from pathlib import Path
 
 
 MANDATORY_LINE1 = "Guardrail check: ran check_copilot_guardrails.py — PASS"
-MANDATORY_LINE2 = (
-    "Files reloaded: copilot-instructions.md, AGENTS.md, PROJECT_STATE.md"
-)
+MANDATORY_LINE2 = "Files reloaded: copilot-instructions.md, AGENTS.md, PROJECT_STATE.md"
 
 
 def body_from_event(event_path: str) -> str:
@@ -46,7 +45,11 @@ def check_body(body: str) -> bool:
     if not l2.startswith("Files reloaded:"):
         return False
     # ensure core trio is present
-    if "copilot-instructions.md" not in l2 or "AGENTS.md" not in l2 or "PROJECT_STATE.md" not in l2:
+    if (
+        "copilot-instructions.md" not in l2
+        or "AGENTS.md" not in l2
+        or "PROJECT_STATE.md" not in l2
+    ):
         return False
     return True
 
@@ -69,10 +72,14 @@ def main():
         print("PR preface: OK")
         sys.exit(0)
     else:
-        print("PR preface: MISSING or malformed. PR body must start with the audit preface (two lines).")
+        print(
+            "PR preface: MISSING or malformed. PR body must start with the audit preface (two lines)."
+        )
         print("Required first line:")
         print(MANDATORY_LINE1)
-        print("Required second line must start with 'Files reloaded:' and contain copilot-instructions.md, AGENTS.md, PROJECT_STATE.md")
+        print(
+            "Required second line must start with 'Files reloaded:' and contain copilot-instructions.md, AGENTS.md, PROJECT_STATE.md"
+        )
         sys.exit(1)
 
 

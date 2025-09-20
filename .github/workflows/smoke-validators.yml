@@ -94,9 +94,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          AUTOMATION_GH_TOKEN: ${{ secrets.AUTOMATION_GH_TOKEN }}
+          ALLOW_NOTIFICATIONS: ${{ secrets.ALLOW_NOTIFICATIONS }}
         run: |
           echo 'Guardrail/validators failed — producing artifact and attempting notifier (best-effort)'
-          python3 scripts/qa/notify_guardrail_failure.py || true
+          python3 scripts/qa/check_copilot_guardrails.py --json > outputs/guardrail_check.json || true
+          # Only allow remote notifications if ALLOW_NOTIFICATIONS is explicitly set to '1'
+          if [ "$${ALLOW_NOTIFICATIONS:-}" = "1" ]; then
+            echo 'ALLOW_NOTIFICATIONS=1; running notifier with enabled actions if configured'
+            # pass enable flags only if corresponding secrets are present
+            ENABLE_ARGS=""
+            if [ -n "$${SLACK_WEBHOOK:-}" ]; then ENABLE_ARGS="$${ENABLE_ARGS} --enable-slack"; fi
+            if [ -n "$${AUTOMATION_GH_TOKEN:-}" ] || [ -n "$${GITHUB_TOKEN:-}" ]; then ENABLE_ARGS="$${ENABLE_ARGS} --enable-issues"; fi
+            python3 scripts/qa/notify_guardrail_failure.py --input-file outputs/guardrail_check.json $${ENABLE_ARGS} || true
+          else
+            echo 'ALLOW_NOTIFICATIONS not set to 1; writing artifact only (no remote notifications)'
+            python3 scripts/qa/notify_guardrail_failure.py --input-file outputs/guardrail_check.json --dry-run || true
+          fi
   smoke:
     name: smoke (py${{ matrix.python-version }}) — optional
     runs-on: ubuntu-latest

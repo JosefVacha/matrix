@@ -8,13 +8,13 @@ labels: bug,guardrail
 What guardrail failed and brief summary:
 
 **Branch / PR**
-- Branch: 
-- PR: 
+- Branch:
+- PR:
 
 **Steps to reproduce**
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 **Attachments**
 - Attach `guardrail-outputs` artifact (from workflow) or include `outputs/guardrail_check.json` here.

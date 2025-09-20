@@ -23,7 +23,7 @@
   "language_ok": true,
   "ok": true,
   "scopes_detected": [
-    "ci",
-    "docs"
+    "docs",
+    "ci"
   ]
 }

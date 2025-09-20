@@ -23,7 +23,7 @@ else
   BRANCH=$PR_OR_REF
 fi
 
-echo "Repo: ${REPO}" 
+echo "Repo: ${REPO}"
 echo "Watching branch: ${BRANCH}"
 
 echo "Recent workflow runs for branch (smoke-validators and simulate-notifier):"
