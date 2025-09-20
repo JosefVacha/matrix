@@ -128,8 +128,59 @@ def main():
             method='POST'
         )
         with urllib.request.urlopen(req) as resp:
+            resp_body = resp.read().decode()
             print('PR response:', resp.status)
-            print(resp.read().decode())
+            print(resp_body)
+        # try to parse PR number and add labels/reviewers if configured
+        try:
+            pr_json = json.loads(resp_body)
+            pr_number = pr_json.get('number')
+        except Exception:
+            pr_number = None
+
+        # Add labels and request reviewers if allowed
+        if pr_number and token:
+            reviewers_env = os.environ.get('DEFAULT_PR_REVIEWERS')
+            labels_env = os.environ.get('DEFAULT_PR_LABELS')
+            reviewers = [r.strip() for r in reviewers_env.split(',')] if reviewers_env else []
+            labels = [lab.strip() for lab in labels_env.split(',')] if labels_env else []
+
+            if labels:
+                try:
+                    lreq = urllib.request.Request(
+                        f'https://api.github.com/repos/{repo}/issues/{pr_number}/labels',
+                        data=json.dumps({'labels': labels}).encode('utf-8'),
+                        headers={
+                            'Authorization': f'token {token}',
+                            'Content-Type': 'application/json',
+                            'User-Agent': 'matrix-baseline-bot'
+                        },
+                        method='POST'
+                    )
+                    with urllib.request.urlopen(lreq) as lresp:
+                        print('Labels response:', lresp.status)
+                        print(lresp.read().decode())
+                except Exception as e:
+                    print('Failed to add labels:', e)
+
+            if reviewers:
+                try:
+                    rreq = urllib.request.Request(
+                        f'https://api.github.com/repos/{repo}/pulls/{pr_number}/requested_reviewers',
+                        data=json.dumps({'reviewers': reviewers}).encode('utf-8'),
+                        headers={
+                            'Authorization': f'token {token}',
+                            'Content-Type': 'application/json',
+                            'User-Agent': 'matrix-baseline-bot'
+                        },
+                        method='POST'
+                    )
+                    with urllib.request.urlopen(rreq) as rresp:
+                        print('Reviewers response:', rresp.status)
+                        print(rresp.read().decode())
+                except Exception as e:
+                    print('Failed to request reviewers:', e)
+
         print('PR created')
     else:
         print('\nDry-run complete. To perform the push and create a PR run with --allow-push and set ALLOW_NOTIFICATIONS=1 in the environment.')
