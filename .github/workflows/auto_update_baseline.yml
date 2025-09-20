@@ -44,8 +44,12 @@ jobs:
         run: |
           python3 scripts/qa/should_update_baseline.py --tol ${{ github.event.inputs.tolerance_up }} > decide.out
           cat decide.out
-          grep '^should_pr=' decide.out | sed 's/should_pr=//' >> $GITHUB_OUTPUT
-          grep '^current_final=' decide.out | sed 's/current_final=//' >> $GITHUB_OUTPUT
+          # Write explicit key=value lines to GITHUB_OUTPUT. Use printf to avoid writing bare 'false' which
+          # GitHub Actions rejects as invalid format for ::set-output style files.
+          SHOULD_PR=$(grep '^should_pr=' decide.out | sed 's/should_pr=//')
+          CURRENT_FINAL=$(grep '^current_final=' decide.out | sed 's/current_final=//')
+          printf 'should_pr=%s\n' "${SHOULD_PR}" >> $GITHUB_OUTPUT
+          printf 'current_final=%s\n' "${CURRENT_FINAL}" >> $GITHUB_OUTPUT
 
       - name: Create PR with updated baseline (optional)
         if: ${{ steps.decide.outputs.should_pr == 'true' && github.event.inputs.create_pr == 'true' }}
