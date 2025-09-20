@@ -90,6 +90,10 @@ def main():
         'body': '\n'.join(body_lines)
     }
 
+    # Recommended reviewers/labels (non-enforced; maintainers should verify)
+    body_lines.extend(['', 'Suggested reviewers: @repo-maintainer', 'Suggested labels: infra, ci, baseline'])
+    payload['body'] = '\n'.join(body_lines)
+
     print('\n--- Proposed baseline PR payload (dry-run) ---')
     print(json.dumps(payload, indent=2))
     print('\n--- Proposed baseline file (ci/baselines/paper_trade_metrics_baseline.json) ---')
