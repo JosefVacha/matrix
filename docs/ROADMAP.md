@@ -124,5 +124,62 @@ If you approve, we can run the safe paper-trading simulator smoke run in CI or l
 - Q: How do I convert FreqAI model outputs to simulator predictions?
   - A: See `docs/convert_model_to_signals.md` for the exact export format (CSV/Parquet with `date,pair,prediction`), alignment rules (no lookahead), and an example export command.
 
+## Reality check — jsme hlavně v kódu, ne v běhu
+
+Krátce: máte pravdu — repo obsahuje hodně užitečného kódu, ale rozhodující část práce je zprovoznit systém tak, aby opravdu běžel: data, backtesty, trénink/inference, a pravidelné simulace. Bez toho zůstáváme v režimu "kódujeme teoreticky". Níže je praktický plán, jak přeorientovat práci na běh systému během příštích 90 dní.
+
+Hlavní rizika dnes:
+- Nemáme pravidelný pipeline pro ingest OHLCV (aktuálně existují sample datasety, ale ne kontinuální ingest/refresh).
+- Žádné automatizované end-to-end backtesty ani scheduled smoke-runy, takže chyby se projeví až pozdě v integraci.
+- Modely a trénink (FreqAI) nejsou opláštěny v opakovatelném runneru, chybí WFO integrace.
+- Notifikace a CI se řeší, ale nevyřeší problém, že samotný obchodní simulátor neběží pravidelně.
+
+Prioritní plán (90 dní) — konkrétní kroky a vlastníci
+
+Sprint A (0-14 dní) — nastavit běh a ověření dat
+- Cíl: stabilní datová stopa a minimální smoke dataset pro CI
+- Úkoly:
+  - (A1) Data ingest smoke: implementovat jednoduchý lokalní ingest script, který stáhne nebo zkonstruuje poslední X dní OHLCV do `data/latest.parquet` (Owner: infra/dev)
+  - (A2) Validátor dat: jednoduchý test, který ověří kontinuitu indexu, žádné duplikáty a žádné NaN v hlavních sloupcích (Owner: dev)
+  - Exit criteria: `data/latest.parquet` existuje a `python -m tests.test_data_ingest` prochází v CI
+
+Sprint B (15-30 dní) — pravidelný smoke-run a backtest harness
+- Cíl: mít CI job, který na požádání (a plánovaně) spustí deterministický paper-trade smoke-run
+- Úkoly:
+  - (B1) CI smoke job: přidat scheduled GitHub Action (nebo nightly runner) který:
+    - vytváří canonical smoke dataset (pokud chybí),
+    - spouští `scripts/trading/paper_trading_sim.py` s deterministickými nastaveními,
+    - ukládá artefakty (`outputs/*`) a vyhodnotí metriky proti baseline
+  - (B2) Backtest harness: zabalit jeden end-to-end backtest (parquet → simulator → metrics) jako `make backtest` a přidat do CI manual job
+  - Exit criteria: CI smoke job úspěšně generuje `outputs/paper_trade_report.json` a baseline check běží
+
+Sprint C (31-60 dní) — FreqAI train/inference loop a WFO
+- Cíl: integrace tréninku a jednoduché inference do pipeline
+- Úkoly:
+  - (C1) Training runner: vytvořit parametrický training script (walk-forward split, save model artifacts) — Owner: ML
+  - (C2) Inference runner: z modelu získat predikce ve formátu pro simulator (`date,pair,prediction`) — Owner: ML
+  - (C3) Wire-in: přidat krok do smoke CI, který volitelně použije model-predictions místo náhodných/signálů
+  - Exit criteria: jeden model natrénován a jeho inference použita v simulátoru s reprodukovatelným výsledkem
+
+Sprint D (61-90 dní) — monitoring, telemetry, a operativní playbook
+- Cíl: udržitelné provozní procesy pro běh systému
+- Úkoly:
+  - (D1) Telemetry: logování inference-latency, percent NaN per-feature, label hit-rate; uložení do `outputs/telemetry.json` — Owner: infra
+  - (D2) Alerts: kritické thresholdy budou posílat notifikace (vyžaduje ALLOW_NOTIFICATIONS + secrets) — Owner: ops
+  - (D3) Playbook: krok-za-krokem jak reagovat na selhání (retrain, rollback, stop) — Owner: maintainer
+  - Exit criteria: existuje playbook + automatický report z CI, který se dá spustit manuálně a za běhu
+
+Rychlé akce které můžeme spustit hned teď (dnes/1-2 dny)
+- Přidat `data/latest.parquet` generátor do `scripts/qa/generate_smoke_dataset.py` s parametrem pro období
+- Přidat `Makefile` cíle: `make ingest-data`, `make backtest`, `make smoke-ci-run`
+- Přidat jednoduchý GitHub Action `smoke-backtest.yml` který poběží nightly a přidá artifacty
+
+Metriky úspěchu (konkrétní, ověřitelné)
+- M1: každý commit na main má možnost spustit smoke-run lokálně (`make smoke-ci-run`) — PASS/FAIL
+- M2: weekly CI smoke job úspěšně běží a ukládá artefakty (equity curve, trades) — PASS/FAIL
+- M3: jeden model prošel WFO a jeho inference byla použita v simulátoru — PASS/FAIL
+
+Shrnutí
+- Ano, musíme se přestat „naznačovat“ v kódu a zaměřit se na to, že systém skutečně běží. Navrhuji, abychom si rozdělili výše uvedený plán do 2týdenních sprintů s jasnými vlastníky a exit-criteria. Pokud to schválíte, připravím konkrétní issue + projekty (GitHub Projects) s úkoly podle sprintů a přiřadím vlastníky.
 
 ```
