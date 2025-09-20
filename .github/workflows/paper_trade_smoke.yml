@@ -53,32 +53,8 @@ jobs:
 
       - name: Optional: compare metrics to baseline
         if: ${{ always() && (exists('ci/baselines/paper_trade_metrics_baseline.json')) }}
+        env:
+          REGRESSION_TOLERANCE: 0.01
         run: |
-          echo "Comparing metrics to baseline"
-          python3 - <<'PY'
-import json, sys
-from pathlib import Path
-
-base = Path('ci/baselines/paper_trade_metrics_baseline.json')
-cur = Path('outputs/paper_trade_metrics.json')
-
-if not base.exists():
-    print('No baseline found, skipping')
-    sys.exit(0)
-
-if not cur.exists():
-    print('Current metrics missing, failing')
-    sys.exit(2)
-
-b = json.loads(base.read_text())
-c = json.loads(cur.read_text())
-
-print('baseline:', b)
-print('current :', c)
-
-if c.get('final_net') < b.get('final_net') - 1e-9:
-    print('Regression detected: final_net decreased')
-    sys.exit(3)
-
-print('No regression')
-PY
+          echo "Comparing metrics to baseline with tolerance=${REGRESSION_TOLERANCE}"
+          python3 scripts/qa/compare_metrics_to_baseline.py --tol ${REGRESSION_TOLERANCE}
