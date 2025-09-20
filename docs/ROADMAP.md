@@ -17,6 +17,17 @@ This roadmap expands the existing milestones and lays out a clear path from the 
 - Deliverables: guardrail runner, unit tests, smoke dataset, docs, maintainers guide.
 - Exit criteria: validators pass locally and in CI; reproducible smoke runs.
 
+Status update (completed):
+- Guardrail runner implemented (`scripts/qa/check_copilot_guardrails.py`) with JSON output mode and preface checks.
+- Notifier implemented and made safe-by-default (`scripts/qa/notify_guardrail_failure.py`).
+- Paper-trading simulator implemented and smoke-run added (`scripts/trading/paper_trading_sim.py`).
+- CI: opt-in manual workflow `paper_trade_smoke.yml` added; baseline metrics stored in `ci/baselines/paper_trade_metrics_baseline.json` and comparison step supports a relative tolerance.
+
+Next immediate items (short-term):
+- Automate baseline PR suggestions: when an approved run improves metrics, create a PR with the proposed baseline to be reviewed by maintainers.
+- Add a small CI badge/process to show smoke-run status in the repository README.
+- Document a maintainer checklist for enabling notifications safely (via `ALLOW_NOTIFICATIONS`).
+
 ## Phase 1 — Strategy adapter & reproducible backtest (M1)
 - Goals: adapter that converts model predictions to Freqtrade-style signals, reproducible dry backtests.
 - Deliverables:
