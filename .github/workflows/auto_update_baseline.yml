@@ -30,6 +30,16 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install pandas pyarrow
 
+      - name: Ensure smoke dataset
+        run: |
+          # If the canonical smoke dataset isn't present, generate it so CI runs are deterministic.
+          if [ -f data/dataset_SMOKE.parquet ] || [ -f data/dataset_SMOKE.pkl ]; then
+            echo "Smoke dataset present, skipping generation"
+          else
+            echo "Smoke dataset missing — generating with scripts/qa/generate_smoke_dataset.py"
+            python3 scripts/qa/generate_smoke_dataset.py
+          fi
+
       - name: Run paper-trade simulator
         run: |
           mkdir -p outputs
